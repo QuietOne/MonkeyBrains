@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
+        <file>file:/D:/Documents/AgentFramework/src/behaviours/player/PlayerMoveBehaviour.java</file>
+        <file>file:/D:/Documents/AgentFramework/src/behaviours/npc/MoveBehaviour.java</file>
+        <file>file:/D:/Documents/AgentFramework/src/behaviours/player/PlayerMainBehaviour.java</file>
+        <file>file:/D:/Documents/AgentFramework/src/test/Main.java</file>
+        <file>file:/D:/Documents/AgentFramework/src/agents/Agent.java</file>
+        <file>file:/D:/Documents/AgentFramework/src/behaviours/npc/AttackBehaviour.java</file>
+        <file>file:/D:/Documents/AgentFramework/src/test/LaserBullet.java</file>
+        <file>file:/D:/Documents/AgentFramework/src/behaviours/npc/Behaviour.java</file>
+        <file>file:/D:/Documents/AgentFramework/src/behaviours/npc/LookAroundBehaviour.java</file>
+        <file>file:/D:/Documents/AgentFramework/src/behaviours/npc/NeuralMainBehaviour.java</file>
+        <file>file:/D:/Documents/AgentFramework/src/behaviours/npc/SeekNDestroyBehaviour.java</file>
+        <file>file:/D:/Documents/AgentFramework/src/behaviours/player/PlayerAttackBehaviour.java</file>
+        <file>file:/D:/Documents/AgentFramework/src/test/DefinedSpatials.java</file>
+        <file>file:/D:/Documents/AgentFramework/src/util/Game.java</file>
+        <file>file:/D:/Documents/AgentFramework/src/test/LaserWeapon.java</file>
+        <file>file:/D:/Documents/AgentFramework/src/test/Model.java</file>
+        <file>file:/D:/Documents/AgentFramework/src/util/AbstractWeapon.java</file>
+        <file>file:/D:/Documents/AgentFramework/src/util/Bullet.java</file>
+    </open-files>
+</project-private>

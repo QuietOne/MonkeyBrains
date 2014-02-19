@@ -24,7 +24,7 @@ public class Main extends SimpleApplication {
     
     private float gameFinishCountDown = 5f;
     //game stats
-    private final float attackRange = 50f;
+    private final float attackRange = 40f;
     private final float turnSpeed = 25f;
     private final float laserDamage = 5f;
     private final float terrainSize = 40;
@@ -71,6 +71,7 @@ public class Main extends SimpleApplication {
         enemyNeural.setMoveSpeed(8);
 
         //giving them weapons
+        //player.setWeapon(new Cannon("cannon", player, 70f, 10f));
         player.setWeapon(new LaserWeapon("laser", player, attackRange, laserDamage));
         enemy.setWeapon(new LaserWeapon("laser", enemy, attackRange, laserDamage));
         enemyNeural.setWeapon(new LaserWeapon("laser", enemyNeural, attackRange, laserDamage));

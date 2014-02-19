@@ -102,7 +102,7 @@ public abstract class AbstractWeapon {
             throw new Exception("No more bullets");
         }
         Bullet firedBullet = controlShootAt(direction, tpf);
-        ((Node) agent.getSpatial()).attachChild(firedBullet.getSpatial());
+        //((Node) Game.getInstance().getRootNode()).attachChild(firedBullet.getSpatial());
         Game.getInstance().addBullet(firedBullet);
         if (numberOfBullets != -1) {
             numberOfBullets--;

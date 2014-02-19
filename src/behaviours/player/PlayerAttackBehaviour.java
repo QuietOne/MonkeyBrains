@@ -53,9 +53,6 @@ public class PlayerAttackBehaviour extends Behaviour implements ActionListener {
                     Logger.getLogger(PlayerAttackBehaviour.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            if (tpf < ((LaserBullet) agent.getWeapon().getBullet()).getLifeTime()) {
-                enabled = false;
-            }
         }
     }
 

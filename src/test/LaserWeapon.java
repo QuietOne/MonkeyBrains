@@ -28,6 +28,8 @@ public class LaserWeapon extends AbstractWeapon{
     
     
     @Override
+    //laser is instant weapon so damage part can be put into weapon, so
+    //bullet won't check it everytime on update
     protected Bullet controlShootAt(Agent target, float tpf) {
         float laserLength = maxAttackRange;
         Game game = Game.getInstance();
@@ -55,6 +57,8 @@ public class LaserWeapon extends AbstractWeapon{
     }
 
     @Override
+    //laser is instant weapon so damage part can be put into weapon, so
+    //bullet won't check it everytime on update
     protected Bullet controlShootAt(Vector3f direction, float tpf) {
         float laserLength = maxAttackRange;
         Game game = Game.getInstance();
@@ -77,6 +81,7 @@ public class LaserWeapon extends AbstractWeapon{
         LaserBullet laserBullet = new LaserBullet(this, DefinedSpatials.initializeLaserBullet(agent, direction, laserLength));
         //only one laser bullet can be active at the time
         bullet = laserBullet;
+        ((Node) agent.getSpatial()).attachChild(laserBullet.getSpatial());
         return laserBullet;
     }
 

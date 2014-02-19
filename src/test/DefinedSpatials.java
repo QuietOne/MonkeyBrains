@@ -238,4 +238,12 @@ public class DefinedSpatials {
         laserBeam.move(laserBeam.getLocalRotation().mult(new Vector3f(0, 0, laserLength / 2)));
         return laserBeam;
     }
+    
+    public static Geometry initializeCannonball(){
+        Geometry ball = new Geometry("cannonball", new Sphere(10, 10, 0.2f));
+        Material matlaser = DefinedSpatials.material.clone();
+        matlaser.setColor("Color", ColorRGBA.Green);
+        ball.setMaterial(matlaser);
+        return ball;
+    }
 }

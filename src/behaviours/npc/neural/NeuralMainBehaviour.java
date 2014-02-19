@@ -1,6 +1,7 @@
-package behaviours.npc;
+package behaviours.npc.neural;
 
 import agents.Agent;
+import behaviours.npc.Behaviour;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import java.util.ArrayList;

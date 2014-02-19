@@ -33,13 +33,14 @@ public class AttackBehaviour extends Behaviour{
     protected void controlUpdate(float tpf) {
         if (agent.getWeapon().getBullet() == null) {
             try {
+                if (!target.isAlive()) {
+                    target = null;
+                    return;
+                }
                 agent.getWeapon().shootAt(target, tpf);
             } catch (Exception ex) {
                 Logger.getLogger(AttackBehaviour.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-        if (tpf < ((LaserBullet) agent.getWeapon().getBullet()).getLifeTime()) {
-            enabled = false;
         }
     }
 

@@ -1,4 +1,4 @@
-package events;
+package com.jme3.ai.agents.events;
 
 import java.util.EventListener;
 

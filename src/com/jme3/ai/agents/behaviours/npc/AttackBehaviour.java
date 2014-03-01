@@ -1,12 +1,12 @@
-package behaviours.npc;
+package com.jme3.ai.agents.behaviours.npc;
 
-import agents.Agent;
+import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import test.LaserBullet;
 
 /**
  * Example of attack behaviour fon NPC.
@@ -33,13 +33,15 @@ public class AttackBehaviour extends Behaviour{
     protected void controlUpdate(float tpf) {
         if (agent.getWeapon().getBullet() == null) {
             try {
-                if (!target.isAlive()) {
-                    target = null;
-                    return;
+                if (target != null) {
+                    if (!target.isAlive() || !agent.getWeapon().isInRange(target)) {
+                        target = null;
+                        return;
+                    }
                 }
                 agent.getWeapon().shootAt(target, tpf);
             } catch (Exception ex) {
-                Logger.getLogger(AttackBehaviour.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(AttackBehaviour.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

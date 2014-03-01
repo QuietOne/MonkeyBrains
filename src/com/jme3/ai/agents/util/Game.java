@@ -1,7 +1,7 @@
-package util;
+package com.jme3.ai.agents.util;
 
-import agents.Agent;
-import behaviours.player.PlayerMainBehaviour;
+import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.player.PlayerMainBehaviour;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;

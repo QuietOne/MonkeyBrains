@@ -1,14 +1,15 @@
-package behaviours.npc;
+package com.jme3.ai.agents.behaviours.npc;
 
-import agents.Agent;
+import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
-import events.AgentSeenEvent;
-import events.AgentSeenEventListener;
-import util.Game;
+import com.jme3.ai.agents.events.AgentSeenEvent;
+import com.jme3.ai.agents.events.AgentSeenEventListener;
+import com.jme3.ai.agents.util.Game;
 import test.Model;
 
 /**

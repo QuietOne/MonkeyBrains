@@ -1,11 +1,11 @@
-package agents;
+package com.jme3.ai.agents;
 
-import behaviours.npc.Behaviour;
+import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
-import util.Game;
-import util.AbstractWeapon;
+import com.jme3.ai.agents.util.Game;
+import com.jme3.ai.agents.util.AbstractWeapon;
 
 /**
  * Class that represents Agent. Note: Not recommended for extending. Use generics.
@@ -123,6 +123,7 @@ public class Agent<T> {
 
     public void setMainBehaviour(Behaviour mainBehaviour) {
         this.mainBehaviour = mainBehaviour;
+        mainBehaviour.setEnabled(false);
     }
 
     public String getName() {

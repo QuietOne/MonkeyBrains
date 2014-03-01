@@ -1,6 +1,6 @@
-package util;
+package com.jme3.ai.agents.util;
 
-import agents.Agent;
+import com.jme3.ai.agents.Agent;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -82,7 +82,6 @@ public abstract class AbstractWeapon {
             throw new Exception("No more bullets");
         }
         Bullet firedBullet = controlShootAt(target, tpf);
-        ((Node) agent.getSpatial()).attachChild(firedBullet.getSpatial());
         Game.getInstance().addBullet(firedBullet);
         if (numberOfBullets != -1) {
             numberOfBullets--;

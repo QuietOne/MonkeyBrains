@@ -1,116 +1,73 @@
-package behaviours.npc.neural;
+package com.jme3.ai.agents.behaviours.npc.neural;
 
-import agents.Agent;
-import behaviours.npc.Behaviour;
+import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.Behaviour;
+import com.jme3.ai.agents.behaviours.npc.LookAroundBehaviour;
+import com.jme3.ai.agents.behaviours.npc.MoveBehaviour;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
-import java.util.ArrayList;
-import org.neuroph.core.data.DataSet;
-import org.neuroph.nnet.MultiLayerPerceptron;
+import com.jme3.ai.agents.events.AgentSeenEvent;
+import com.jme3.ai.agents.events.AgentSeenEventListener;
+import com.jme3.ai.agents.util.Game;
 
 /**
  * One behaviour to rule them all.<br>
- * Behaviour that use Neural Network to learn proper behaviour activation.
- * Not operational.
+ * Behaviour that use behaviours that have implemented neural network within themselves
+ * to learn proper behaviour activation.
  * 
  * @author Tihomir Radosavljević
+ * @version 1.0
  */
-public class NeuralMainBehaviour extends Behaviour {
+public class NeuralMainBehaviour extends Behaviour implements AgentSeenEventListener {
 
+    private LookAroundBehaviour lookAroundBehaviour;
+    private MoveBehaviour moveBehaviour;
     /**
-     * List of all behaviours that this behaviour controls.
+     * Attack behaviour that calculates next position of agent and shoots there.
      */
-    private ArrayList<Behaviour> behaviours = new ArrayList<Behaviour>();
-    /**
-     * Neural network for deciding what behaviour should run.
-     */
-    private MultiLayerPerceptron brain;
-    /**
-     * Training set for NN.
-     */
-    private DataSet trainingSet = null;
-
-    public NeuralMainBehaviour(Agent agent) {
+    private NeuralAttackBehaviour neuralAttackBehaviour;
+    
+    
+    public NeuralMainBehaviour(Agent agent, float terrainSize) {
+        //Main behaviour doesn't have need for spatials.
         super(agent);
-        brain = new MultiLayerPerceptron(new int[]{13, 11, 17, 23});
+        lookAroundBehaviour = new LookAroundBehaviour(agent);
+        //TODO: put some spatial to move behaviour
+        moveBehaviour = new MoveBehaviour(agent, null, terrainSize);
+        //TODO: put some spatial to attack behaviour
+        neuralAttackBehaviour = new NeuralAttackBehaviour(agent, null);
+        lookAroundBehaviour.addListener(moveBehaviour);
+        lookAroundBehaviour.addListener(this);
+        moveBehaviour.setEnabled(true);
+        neuralAttackBehaviour.setEnabled(false);
     }
-
-    public NeuralMainBehaviour(Agent agent, int[] layers) {
-        super(agent);
-        brain = new MultiLayerPerceptron(layers);
-    }
-
-    /**
-     * This method is for creating trainingSet, without direct use of Neuroph's
-     * methods.
-     *
-     * @param inputSize number of input neurons
-     * @param outputSize number of output neurons
-     */
-    public void createTrainingSet(int inputSize, int outputSize) {
-        trainingSet = new DataSet(inputSize, outputSize);
-    }
-
-    /**
-     * Expand trainigSet by adding more inputs and outputs.
-     *
-     * @param input
-     * @param output
-     */
-    public void expandTrainingSet(double[] input, double[] output) {
-        if (trainingSet == null) {
-            throw new NullPointerException("trainingSet has not been created.");
-        } else {
-            trainingSet.addRow(input, output);
-        }
-    }
-
-    /**
-     * Generating NN with trainingSet.
-     *
-     * @see DataSet
-     */
-    public void learn() {
-        if (trainingSet == null) {
-            throw new NullPointerException("trainingSet has not been created.");
-        } else {
-            brain.learn(trainingSet);
-        }
-    }
-
-    public void addBehaviour(Behaviour behaviour) {
-        behaviours.add(behaviour);
-    }
-
-    public void removeBehaviour(Behaviour behaviour) {
-        behaviours.remove(behaviour);
-    }
-
+    
     @Override
     protected void controlUpdate(float tpf) {
-        //calculation
-        
-        
-        brain.setInput(new double[]{1, 2, 3, 4});
-        brain.calculate();
-        double[] brainOutput = brain.getOutput();
-        for (int i = 0; i < brainOutput.length; i++) {
-            if (brainOutput[i] > 0.5) {
-                //activate i. behaviour
-                behaviours.get(i).setEnabled(true);
-            } else {
-                //deactivate i. behaviour
-                behaviours.get(i).setEnabled(false);
-            }
+        Game game = Game.getInstance();
+        if (agent.isAlive() && !game.isOver()) {
+            lookAroundBehaviour.setEnabled(true);
+        } else {
+            lookAroundBehaviour.setEnabled(false);
         }
-        for (Behaviour behaviour : behaviours) {
-            behaviour.update(tpf);
-        }
-
+        lookAroundBehaviour.update(tpf);
+        moveBehaviour.update(tpf);
+        neuralAttackBehaviour.update(tpf);
     }
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-    //don't care about rendering
+        //don't care about rendering
     }
+
+    public void handleAgentSeenEvent(AgentSeenEvent event) {
+        Agent target = event.getAgentSeen();
+        //if in range
+        if (agent.getWeapon().isInRange(target)) {
+            neuralAttackBehaviour.setTarget(target);
+            //attack mode enabled
+            neuralAttackBehaviour.setEnabled(true);
+        }
+    }
+
 }

@@ -1,15 +1,16 @@
-package behaviours.npc;
+package com.jme3.ai.agents.behaviours.npc;
 
-import agents.Agent;
+import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.math.FastMath;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
-import events.AgentSeenEvent;
-import events.AgentSeenEventListener;
+import com.jme3.ai.agents.events.AgentSeenEvent;
+import com.jme3.ai.agents.events.AgentSeenEventListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.event.EventListenerList;
-import util.Game;
+import com.jme3.ai.agents.util.Game;
 
 /**
  * Example of looking behaviour for NPC.
@@ -38,6 +39,10 @@ public class LookAroundBehaviour extends Behaviour {
         listeners.remove(listener);
     }
 
+    /**
+     * Method for calling all behaviours that are affected by what agent is seeing.
+     * @param agentSeen Agent that have been seen
+     */
     private void fireAgentSeenEvent(Agent agentSeen) {
         //create AgentSeenEvent
         AgentSeenEvent event = new AgentSeenEvent(agent, agentSeen);
@@ -51,7 +56,13 @@ public class LookAroundBehaviour extends Behaviour {
     protected void controlUpdate(float tpf) {
         List<Agent> agents = Game.getInstance().viewPort(agent, FastMath.QUARTER_PI);
         for (int i = 0; i < agents.size(); i++) {
-            fireAgentSeenEvent(agents.get(i));
+            //I wanted them to join against me
+            //if you want to have teams, than add in model team identificator
+            //and check it here, if you want that every agent for itself then
+            //just delete this condition
+            if (agents.get(i).getName().equals("Player")) {
+                fireAgentSeenEvent(agents.get(i));
+            }
         }
     }
 

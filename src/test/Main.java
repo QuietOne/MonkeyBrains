@@ -1,9 +1,10 @@
 package test;
 
-import util.Game;
-import agents.Agent;
-import behaviours.npc.SeekNDestroyBehaviour;
-import behaviours.player.PlayerMainBehaviour;
+import com.jme3.ai.agents.util.Game;
+import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.npc.SeekNDestroyBehaviour;
+import com.jme3.ai.agents.behaviours.npc.neural.NeuralMainBehaviour;
+import com.jme3.ai.agents.behaviours.player.PlayerMainBehaviour;
 import com.jme3.app.SimpleApplication;
 import com.jme3.font.BitmapText;
 import com.jme3.material.Material;
@@ -71,23 +72,20 @@ public class Main extends SimpleApplication {
         enemyNeural.setMoveSpeed(8);
 
         //giving them weapons
-        //player.setWeapon(new Cannon("cannon", player, 70f, 10f));
-        player.setWeapon(new LaserWeapon("laser", player, attackRange, laserDamage));
+        player.setWeapon(new Cannon("cannon", player, 70f, 10f));
+        //player.setWeapon(new LaserWeapon("laser", player, attackRange, laserDamage));
         enemy.setWeapon(new LaserWeapon("laser", enemy, attackRange, laserDamage));
-        enemyNeural.setWeapon(new LaserWeapon("laser", enemyNeural, attackRange, laserDamage));
+        enemyNeural.setWeapon(new Cannon("cannon", enemyNeural, 70f, 10f));
 
         enemy.setVisibilityRange(150f);
-        enemyNeural.setVisibilityRange(150f);
+        enemyNeural.setVisibilityRange(400f);
         //attaching camera to player
         DefinedSpatials.attachCameraTo(player, cam);
 
         //giving behaviours
         player.setMainBehaviour(new PlayerMainBehaviour(player, cam, terrainSize));
         enemy.setMainBehaviour(new SeekNDestroyBehaviour(enemy, terrainSize));
-        enemyNeural.setMainBehaviour(new SeekNDestroyBehaviour(enemyNeural, terrainSize));
-        
-        //Neural not yet finished
-        //enemyNeural.setMainBehaviour(new NeuralMainBehaviour(enemyNeural));
+        enemyNeural.setMainBehaviour(new NeuralMainBehaviour(enemyNeural, terrainSize));
 
         //registering input
         game.registerInput();
@@ -117,6 +115,10 @@ public class Main extends SimpleApplication {
                 }
             }
             
+        }
+        //if player is dead game over
+        if (!player.isAlive()) {
+            game.setOver(true);
         }
         game.update(tpf);
     }

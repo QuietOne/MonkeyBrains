@@ -1,11 +1,12 @@
-package behaviours.npc;
+package com.jme3.ai.agents.behaviours.npc;
 
-import agents.Agent;
+import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
-import events.AgentSeenEvent;
-import events.AgentSeenEventListener;
-import util.Game;
+import com.jme3.ai.agents.events.AgentSeenEvent;
+import com.jme3.ai.agents.events.AgentSeenEventListener;
+import com.jme3.ai.agents.util.Game;
 
 /**
  * Example of mainBehaviour for NPC.
@@ -22,7 +23,7 @@ public class SeekNDestroyBehaviour extends Behaviour implements AgentSeenEventLi
         //Main behaviour doesn't have need for spatials.
         super(agent);
         lookAroundBehaviour = new LookAroundBehaviour(agent);
-        //TODO: put some spatil to move behaviour
+        //TODO: put some spatial to move behaviour
         moveBehaviour = new MoveBehaviour(agent, null, terrainSize);
         //TODO: put some spatial to attack behaviour
         attackBehaviour = new AttackBehaviour(agent, null);

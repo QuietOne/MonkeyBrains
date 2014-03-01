@@ -1,6 +1,6 @@
-package events;
+package com.jme3.ai.agents.events;
 
-import agents.Agent;
+import com.jme3.ai.agents.Agent;
 import java.util.EventObject;
 
 /**

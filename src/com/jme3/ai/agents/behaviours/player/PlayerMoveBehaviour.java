@@ -1,14 +1,14 @@
-package behaviours.player;
+package com.jme3.ai.agents.behaviours.player;
 
-import agents.Agent;
-import behaviours.npc.Behaviour;
+import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
-import util.Game;
+import com.jme3.ai.agents.util.Game;
 import test.Model;
 
 /**

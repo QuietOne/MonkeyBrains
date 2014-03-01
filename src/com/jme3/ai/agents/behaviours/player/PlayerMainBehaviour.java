@@ -1,7 +1,7 @@
-package behaviours.player;
+package com.jme3.ai.agents.behaviours.player;
 
-import agents.Agent;
-import behaviours.npc.Behaviour;
+import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;

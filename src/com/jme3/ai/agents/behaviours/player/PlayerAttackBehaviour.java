@@ -1,7 +1,7 @@
-package behaviours.player;
+package com.jme3.ai.agents.behaviours.player;
 
-import agents.Agent;
-import behaviours.npc.Behaviour;
+import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.math.Plane;
 import com.jme3.math.Ray;
@@ -13,8 +13,7 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import util.Game;
-import test.LaserBullet;
+import com.jme3.ai.agents.util.Game;
 
 /**
  * Example of attacking behaviour for player.

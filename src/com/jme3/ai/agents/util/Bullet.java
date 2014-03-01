@@ -1,4 +1,4 @@
-package util;
+package com.jme3.ai.agents.util;
 
 import com.jme3.bullet.BulletAppState;
 import com.jme3.scene.Spatial;

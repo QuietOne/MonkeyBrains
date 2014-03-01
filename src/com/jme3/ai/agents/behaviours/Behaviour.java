@@ -1,7 +1,7 @@
-package behaviours.npc;
+package com.jme3.ai.agents.behaviours;
 
 
-import agents.Agent;
+import com.jme3.ai.agents.Agent;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 

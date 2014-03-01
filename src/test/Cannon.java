@@ -1,16 +1,11 @@
 package test;
 
-import agents.Agent;
-import com.jme3.collision.CollisionResults;
-import com.jme3.math.Ray;
+import com.jme3.ai.agents.Agent;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
-import com.jme3.scene.shape.Quad;
-import com.jme3.scene.shape.Sphere;
-import util.AbstractWeapon;
-import util.Bullet;
-import util.Game;
+import com.jme3.ai.agents.util.AbstractWeapon;
+import com.jme3.ai.agents.util.Bullet;
+import com.jme3.ai.agents.util.Game;
 
 /**
  *
@@ -28,8 +23,10 @@ public class Cannon extends AbstractWeapon{
     
     @Override
     protected Bullet controlShootAt(Agent target, float tpf) {
-        //FIXME:
-        return new CannonBall(this, DefinedSpatials.initializeCannonball(), agent.getLocalTranslation());
+        Bullet cannonBall = new CannonBall(this, DefinedSpatials.initializeCannonball(), target.getLocalTranslation());
+        bullet = cannonBall;
+        ((Node) Game.getInstance().getRootNode()).attachChild(cannonBall.getSpatial());
+        return cannonBall;
     }
 
     @Override

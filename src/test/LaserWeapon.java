@@ -1,15 +1,15 @@
 package test;
 
-import util.Game;
-import agents.Agent;
+import com.jme3.ai.agents.util.Game;
+import com.jme3.ai.agents.Agent;
 import com.jme3.collision.CollisionResults;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Quad;
-import util.AbstractWeapon;
-import util.Bullet;
+import com.jme3.ai.agents.util.AbstractWeapon;
+import com.jme3.ai.agents.util.Bullet;
 
 /**
  * Specific weapon for this game. 

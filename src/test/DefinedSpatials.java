@@ -1,7 +1,7 @@
 package test;
 
-import util.Game;
-import agents.Agent;
+import com.jme3.ai.agents.util.Game;
+import com.jme3.ai.agents.Agent;
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;

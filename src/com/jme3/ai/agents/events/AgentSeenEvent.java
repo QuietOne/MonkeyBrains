@@ -1,6 +1,6 @@
-package events;
+package com.jme3.ai.agents.events;
 
-import agents.Agent;
+import com.jme3.ai.agents.Agent;
 
 /**
  * Event that is being activated when agent is seen.

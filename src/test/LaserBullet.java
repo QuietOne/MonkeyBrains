@@ -1,9 +1,9 @@
 package test;
 
-import util.Game;
+import com.jme3.ai.agents.util.Game;
 import com.jme3.scene.Spatial;
-import util.Bullet;
-import util.AbstractWeapon;
+import com.jme3.ai.agents.util.Bullet;
+import com.jme3.ai.agents.util.AbstractWeapon;
 
 /**
  *

@@ -1,6 +1,6 @@
 package test;
 
-import agents.Agent;
+import com.jme3.ai.agents.Agent;
 import com.jme3.collision.CollisionResults;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
@@ -8,9 +8,9 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Quad;
-import util.AbstractWeapon;
-import util.Bullet;
-import util.Game;
+import com.jme3.ai.agents.util.AbstractWeapon;
+import com.jme3.ai.agents.util.Bullet;
+import com.jme3.ai.agents.util.Game;
 
 /**
  *
@@ -22,7 +22,7 @@ public class CannonBall extends Bullet{
     
     public CannonBall(AbstractWeapon weapon, Spatial spatial, Vector3f direction) {
         super(weapon, spatial);
-        speed = 20f;
+        speed = 40f;
         this.direction = direction;
         spatial.setLocalRotation(weapon.getAgent().getLocalRotation());
         spatial.setLocalTranslation(weapon.getAgent().getLocalTranslation());

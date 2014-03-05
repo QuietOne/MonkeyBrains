@@ -6,6 +6,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
+import java.net.URL;
 import java.util.ArrayList;
 import org.neuroph.core.data.DataSet;
 import org.neuroph.nnet.MultiLayerPerceptron;
@@ -40,8 +41,8 @@ public class NeuralAttackBehaviour extends Behaviour{
         //defining type of NN (Neural network)
         brain = new MultiLayerPerceptron(TransferFunctionType.TANH, 20, 10, 2);
         //creating dataSet from url
-        //FIXME: url may differ
-        dataSet = DataSet.createFromFile("D:\\Documents\\GitHub\\JMEAI\\src\\com\\jme3\\ai\\agents\\behaviours\\npc\\neural\\TrainingSet.csv", 20, 2, " ");
+        URL url = getClass().getResource("TrainingSet.csv");
+        dataSet = DataSet.createFromFile(url.getPath(), 20, 2, " ");
         //training NN
         brain.learn(dataSet);
         enemyPositions = new ArrayList<Vector3f>();

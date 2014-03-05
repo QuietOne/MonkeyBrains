@@ -38,7 +38,7 @@ public class NeuralAttackBehaviour extends Behaviour{
     public NeuralAttackBehaviour(Agent agent, Spatial spatial) {
         super(agent, spatial);
         //defining type of NN (Neural network)
-        brain = new MultiLayerPerceptron(TransferFunctionType.TANH, new int[]{20, 10, 2});
+        brain = new MultiLayerPerceptron(TransferFunctionType.TANH, 20, 10, 2);
         //creating dataSet from url
         //FIXME: url may differ
         dataSet = DataSet.createFromFile("D:\\Documents\\GitHub\\JMEAI\\src\\com\\jme3\\ai\\agents\\behaviours\\npc\\neural\\TrainingSet.csv", 20, 2, " ");

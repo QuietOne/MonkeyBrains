@@ -34,18 +34,21 @@ public class Game {
     public void addAgent(Agent agent){
         agent.setAlive(true);
         agents.add(agent);
+        Game.getInstance().getRootNode().attachChild(agent.getSpatial());
     }
     
     public void addAgent(Agent agent, Vector3f position) {
         agent.setLocalTranslation(position);
         agent.setAlive(true);
         agents.add(agent);
+        Game.getInstance().getRootNode().attachChild(agent.getSpatial());
     }
 
     public void addAgent(Agent agent, float x, float y, float z) {
         agent.setLocalTranslation(x, y, z);
         agent.setAlive(true);
         agents.add(agent);
+        Game.getInstance().getRootNode().attachChild(agent.getSpatial());
     }
 
     public void removeAgent(Agent agent) {

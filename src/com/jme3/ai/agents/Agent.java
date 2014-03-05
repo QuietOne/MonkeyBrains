@@ -68,7 +68,6 @@ public class Agent<T> {
     public Agent(String name, Spatial spatial) {
         this.name = name;
         this.spatial = spatial;
-        Game.getInstance().getRootNode().attachChild(spatial);
     }
 
     /**

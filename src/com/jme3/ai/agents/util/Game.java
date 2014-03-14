@@ -16,41 +16,75 @@ import java.util.List;
 /**
  * Class with information about agents and consequences of their behaviours in game.
  * @author Tihomir Radosavljević
- * @version 1.0
  */
 public class Game {
-    
+    /**
+     * Status of game with agents.
+     */
     private boolean over = false;
+    /**
+     * Indicator if the agent in same team can damage each other.
+     */
+    private boolean friendlyFire = false;
+    /**
+     * Node for all gama geometry representation.
+     */
     private Node rootNode;
+    /**
+     * Managing input for player.
+     */
     private InputManager inputManager;
+    /**
+     * List of all agents that are active in game.
+     */
     private List<Agent> agents;
+    /**
+     * List of all fired bullets in game.
+     */
     private List<Bullet> bullets;
     
     private Game() {
         agents = new ArrayList<Agent>();
         bullets = new LinkedList<Bullet>();
     }
-    
+    /**
+     * Adding agent to game. It will be automaticly updated when game is updated, 
+     * and agent's position will be one set into Spatial.
+     * @param agent agent which is added to game
+     */
     public void addAgent(Agent agent){
         agent.setAlive(true);
         agents.add(agent);
         rootNode.attachChild(agent.getSpatial());
     }
-    
+    /**
+     * Adding agent to game. It will be automaticly updated when game is updated.
+     * @param agent agent which is added to game
+     * @param position position where spatial should be added
+     */
     public void addAgent(Agent agent, Vector3f position) {
         agent.setLocalTranslation(position);
         agent.setAlive(true);
         agents.add(agent);
         rootNode.attachChild(agent.getSpatial());
     }
-
+    /**
+     * Adding agent to game. It will be automaticly updated when game is updated.
+     * @param agent agent which is added to game
+     * @param x X coordinate where spatial should be added
+     * @param y Y coordinate where spatial should be added
+     * @param z Z coordinate where spatial should be added
+     */
     public void addAgent(Agent agent, float x, float y, float z) {
         agent.setLocalTranslation(x, y, z);
         agent.setAlive(true);
         agents.add(agent);
         rootNode.attachChild(agent.getSpatial());
     }
-
+    /**
+     * Removing agent from list of agents to be updated and its spatial from game.
+     * @param agent agent who shoud be removed
+     */
     public void removeAgent(Agent agent) {
         for (int i = 0; i < agents.size(); i++) {
             if (agents.get(i).equals(agent)) {
@@ -61,7 +95,10 @@ public class Game {
             }
         }
     }
-
+    /**
+     * Disabling agent. It means from agent will be dead and won't updated.
+     * @param agent 
+     */
     public void disableAgent(Agent agent) {
         for (int i = 0; i < agents.size(); i++) {
             if (agents.get(i).equals(agent)) {
@@ -70,34 +107,49 @@ public class Game {
             }
         }
     }
-    
+    /**
+     * Decreasing health of agent for value of damage.
+     * @param agent 
+     * @param damage 
+     */
     public void decreaseHealth(Agent agent, double damage) {
         //finding agent and decreasing his healthbar
         for (int i = 0; i < agents.size(); i++) {
             if (agents.get(i).equals(agent)) {
                 agents.get(i).decreaseHealth(damage);
                 if (!agents.get(i).isAlive()) {
-                    //System.out.println("Agent "+agents.get(i).getName()+" is dead.");
                     agents.get(i).setAlive(false);
                     agents.get(i).getSpatial().removeFromParent();
-                } else {
-                    //System.out.println("Agent "+agents.get(i).getName()+" has left "+agents.get(i).getHealth()+" health.");
                 }
                 break;
             }
         }
-        //checking if only one agent left if it has, then game over
-        int numberOfAliveAgents = 0;
-        for (int i = 0; i < agents.size(); i++) {
-            if (agents.get(i).isAlive()) {
-                numberOfAliveAgents++;
-            }
+        //checking if one team left if it has, then game over
+        int i = 0;
+        //find first alive agent in list
+        while (i < agents.size() && !agents.get(i).isAlive()) {
+            i++;
         }
-        if (numberOfAliveAgents < 2) {
+        int j = i + 1;
+        while (j < agents.size()) {
+            //finding next agent that is alive
+            if (!agents.get(j).isAlive()) {
+                j++;
+                continue;
+            }
+            //if agent is not in the same team, game is certainly not over
+            if (!agents.get(i).isSameTeam(agents.get(j))) {
+                break;
+            }
+            j++;
+        }
+        if (j>=agents.size()) {
             over = true;
         }
     }
-
+    /**
+     * Restarting game. All paramethers set to initial values.
+     */
     public void restart() {
         over = false;
         for (int i = 0; i < agents.size(); i++) {
@@ -107,7 +159,12 @@ public class Game {
             }
         }
     }
-
+    /**
+     * Check what agents are seen by one agent.
+     * @param agent agent which is looking
+     * @param viewAngle 
+     * @return all agents that is seen by agent
+     */
     public List<Agent> viewPort(Agent agent, float viewAngle) {
         List<Agent> temp = new LinkedList<Agent>();
         for (int i = 0; i < agents.size(); i++) {
@@ -119,10 +176,8 @@ public class Game {
         }
         return temp;
     }
-
     /**
      * Use with cautious. It works for this example, but it is not generic.
-     *
      * @param observer
      * @param agent
      * @param heightAngle
@@ -165,7 +220,6 @@ public class Game {
 
         }
     }
-
     /**
      * Function for registering input. It is presumed that playable character is
      * first in list. If he isn't, than override this.
@@ -211,13 +265,33 @@ public class Game {
     public List<Bullet> getBullets() {
         return bullets;
     }
+
+    public boolean isFriendlyFire() {
+        return friendlyFire;
+    }
+
+    public void setFriendlyFire(boolean friendlyFire) {
+        this.friendlyFire = friendlyFire;
+    }
+    /**
+     * Check friendly fire and decreaseHealth of target if conditions are ok.
+     * @see Game#friendlyFire
+     * @see Game#decreaseHealth(com.jme3.ai.agents.Agent, double)
+     * @param attacker agent who attacks
+     * @param target agent who is attacked
+     */
+    public void agentAttack(Agent attacker, Agent target) {
+        if (friendlyFire && attacker.isSameTeam(target)) {
+            return;
+        }
+        decreaseHealth(target, attacker.getWeapon().getAttackDamage());
+    }
     
     public static Game getInstance() {
         return GameHolder.INSTANCE;
     }
     
     private static class GameHolder {
-
         private static final Game INSTANCE = new Game();
     }
 }

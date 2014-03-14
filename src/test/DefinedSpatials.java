@@ -222,7 +222,7 @@ public class DefinedSpatials {
         //this is part where geometry begins
         Cylinder laser = new Cylinder(4, 8, 0.02f, laserLength);
         Geometry laserBeam = new Geometry("laserbeam", laser);
-        Material matlaser = DefinedSpatials.material.clone();
+        Material matlaser = material.clone();
         matlaser.setColor("Color", ColorRGBA.Red);
         matlaser.setColor("GlowColor", ColorRGBA.Orange);
         laserBeam.setMaterial(matlaser);
@@ -241,9 +241,9 @@ public class DefinedSpatials {
     
     public static Geometry initializeCannonball(){
         Geometry ball = new Geometry("cannonball", new Sphere(10, 10, 0.2f));
-        Material matlaser = DefinedSpatials.material.clone();
-        matlaser.setColor("Color", ColorRGBA.Green);
-        ball.setMaterial(matlaser);
+        Material matcannonball = material.clone();
+        matcannonball.setColor("Color", ColorRGBA.Green);
+        ball.setMaterial(matcannonball);
         return ball;
     }
 }

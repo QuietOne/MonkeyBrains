@@ -77,6 +77,11 @@ public class Main extends SimpleApplication {
         enemy.setWeapon(new LaserWeapon("laser", enemy, attackRange, laserDamage));
         enemyNeural.setWeapon(new Cannon("cannon", enemyNeural, 70f, 10f));
 
+        //adding game teams
+        player.setTeamName("Player");
+        enemy.setTeamName("Computers");
+        enemyNeural.setTeamName("Computers");
+        
         enemy.setVisibilityRange(150f);
         enemyNeural.setVisibilityRange(400f);
         //attaching camera to player
@@ -108,17 +113,14 @@ public class Main extends SimpleApplication {
                         BitmapText hudText = new BitmapText(guiFont, false);
                         hudText.setSize(guiFont.getCharSet().getRenderedSize()); // font size
                         hudText.setColor(ColorRGBA.Red); // font color
-                        hudText.setText(agent.getName()+" wins."); // the text
+                        hudText.setText(agent.getTeamName()+" wins."); // the text
                         hudText.setLocalTranslation(settings.getWidth() / 2 - hudText.getLineWidth() / 2, settings.getHeight() / 2 - hudText.getLineHeight() / 2, 0); // position
                         guiNode.attachChild(hudText);
+                        break;
                     }
                 }
             }
             
-        }
-        //if player is dead game over
-        if (!player.isAlive()) {
-            game.setOver(true);
         }
         game.update(tpf);
     }

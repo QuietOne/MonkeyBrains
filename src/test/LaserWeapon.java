@@ -44,7 +44,7 @@ public class LaserWeapon extends AbstractWeapon{
             agentPos.getSpatial().collideWith(ray, collsions);
             //really don't understand why, but this works
             if (collsions.size() > 0  && !agent.equals(agentPos)) {
-                game.decreaseHealth(agentPos, agent.getWeapon().getAttackDamage());
+                game.agentAttack(agent, target);
                 ((Quad) ((Geometry) ((Node) agentPos.getSpatial()).getChild("healthbar")).getMesh()).updateGeometry(agentPos.getHealth() / 100 * 4, 0.2f);
                 laserLength = agentPos.getLocalTranslation().distance(agent.getLocalTranslation());
                 break;
@@ -72,7 +72,7 @@ public class LaserWeapon extends AbstractWeapon{
         for (Agent target : game.getAgents()) {
             target.getSpatial().collideWith(ray, collsions);
             if (collsions.size() / 2 > 1 && !agent.equals(target)) {
-                game.decreaseHealth(target, agent.getWeapon().getAttackDamage());
+                game.agentAttack(agent, target);
                 ((Quad) ((Geometry) ((Node) target.getSpatial()).getChild("healthbar")).getMesh()).updateGeometry(target.getHealth() / 100 * 4, 0.2f);
                 laserLength = agent.getLocalTranslation().distance(target.getLocalTranslation());
                 break;

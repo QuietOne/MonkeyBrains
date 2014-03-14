@@ -44,7 +44,7 @@ public class CannonBall extends Bullet{
         //this the part where it hurts
         for (Agent target : game.getAgents()) {
             if (hurts(target) && !weapon.getAgent().equals(target)) {
-                game.decreaseHealth(target, weapon.getAgent().getWeapon().getAttackDamage());
+                game.agentAttack(weapon.getAgent(), target);
                 ((Quad) ((Geometry) ((Node) target.getSpatial()).getChild("healthbar")).getMesh()).updateGeometry(target.getHealth() / 100 * 4, 0.2f);
                 weapon.setBullet(null);
                 game.removeBullet(this);

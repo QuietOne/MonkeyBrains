@@ -1,10 +1,11 @@
-#JMEAI
+#MonkeyBrains
 
-This project is to make Agent framework that will make coding agents in jMonkey Engine easier.
+MonkeyBrains is an sophisticated AI Engine for jMonkeyEngine. It uses an agent framework to wrap human and AI controlled characters in plugin-based AI algorithms so that different each game can pick out whichever AI techniques fits best.
 
 ##Note:
 
-Agents for now are primarily built for FPS (First Person Shooter) games.
+If you have suggestion or any questions, please see forum:
+http://hub.jmonkeyengine.org/forum/board/projects/monkeybrains/
 
 ##Licence:
 

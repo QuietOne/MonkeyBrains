@@ -4,13 +4,11 @@ import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
-import com.jme3.ai.agents.util.Game;
 import com.jme3.ai.agents.util.AbstractWeapon;
 
 /**
  * Class that represents Agent. Note: Not recommended for extending. Use generics.
  * @author Tihomir Radosavljević
- * @version 1.0
  */
 public class Agent<T> {
     /**
@@ -37,6 +35,18 @@ public class Agent<T> {
      * Move speed of agent.
      */
     private float moveSpeed;
+    /**
+     * Agent acceleration speed.
+     */
+    private float acceleration;
+    /**
+     * Maximum movement speed of agent.
+     */
+    private float maxMoveSpeed;
+    /**
+     * Name of team. Primarily used for enabling friendly fire.
+     */
+    private String teamName;
     /**
      * Status of agent. Agent won't update its status if alive==false.
      */
@@ -231,6 +241,34 @@ public class Agent<T> {
         this.model = model;
     }
 
+    public float getAcceleration() {
+        return acceleration;
+    }
+
+    public void setAcceleration(float acceleration) {
+        this.acceleration = acceleration;
+    }
+
+    public float getMaxMoveSpeed() {
+        return maxMoveSpeed;
+    }
+
+    public void setMaxMoveSpeed(float maxMoveSpeed) {
+        this.maxMoveSpeed = maxMoveSpeed;
+    }
+
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
+    }
+    
+    public boolean isSameTeam(Agent agent) {
+        return teamName.equals(agent.getTeamName());
+    }
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -243,13 +281,17 @@ public class Agent<T> {
         if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
             return false;
         }
+        if ((this.teamName == null) ? (other.teamName != null) : !this.teamName.equals(other.teamName)) {
+            return false;
+        }
         return true;
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 17 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 71 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 71 * hash + (this.teamName != null ? this.teamName.hashCode() : 0);
         return hash;
     }
 }

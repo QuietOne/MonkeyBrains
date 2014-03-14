@@ -5,6 +5,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 import com.jme3.ai.agents.util.AbstractWeapon;
+import com.jme3.scene.Node;
 
 /**
  * Class that represents Agent. Note: Not recommended for extending. Use generics.
@@ -123,6 +124,14 @@ public class Agent<T> {
     }
 
     public void setWeapon(AbstractWeapon weapon) {
+        //remove previous weapon spatial
+        if (this.weapon!= null && this.weapon.getSpatial()!= null) {
+            this.weapon.getSpatial().removeFromParent();
+        }
+        //add new weapon spatial if there is any
+        if (weapon.getSpatial()!= null) {
+            ((Node) spatial).attachChild(weapon.getSpatial());
+        }
         this.weapon = weapon;
     }
 

@@ -72,6 +72,7 @@ public class Main extends SimpleApplication {
         enemyNeural.setMoveSpeed(8);
 
         //giving them weapons
+        //player.setWeapon(new Knife("knife", player));
         player.setWeapon(new Cannon("cannon", player, 70f, 10f));
         //player.setWeapon(new LaserWeapon("laser", player, attackRange, laserDamage));
         enemy.setWeapon(new LaserWeapon("laser", enemy, attackRange, laserDamage));

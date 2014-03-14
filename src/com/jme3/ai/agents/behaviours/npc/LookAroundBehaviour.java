@@ -56,11 +56,8 @@ public class LookAroundBehaviour extends Behaviour {
     protected void controlUpdate(float tpf) {
         List<Agent> agents = Game.getInstance().viewPort(agent, FastMath.QUARTER_PI);
         for (int i = 0; i < agents.size(); i++) {
-            //I wanted them to join against me
-            //if you want to have teams, than add in model team identificator
-            //and check it here, if you want that every agent for itself then
-            //just delete this condition
-            if (agents.get(i).getName().equals("Player")) {
+            //do not attack in same team
+            if (!agent.isSameTeam(agents.get(i))) {
                 fireAgentSeenEvent(agents.get(i));
             }
         }

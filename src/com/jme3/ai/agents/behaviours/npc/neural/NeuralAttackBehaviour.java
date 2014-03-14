@@ -43,7 +43,7 @@ public class NeuralAttackBehaviour extends Behaviour{
         //creating dataSet from url
         URL url = getClass().getResource("TrainingSet.csv");
         dataSet = DataSet.createFromFile(url.getPath(), 20, 2, " ");
-        //training NN
+        //training NN 
         brain.learn(dataSet);
         enemyPositions = new ArrayList<Vector3f>();
     }

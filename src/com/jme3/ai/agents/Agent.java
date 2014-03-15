@@ -39,11 +39,15 @@ public class Agent<T> {
     /**
      * Agent acceleration speed.
      */
-    private float acceleration;
+    private Vector3f acceleration;
     /**
-     * Maximum movement speed of agent.
+     * Mass of agent.
      */
-    private float maxMoveSpeed;
+    private float mass;
+    /**
+     * Maximum force that can be applied to this agent.
+     */
+    private float maxForce;
     /**
      * Name of team. Primarily used for enabling friendly fire.
      */
@@ -250,20 +254,12 @@ public class Agent<T> {
         this.model = model;
     }
 
-    public float getAcceleration() {
+    public Vector3f getAcceleration() {
         return acceleration;
     }
 
-    public void setAcceleration(float acceleration) {
+    public void setAcceleration(Vector3f acceleration) {
         this.acceleration = acceleration;
-    }
-
-    public float getMaxMoveSpeed() {
-        return maxMoveSpeed;
-    }
-
-    public void setMaxMoveSpeed(float maxMoveSpeed) {
-        this.maxMoveSpeed = maxMoveSpeed;
     }
 
     public String getTeamName() {
@@ -303,4 +299,22 @@ public class Agent<T> {
         hash = 71 * hash + (this.teamName != null ? this.teamName.hashCode() : 0);
         return hash;
     }
+
+    public float getMass() {
+        return mass;
+    }
+
+    public void setMass(float mass) {
+        this.mass = mass;
+    }
+
+    public float getMaxForce() {
+        return maxForce;
+    }
+
+    public void setMaxForce(float maxForce) {
+        this.maxForce = maxForce;
+    }
+    
+    
 }

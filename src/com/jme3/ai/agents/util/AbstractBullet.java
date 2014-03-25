@@ -1,37 +1,46 @@
 package com.jme3.ai.agents.util;
 
-import com.jme3.bullet.BulletAppState;
 import com.jme3.scene.Spatial;
 
 /**
+ * Base class for bullets in game.
  *
  * @author Tihomir Radosavljević
+ * @version 1.0
  */
-public class Bullet extends BulletAppState {
-    
-    //does it really have to have reference to weapon from which is fired
-    protected AbstractWeapon weapon;
-    protected Spatial spatial;
+public abstract class AbstractBullet extends GameObject {
 
-    public Bullet(AbstractWeapon weapon, Spatial spatial) {
+    /**
+     * Weapon from which bullet was fired.
+     */
+    protected AbstractWeapon weapon;
+
+    /**
+     * Constructor for AbstractBullet.
+     *
+     * @param weapon weapon from which bullet was fired
+     * @param spatial spatial for bullet
+     */
+    public AbstractBullet(AbstractWeapon weapon, Spatial spatial) {
         this.weapon = weapon;
         this.spatial = spatial;
     }
 
+    /**
+     * Get weapon.
+     *
+     * @return weapon from which bullet was fired
+     */
     public AbstractWeapon getWeapon() {
         return weapon;
     }
 
+    /**
+     * Setting weapon.
+     *
+     * @param weapon weapon from which bullet was fired
+     */
     public void setWeapon(AbstractWeapon weapon) {
         this.weapon = weapon;
     }
-
-    public Spatial getSpatial() {
-        return spatial;
-    }
-
-    public void setSpatial(Spatial spatial) {
-        this.spatial = spatial;
-    }
-    
 }

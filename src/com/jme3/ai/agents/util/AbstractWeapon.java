@@ -1,16 +1,18 @@
 package com.jme3.ai.agents.util;
 
+import com.jme3.ai.agents.util.control.Game;
 import com.jme3.ai.agents.Agent;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 
 /**
  * Abstract class for defining weapons used by agents.
+ *
  * @author Tihomir Radosavljević
  * @version 1.0
  */
 public abstract class AbstractWeapon {
+
     /**
      * Name of weapon.
      */
@@ -43,14 +45,15 @@ public abstract class AbstractWeapon {
      * One weapon have one type of bullet. Each fired bullet can be in it's own
      * update().
      */
-    protected Bullet bullet;
+    protected AbstractBullet bullet;
 
     /**
      * Check if enemy agent is in range of weapon.
+     *
      * @param target
-     * @return 
+     * @return
      */
-    public boolean isInRange(Agent target) {
+    public boolean isInRange(GameObject target) {
         if (agent.getLocalTranslation().distance(target.getLocalTranslation()) > maxAttackRange) {
             return false;
         }
@@ -61,57 +64,63 @@ public abstract class AbstractWeapon {
     }
 
     /**
+     * Check if target position is in range of weapon.
+     *
+     * @param targetPosition
+     * @return
+     */
+    public boolean isInRange(Vector3f targetPosition) {
+        if (agent.getLocalTranslation().distance(targetPosition) > maxAttackRange) {
+            return false;
+        }
+        if (agent.getLocalTranslation().distance(targetPosition) < minAttackRange) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Check if there is any bullets in weapon.
+     *
      * @return true - has, false - no, it doesn't
      */
-    public boolean hasBullets(){
+    public boolean hasBullets() {
         if (numberOfBullets == 0) {
             return false;
         }
         return true;
     }
-    
+
     /**
      * Method for creating bullets and setting them to move.
-     * @param target agent that should be shoot at
-     * @param tpf time per frame
-     * @throws Exception when there is no more bullets left
-     */
-    public void shootAt(Agent target, float tpf) throws Exception{
-        if (numberOfBullets == 0) {
-            throw new Exception("No more bullets");
-        }
-        Bullet firedBullet = controlShootAt(target, tpf);
-        if (firedBullet!= null) {
-            Game.getInstance().addBullet(firedBullet);
-        }
-        if (numberOfBullets != -1) {
-            numberOfBullets--;
-        }
-    }
-    
-    protected abstract Bullet controlShootAt(Agent target, float tpf);
-    
-    /**
-     * Method for creating bullets and setting them to move.
+     *
      * @param direction direction of bullets to go
      * @param tpf time per frame
-     * @throws Exception when hasBullets()== false
      */
-    public void shootAt(Vector3f direction, float tpf) throws Exception{
-        if (numberOfBullets == 0) {
-            throw new Exception("No more bullets");
+    public void attack(Vector3f direction, float tpf) {
+        if (hasBullets()) {
+            return;
         }
-        Bullet firedBullet = controlShootAt(direction, tpf);
-        if (firedBullet!= null) {
-            Game.getInstance().addBullet(firedBullet);
+        AbstractBullet firedBullet = controlAttack(direction, tpf);
+        if (firedBullet != null) {
+            Game.getInstance().addGameObject(firedBullet);
         }
         if (numberOfBullets != -1) {
             numberOfBullets--;
         }
     }
-    
-    protected abstract Bullet controlShootAt(Vector3f direction, float tpf);
+
+    /**
+     * Method for creating bullets and setting them to move.
+     *
+     * @param target
+     * @param tpf time per frame
+     */
+    public void attack(GameObject target, float tpf) {
+        attack(target.getLocalTranslation(), tpf);
+    }
+
+    protected abstract AbstractBullet controlAttack(Vector3f direction, float tpf);
 
     public String getName() {
         return name;
@@ -153,11 +162,11 @@ public abstract class AbstractWeapon {
         this.spatial = spatial;
     }
 
-    public Bullet getBullet() {
+    public AbstractBullet getBullet() {
         return bullet;
     }
 
-    public void setBullet(Bullet bullet) {
+    public void setBullet(AbstractBullet bullet) {
         this.bullet = bullet;
     }
 
@@ -176,5 +185,4 @@ public abstract class AbstractWeapon {
     public void setMinAttackRange(float minAttackRange) {
         this.minAttackRange = minAttackRange;
     }
-    
 }

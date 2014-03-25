@@ -2,82 +2,116 @@ package com.jme3.ai.agents.behaviours.player;
 
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.Behaviour;
+import com.jme3.ai.agents.behaviours.npc.SimpleMoveBehaviour;
+import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
-import com.jme3.math.FastMath;
-import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
-import com.jme3.ai.agents.util.Game;
-import test.Model;
+import java.util.HashMap;
+import java.util.List;
 
 /**
- * Example of moving behaviour for player.
+ * Simple moveBehaviour for player controled agent. It has support for
+ * AnalogListener and ActionListener.
+ *
  * @author Tihomir Radosavljević
  * @version 1.0
  */
-public class PlayerMoveBehaviour extends Behaviour implements AnalogListener{
+public class SimplePlayerMoveBehaviour extends SimpleMoveBehaviour implements AnalogListener, ActionListener {
 
     /**
      * Name of operation that should be done.
-     * @see util.Game#registerInput()
      */
     private String operation;
     /**
-     * Size of terrain on which agents move.
+     * Supported operation for this agent base on inputs.
      */
-    private float terrainSize;
-    
+    private HashMap<String, Behaviour> supportedOperations;
+
     /**
+     * Constructor for SimplePlayerMoveBehaviour.
+     *
      * @param agent Agent to whom is added this behaviour
      * @param spatial active spatial durring moving
      */
-    public PlayerMoveBehaviour(Agent agent, Spatial spatial, float terrainSize) {
+    public SimplePlayerMoveBehaviour(Agent agent, Spatial spatial) {
         super(agent, spatial);
-        this.terrainSize = terrainSize;
+        supportedOperations = new HashMap<String, Behaviour>();
     }
 
     @Override
     protected void controlUpdate(float tpf) {
-        float turnSpeed = ((Model) agent.getModel()).getTurnSpeed();
-        // you can't move if game is over
-        if (Game.getInstance().isOver()) {
-            enabled = false;
-        }
-        Vector3f oldPos = agent.getLocalTranslation().clone();
-        if (operation.equals("moveForward")) {
-            agent.getSpatial().move(agent.getLocalRotation().mult(new Vector3f(0, 0, agent.getMoveSpeed() * tpf)));
-            if (agent.getLocalTranslation().x > terrainSize * 2 || agent.getLocalTranslation().z > terrainSize * 2
-                    || agent.getLocalTranslation().x < -terrainSize * 2 || agent.getLocalTranslation().z < -terrainSize * 2) {
-                agent.setLocalTranslation(oldPos);
-            }
-        }
-        if (operation.equals("moveBackward")) {
-            agent.getSpatial().move(agent.getLocalRotation().mult(new Vector3f(0, 0, -agent.getMoveSpeed() * tpf)));
-            if (agent.getLocalTranslation().x > terrainSize * 2 || agent.getLocalTranslation().z > terrainSize * 2
-                    || agent.getLocalTranslation().x < -terrainSize * 2 || agent.getLocalTranslation().z < -terrainSize * 2) {
-                agent.setLocalTranslation(oldPos);
-            }
-        }
-        if (operation.equals("moveRight")) {
-            agent.getSpatial().rotate(0, -(FastMath.DEG_TO_RAD * tpf) * turnSpeed, 0);
-        }
-        if (operation.equals("moveLeft")) {
-            agent.getSpatial().rotate(0, (FastMath.DEG_TO_RAD * tpf) * turnSpeed, 0);
-        }
-        enabled = false;
+        supportedOperations.get(operation).update(tpf);
     }
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-        //don't care about rendering
+        throw new UnsupportedOperationException("You should override it youself");
     }
 
     public void onAnalog(String name, float value, float tpf) {
         operation = name;
-        if (value!=0) {
+        if (value != 0) {
             enabled = true;
         }
     }
 
+    public void onAction(String name, boolean isPressed, float tpf) {
+        //FIXME: check if it has to turn left or right
+    }
+
+    /**
+     * Add supported operations to this behaviour.
+     *
+     * @param name of supported operation
+     * @param operation behaviour that should be done
+     */
+    public void addSuportedOperation(String name, Behaviour operation) {
+        supportedOperations.put(name, operation);
+    }
+
+    /**
+     * Add supported operations to this behaviour.
+     *
+     * @param names list of supported operations
+     * @param operations list of behaviours that should be done
+     * @return if sizes of names and operations don't match, true otherwise
+     */
+    public boolean addSuportedOperations(List<String> names, List<Behaviour> operations) {
+        if (names.size() != operations.size()) {
+            return false;
+        }
+        for (int i = 0; i < operations.size(); i++) {
+            supportedOperations.put(names.get(i), operations.get(i));
+        }
+        return true;
+    }
+
+    /**
+     * Add supported operations to this behaviour.
+     *
+     * @param supportedOperations map of supported operations
+     */
+    public void addSupportedOperations(HashMap<String, Behaviour> supportedOperations) {
+        this.supportedOperations.putAll(supportedOperations);
+    }
+
+    /**
+     * Get supported operations.
+     *
+     * @return
+     */
+    public HashMap<String, Behaviour> getSupportedOperations() {
+        return supportedOperations;
+    }
+
+    /**
+     * Setting supported operations.
+     *
+     * @param supportedActions
+     */
+    public void setSupportedOperations(HashMap<String, Behaviour> supportedActions) {
+        this.supportedOperations = supportedActions;
+    }
 }

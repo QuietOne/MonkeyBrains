@@ -3,61 +3,50 @@ package com.jme3.ai.agents.behaviours.player;
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.input.controls.ActionListener;
-import com.jme3.math.Plane;
-import com.jme3.math.Ray;
-import com.jme3.math.Vector2f;
-import com.jme3.math.Vector3f;
-import com.jme3.renderer.Camera;
+import com.jme3.input.controls.AnalogListener;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import com.jme3.ai.agents.util.Game;
+import java.util.HashMap;
+import java.util.List;
 
 /**
- * Example of attacking behaviour for player.
+ * Simple attackBehaviour for player controled agent. It has support for
+ * AnalogListener and ActionListener.
+ *
  * @author Tihomir Radosavljević
  * @version 1.0
  */
-public class PlayerAttackBehaviour extends Behaviour implements ActionListener {
+public class SimplePlayerAttackBehaviour extends Behaviour implements ActionListener, AnalogListener {
 
     /**
      * Operation that should be done.
-     * @see util.Game#registerInput() 
      */
     private String operation;
-    private Camera cam;
+    /**
+     * Supported operation for this agent base on inputs.
+     */
+    private HashMap<String, Behaviour> supportedOperations;
 
-    public PlayerAttackBehaviour(Agent agent, Spatial spatial, Camera cam) {
+    /**
+     * Constructor for SimplePlayerAttackBehaviour.
+     *
+     * @param agent to whom behaviour belongs
+     * @param spatial active spatial during excecution of behaviour
+     */
+    public SimplePlayerAttackBehaviour(Agent agent, Spatial spatial) {
         super(agent, spatial);
-        this.cam = cam;
+        supportedOperations = new HashMap<String, Behaviour>();
     }
 
     @Override
     protected void controlUpdate(float tpf) {
-        if (operation.equals("Shoot")) {
-            //in this demo weapon can only have one bullet (laser) active at the time
-            if (agent.getWeapon().getBullet() == null) {
-                Vector2f click2d = Game.getInstance().getInputManager().getCursorPosition();
-                Vector3f click3d = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 0f).clone();
-                Vector3f dir = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
-                Ray ray = new Ray(click3d, dir);
-                Plane ground = new Plane(Vector3f.UNIT_Y, 0);
-                Vector3f groundpoint = new Vector3f();
-                ray.intersectsWherePlane(ground, groundpoint);
-                try {
-                    agent.getWeapon().shootAt(groundpoint, tpf);
-                } catch (Exception ex) {
-                    Logger.getLogger(PlayerAttackBehaviour.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
+        supportedOperations.get(operation).update(tpf);
     }
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-        //don't care about rendering
+        throw new UnsupportedOperationException("You should override it youself");
     }
 
     public void onAction(String name, boolean isPressed, float tpf) {
@@ -67,5 +56,65 @@ public class PlayerAttackBehaviour extends Behaviour implements ActionListener {
         } else {
             enabled = false;
         }
+        //TODO: see if other paramethers can be used
+    }
+
+    public void onAnalog(String name, float value, float tpf) {
+        operation = name;
+        //TODO: see if other paramethers can be used
+    }
+
+    /**
+     * Add supported operations to this behaviour.
+     *
+     * @param name of supported operation
+     * @param operation behaviour that should be done
+     */
+    public void addSuportedOperation(String name, Behaviour operation) {
+        supportedOperations.put(name, operation);
+    }
+
+    /**
+     * Add supported operations to this behaviour.
+     *
+     * @param names list of supported operations
+     * @param operations list of behaviours that should be done
+     * @return if sizes of names and operations don't match, true otherwise
+     */
+    public boolean addSuportedOperations(List<String> names, List<Behaviour> operations) {
+        if (names.size() != operations.size()) {
+            return false;
+        }
+        for (int i = 0; i < operations.size(); i++) {
+            supportedOperations.put(names.get(i), operations.get(i));
+        }
+        return true;
+    }
+
+    /**
+     * Add supported operations to this behaviour.
+     *
+     * @param supportedOperations map of supported operations
+     */
+    public void addSupportedOperations(HashMap<String, Behaviour> supportedOperations) {
+        this.supportedOperations.putAll(supportedOperations);
+    }
+
+    /**
+     * Get supported operations.
+     *
+     * @return
+     */
+    public HashMap<String, Behaviour> getSupportedOperations() {
+        return supportedOperations;
+    }
+
+    /**
+     * Setting supported operations.
+     *
+     * @param supportedActions
+     */
+    public void setSupportedOperations(HashMap<String, Behaviour> supportedActions) {
+        this.supportedOperations = supportedActions;
     }
 }

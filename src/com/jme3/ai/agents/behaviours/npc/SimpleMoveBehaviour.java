@@ -2,71 +2,114 @@ package com.jme3.ai.agents.behaviours.npc;
 
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.Behaviour;
-import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
-import com.jme3.ai.agents.events.AgentSeenEvent;
-import com.jme3.ai.agents.events.AgentSeenEventListener;
-import com.jme3.ai.agents.util.Game;
-import test.Model;
 
 /**
- * Example of move behaviour for NPC.
+ * Simple move behaviour for NPC. Agent should move to targeted position or to
+ * moveDirection. If both are added then agent will move to targeted position.
+ * <br>Warrning:<br>
+ * Agent sometimes will never move exactly to targeted position if moveSpeed is
+ * too high so add appropriate distance error.
+ *
+ * @see Agent#moveSpeed
+ *
  * @author Tihomir Radosavljević
  * @version 1.0
  */
-public class MoveBehaviour extends Behaviour implements AgentSeenEventListener{
+public class SimpleMoveBehaviour extends Behaviour {
 
     /**
-     * Targeted agent.
+     * Targeted position.
      */
-    private Agent target;
+    private Vector3f targetPosition;
     /**
-     * Size of terrain on which agents move.
+     * Move direction of agent.
      */
-    private float terrainSize;
-    
-    public MoveBehaviour(Agent agent, Spatial spatial, float terrainSize) {
-        super(agent, spatial);
-        this.terrainSize = terrainSize;
+    private Vector3f moveDirection;
+    /**
+     * Distance of targetPosition that is acceptable.
+     */
+    private float distanceError;
+
+    public SimpleMoveBehaviour(Agent agent) {
+        super(agent);
+        distanceError = 0;
     }
-    
+
+    public SimpleMoveBehaviour(Agent agent, Spatial spatial) {
+        super(agent, spatial);
+        distanceError = 0;
+    }
+
     @Override
     protected void controlUpdate(float tpf) {
-        if (target == null) {
-            float turnSpeed = ((Model) agent.getModel()).getTurnSpeed();
-            //if there is no target, rotate
-            agent.getSpatial().rotate(0, (FastMath.DEG_TO_RAD * tpf) * turnSpeed, 0);
-        } else {
-            //if agent in range do not move closer to him or
-            //agent is not lookable then tere is no target
-            if (agent.getWeapon().isInRange(target) || !Game.getInstance().lookable(agent, target, FastMath.QUARTER_PI)) {
-                target = null;
+        //if there is target position where agent should move
+        if (targetPosition != null) {
+            if (agent.getLocalTranslation().distance(targetPosition) <= distanceError) {
+                targetPosition = null;
+                moveDirection = null;
+                enabled = false;
                 return;
             }
-            Vector3f oldPos = agent.getSpatial().getLocalTranslation().clone();
-            agent.getSpatial().move(agent.getLocalRotation().mult(new Vector3f(0, 0, agent.getMoveSpeed() * tpf)));
-            if (agent.getLocalTranslation().x > terrainSize * 2 || agent.getLocalTranslation().z > terrainSize * 2
-                    || agent.getLocalTranslation().x < -terrainSize * 2 || agent.getLocalTranslation().z < -terrainSize * 2) {
-                agent.setLocalTranslation(oldPos);
-                // if enemy hit border make him move backwards
-            }
-
+            moveDirection = targetPosition.subtract(agent.getLocalTranslation()).normalize();
         }
-
+        //if there is movement direction in which agent should move
+        if (moveDirection != null) {
+            agent.getSpatial().move(moveDirection.mult(agent.getMoveSpeed() * tpf));
+        }
     }
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-        //don't care about rendering
+        throw new UnsupportedOperationException("You should override it youself");
     }
 
-    public void handleAgentSeenEvent(AgentSeenEvent event) {
-        // if another agent is seen set him as target
-        target = event.getAgentSeen();
+    /**
+     * @return position of target
+     */
+    public Vector3f getTargetPosition() {
+        return targetPosition;
     }
 
-    
+    /**
+     * @param targetPosition position of target
+     */
+    public void setTargetPosition(Vector3f targetPosition) {
+        this.targetPosition = targetPosition;
+    }
+
+    /**
+     *
+     * @return movement vector
+     */
+    public Vector3f getMoveDirection() {
+        return moveDirection;
+    }
+
+    /**
+     *
+     * @param moveDirection movement vector
+     */
+    public void setMoveDirection(Vector3f moveDirection) {
+        this.moveDirection = moveDirection.normalize();
+    }
+
+    /**
+     *
+     * @return allowed distance error
+     */
+    public float getDistanceError() {
+        return distanceError;
+    }
+
+    /**
+     *
+     * @param distanceError allowed distance error
+     */
+    public void setDistanceError(float distanceError) {
+        this.distanceError = distanceError;
+    }
 }

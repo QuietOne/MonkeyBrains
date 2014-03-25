@@ -5,67 +5,124 @@ import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.math.FastMath;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
-import com.jme3.ai.agents.events.AgentSeenEvent;
-import com.jme3.ai.agents.events.AgentSeenEventListener;
+import com.jme3.ai.agents.events.GameObjectSeenEvent;
+import com.jme3.ai.agents.events.GameObjectSeenListener;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.event.EventListenerList;
-import com.jme3.ai.agents.util.Game;
+import com.jme3.ai.agents.util.control.Game;
+import com.jme3.ai.agents.util.GameObject;
 
 /**
- * Example of looking behaviour for NPC.
+ * Simple look behaviour for NPC. It calls for all behaviour that are added in
+ * listeners. That behaviours must implement GameObjectSeenListener.
+ *
+ * @see GameObjectSeenListener
+ *
+ * This behaviour can only see GameObject if it is added to game.
+ * @see Game#addGameObject(com.jme3.ai.agents.util.GameObject)
+ * <br>or for agents
+ * @see Game#addAgent(com.jme3.ai.agents.Agent) For seeing things on terrain it
+ * uses
+ * @see Game#look(com.jme3.ai.agents.Agent, float)
+ *
  * @author Tihomir Radosavljević
  * @version 1.0
  */
-public class LookAroundBehaviour extends Behaviour {
-    
+public class SimpleLookBehaviour extends Behaviour {
+
     /**
-     * List of listeners to which behaviours AgentSeenEvent should forward to.
-     * If more than one type of Events one behaviour forwards, then use EventListenerList.
-     * @see EventListenerList
+     * List of listeners to which behaviours GameObjectSeen should forward to.
      */
-    private List<AgentSeenEventListener> listeners;
-    
-    public LookAroundBehaviour(Agent agent) {
+    private List<GameObjectSeenListener> listeners;
+    /**
+     * Angle in which GameObjects will be seen.
+     */
+    private float viewAngle;
+
+    /**
+     * @param agent to whom behaviour belongs
+     */
+    public SimpleLookBehaviour(Agent agent) {
         super(agent);
-        listeners = new ArrayList<AgentSeenEventListener>();
-    }
-    
-    public void addListener(AgentSeenEventListener listener) {
-        listeners.add(listener);
-    }
-    
-    public void removeListener(AgentSeenEventListener listener) {
-        listeners.remove(listener);
+        listeners = new ArrayList<GameObjectSeenListener>();
+        //default value
+        viewAngle = FastMath.QUARTER_PI;
     }
 
     /**
-     * Method for calling all behaviours that are affected by what agent is seeing.
-     * @param agentSeen Agent that have been seen
+     * @param agent to whom behaviour belongs
+     * @param viewAngle angle in which GameObjects will be seen
      */
-    private void fireAgentSeenEvent(Agent agentSeen) {
-        //create AgentSeenEvent
-        AgentSeenEvent event = new AgentSeenEvent(agent, agentSeen);
+    public SimpleLookBehaviour(Agent agent, float viewAngle) {
+        super(agent);
+        listeners = new ArrayList<GameObjectSeenListener>();
+        this.viewAngle = viewAngle;
+    }
+
+    /**
+     * Method for calling all behaviours that are affected by what agent is
+     * seeing.
+     *
+     * @param gameObjectSeen Agent that have been seen
+     */
+    private void triggerListeners(GameObject gameObjectSeen) {
+        //create GameObjectSeenEvent
+        GameObjectSeenEvent event = new GameObjectSeenEvent(agent, gameObjectSeen);
         //forward it to all listeners
-        for (AgentSeenEventListener listener : listeners) {
-            listener.handleAgentSeenEvent(event);
+        for (GameObjectSeenListener listener : listeners) {
+            listener.handleGameObjectSeenEvent(event);
         }
     }
-    
+
     @Override
     protected void controlUpdate(float tpf) {
-        List<Agent> agents = Game.getInstance().viewPort(agent, FastMath.QUARTER_PI);
+        List<GameObject> agents = Game.getInstance().look(agent, viewAngle);
         for (int i = 0; i < agents.size(); i++) {
-            //do not attack in same team
-            if (!agent.isSameTeam(agents.get(i))) {
-                fireAgentSeenEvent(agents.get(i));
-            }
+            triggerListeners(agents.get(i));
         }
     }
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-        //don't care about rendering
+        throw new UnsupportedOperationException("You should override it youself");
     }
-    
+
+    /**
+     * Adding listener that will trigger when GameObject is seen.
+     *
+     * @param listener
+     */
+    public void addListener(GameObjectSeenListener listener) {
+        listeners.add(listener);
+    }
+
+    /**
+     * Removing listener from behaviour.
+     *
+     * @param listener
+     */
+    public void removeListener(GameObjectSeenListener listener) {
+        listeners.remove(listener);
+    }
+
+    /**
+     * Removing all listeners from this behaviour.
+     */
+    public void clearListeners() {
+        listeners.clear();
+    }
+
+    /**
+     * @return angle in which GameObjects will be seen
+     */
+    public float getViewAngle() {
+        return viewAngle;
+    }
+
+    /**
+     * @param viewAngle angle in which GameObjects will be seen
+     */
+    public void setViewAngle(float viewAngle) {
+        this.viewAngle = viewAngle;
+    }
 }

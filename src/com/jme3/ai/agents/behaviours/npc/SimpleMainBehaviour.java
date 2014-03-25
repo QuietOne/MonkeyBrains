@@ -4,61 +4,92 @@ import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
-import com.jme3.ai.agents.events.AgentSeenEvent;
-import com.jme3.ai.agents.events.AgentSeenEventListener;
-import com.jme3.ai.agents.util.Game;
+import com.jme3.ai.agents.util.control.Game;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Example of mainBehaviour for NPC.
+ * Simple main behaviour for NPC. Main behaviour contains other Behaviours and
+ * if active it will update all behavioour that are enabled.
+ *
  * @author Tihomir Radosavljević
+ * @version 1.0
  */
-public class SeekNDestroyBehaviour extends Behaviour implements AgentSeenEventListener{
+public class SimpleMainBehaviour extends Behaviour {
 
-    private LookAroundBehaviour lookAroundBehaviour;
-    private MoveBehaviour moveBehaviour;
-    private AttackBehaviour attackBehaviour;
-    
-    
-    public SeekNDestroyBehaviour(Agent agent, float terrainSize) {
+    /**
+     * Behaviours are implemented as LinkedList for flexibility. If there isn't
+     * changing behaviours while agent is active you can change it to ArrayList
+     * for speed.
+     *
+     * @see ArrayList
+     * @see LinkedList
+     */
+    protected List<Behaviour> behaviours;
+    /**
+     * Instance of game. Main behaviour will not work if game is over.
+     *
+     * @see Game#over
+     */
+    protected Game game;
+
+    /**
+     * This behaviour never have spatial.
+     *
+     * @param agent
+     */
+    public SimpleMainBehaviour(Agent agent) {
         //Main behaviour doesn't have need for spatials.
         super(agent);
-        lookAroundBehaviour = new LookAroundBehaviour(agent);
-        //TODO: put some spatial to move behaviour
-        moveBehaviour = new MoveBehaviour(agent, null, terrainSize);
-        //TODO: put some spatial to attack behaviour
-        attackBehaviour = new AttackBehaviour(agent, null);
-        lookAroundBehaviour.addListener(moveBehaviour);
-        lookAroundBehaviour.addListener(this);
-        moveBehaviour.setEnabled(true);
-        attackBehaviour.setEnabled(false);
+        game = Game.getInstance();
+        behaviours = new LinkedList<Behaviour>();
     }
-    
-    
-    
+
     @Override
     protected void controlUpdate(float tpf) {
-        Game game = Game.getInstance();
-        if (agent.isAlive() && !game.isOver()) {
-            lookAroundBehaviour.setEnabled(true);
-        } else {
-            lookAroundBehaviour.setEnabled(false);
+        for (Behaviour behaviour : behaviours) {
+            behaviour.update(tpf);
         }
-        lookAroundBehaviour.update(tpf);
-        moveBehaviour.update(tpf);
-        attackBehaviour.update(tpf);
+
     }
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-        //don't care about rendering    
+        throw new UnsupportedOperationException("You should override it youself");
     }
 
-    public void handleAgentSeenEvent(AgentSeenEvent event) {
-        Agent target = event.getAgentSeen();
-        if (agent.getWeapon().isInRange(target)) {
-            attackBehaviour.setTarget(target);
-            attackBehaviour.setEnabled(enabled);
-        }
+    /**
+     * Remove all behaviours from this behaviour.
+     */
+    public void clearBehaviours() {
+        behaviours.clear();
     }
 
+    /**
+     * Set list of bahaviours for this behaviour to do.
+     *
+     * @param behaviours
+     */
+    public void setBehaviours(List<Behaviour> behaviours) {
+        this.behaviours = behaviours;
+    }
+
+    /**
+     * Add behaviour to this main behaviour.
+     *
+     * @param behaviour that will be added
+     */
+    public void addBehaviour(Behaviour behaviour) {
+        behaviours.add(behaviour);
+    }
+
+    /**
+     * Remove behaviour from this main behaviour.
+     *
+     * @param behaviour that will be removed
+     */
+    public void removeBehaviour(Behaviour behaviour) {
+        behaviours.remove(behaviour);
+    }
 }

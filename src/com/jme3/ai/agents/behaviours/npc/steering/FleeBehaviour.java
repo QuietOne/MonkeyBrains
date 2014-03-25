@@ -5,77 +5,127 @@ import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Spatial;
 
 /**
- * Flee is simply the inverse of seek and acts to steer the agent so that its 
- * velocity is radially aligned away from the target. The desired velocity points
- * in the opposite direction. Basically it's movement behaviour. For your use of
- * seek behaviour you only need to override controlUpdate() and controlRender() 
- * and use appropriate listeners. For now it hasn't been done, because this is 
- * in demo version.
+ * Flee is simply the inverse of seek and acts to steer the agent so that its
+ * velocity is radially aligned away from the target. The desired velocity
+ * points in the opposite direction. Basically it's movement behaviour. For your
+ * use of seek behaviour you only need to override controlUpdate() and
+ * controlRender() and use appropriate listeners. For now it hasn't been done,
+ * because this is in demo version.
+ *
  * @author Tihomir Radosavljević
+ * @version 1.0
  */
-public class FleeBehaviour extends Behaviour{
+public class FleeBehaviour extends Behaviour {
 
+    /**
+     * Agent from whom we flee.
+     */
     private Agent target;
+    /**
+     * Velocity of our agent.
+     */
     private Vector3f velocity;
-    
+
+    /**
+     * Constructor for flee behaviour.
+     *
+     * @param agent to whom behaviour belongs
+     * @param target agent from whom we flee
+     */
     public FleeBehaviour(Agent agent, Agent target) {
         super(agent);
         this.target = target;
         velocity = new Vector3f();
     }
-    
+
+    /**
+     * Constructor for flee behaviour.
+     *
+     * @param agent to whom behaviour belongs
+     * @param target agent from whom we flee
+     * @param spatial active spatial during excecution of behaviour
+     */
+    public FleeBehaviour(Agent agent, Agent target, Spatial spatial) {
+        super(agent, spatial);
+        this.target = target;
+        velocity = new Vector3f();
+    }
+
     @Override
     protected void controlUpdate(float tpf) {
-        float terrainSize = 40f;
-        Vector3f oldPos = agent.getSpatial().getLocalTranslation().clone();
         Vector3f vel = calculateNewVelocity().mult(tpf);
         agent.setLocalTranslation(agent.getLocalTranslation().add(vel));
-        if (agent.getLocalTranslation().x > terrainSize * 2 || agent.getLocalTranslation().z > terrainSize * 2
-                || agent.getLocalTranslation().x < -terrainSize * 2 || agent.getLocalTranslation().z < -terrainSize * 2) {
-            agent.setLocalTranslation(oldPos);
-            // if enemy hit border make him move backwards
-        }
     }
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("You should override it youself");
     }
 
-    public Vector3f getSteering(){
+    /**
+     * Calculate steering vector.
+     *
+     * @return steering vector
+     */
+    public Vector3f calculateSteering() {
         Vector3f desiredVelocity = target.getLocalTranslation().subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
         return desiredVelocity.subtract(velocity).negate();
     }
 
-    public Vector3f calculateNewVelocity(){
-        Vector3f steering = getSteering();
-        if (steering.length()>agent.getMaxForce()) {
+    /**
+     * Calculate new velocity for agent based on calculated steering behaviour.
+     *
+     * @return velocity vector
+     */
+    public Vector3f calculateNewVelocity() {
+        Vector3f steering = calculateSteering();
+        if (steering.length() > agent.getMaxForce()) {
             steering = steering.normalize().mult(agent.getMaxForce());
         }
-        agent.setAcceleration(steering.mult(1/agent.getMass()));
+        agent.setAcceleration(steering.mult(1 / agent.getMass()));
         velocity = velocity.add(agent.getAcceleration());
-        if (velocity.length()>agent.getMoveSpeed()) {
+        if (velocity.length() > agent.getMoveSpeed()) {
             velocity = velocity.normalize().mult(agent.getMoveSpeed());
         }
         return velocity;
     }
-    
+
+    /**
+     * Get current velocity of agent.
+     *
+     * @return velocity vector
+     */
     public Vector3f getVelocity() {
         return velocity;
     }
 
+    /**
+     * Setting current velocity of agent.
+     *
+     * @param velocity
+     */
     public void setVelocity(Vector3f velocity) {
         this.velocity = velocity;
     }
 
+    /**
+     * Get agent from whom we flee.
+     *
+     * @return agent
+     */
     public Agent getTarget() {
         return target;
     }
 
+    /**
+     * Setting agent from whom we flee.
+     *
+     * @param target
+     */
     public void setTarget(Agent target) {
         this.target = target;
     }
-    
 }

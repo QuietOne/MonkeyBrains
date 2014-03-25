@@ -5,73 +5,134 @@ import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Spatial;
 import java.util.Random;
 
 /**
+ * Wander behaviour is steering behaviour where agent moves randomly on terrain.
+ * This is done by same calculation as seek behaviour, but difference is that
+ * target for this behaviour are random positions that changes durring time.
  *
  * @author Tihomir Radosavljević
+ * @version 1.0
  */
-public class WanderBehaviour extends Behaviour{
+public class WanderBehaviour extends Behaviour {
 
+    /**
+     * Position of target
+     */
     private Vector3f targetPosition;
+    /**
+     * Current velocity of agent.
+     */
     private Vector3f velocity;
+    /**
+     * Time interval durring which target position doesn't change.
+     */
+    private float timeInterval;
+    /**
+     * Current time.
+     */
     private float time;
-    
+
+    /**
+     * Constructor for wander behaviour.
+     *
+     * @param agent to whom behaviour belongs
+     */
     public WanderBehaviour(Agent agent) {
         super(agent);
         targetPosition = new Vector3f();
         velocity = new Vector3f();
-        time = 2f;
+        timeInterval = 2f;
+        time = timeInterval;
     }
-    
+
+    /**
+     * Constructor for wander behaviour.
+     *
+     * @param agent to whom behaviour belongs
+     * @param spatial active spatial during excecution of behaviour
+     */
+    public WanderBehaviour(Agent agent, Spatial spatial) {
+        super(agent, spatial);
+        targetPosition = new Vector3f();
+        velocity = new Vector3f();
+        timeInterval = 2f;
+        time = timeInterval;
+    }
+
     @Override
     protected void controlUpdate(float tpf) {
-        float terrainSize = 40f;
         changeTargetPosition(tpf);
-        Vector3f oldPos = agent.getSpatial().getLocalTranslation().clone();
         Vector3f vel = calculateNewVelocity().mult(tpf);
         agent.setLocalTranslation(agent.getLocalTranslation().add(vel));
-        if (agent.getLocalTranslation().x > terrainSize * 2 || agent.getLocalTranslation().z > terrainSize * 2
-                || agent.getLocalTranslation().x < -terrainSize * 2 || agent.getLocalTranslation().z < -terrainSize * 2) {
-            agent.setLocalTranslation(oldPos);
-            // if enemy hit border make him move backwards
-        }
-
     }
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-        //don't care about rendering
+        throw new UnsupportedOperationException("You should override it youself");
     }
 
-    public Vector3f getSteering(){
+    /**
+     * Calculate steering vector.
+     *
+     * @return steering vector
+     */
+    public Vector3f calculateSteering() {
         Vector3f desiredVelocity = targetPosition.subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
         return desiredVelocity.subtract(velocity);
     }
 
-    public Vector3f calculateNewVelocity(){
-        Vector3f steering = getSteering();
-        if (steering.length()>agent.getMaxForce()) {
+    /**
+     * Calculate new velocity for agent based on calculated steering behaviour.
+     *
+     * @return velocity vector
+     */
+    public Vector3f calculateNewVelocity() {
+        Vector3f steering = calculateSteering();
+        if (steering.length() > agent.getMaxForce()) {
             steering = steering.normalize().mult(agent.getMaxForce());
         }
-        agent.setAcceleration(steering.mult(1/agent.getMass()));
+        agent.setAcceleration(steering.mult(1 / agent.getMass()));
         velocity = velocity.add(agent.getAcceleration());
-        if (velocity.length()>agent.getMoveSpeed()) {
+        if (velocity.length() > agent.getMoveSpeed()) {
             velocity = velocity.normalize().mult(agent.getMoveSpeed());
         }
         return velocity;
     }
-    
-    public void changeTargetPosition(float tpf){
+
+    /**
+     * Metod for changing target position.
+     *
+     * @param tpf time per frame
+     */
+    public void changeTargetPosition(float tpf) {
         time -= tpf;
-        float terrainSize = 40f;
-        if (time<=0) {
+        if (time <= 0) {
             Random random = new Random();
-            float x = random.nextInt() % terrainSize;
-            float z = random.nextInt() % terrainSize;
-            targetPosition = new Vector3f(x, 0, z);
-            time = 2f;
-            System.out.println(targetPosition);
-        } 
+            float x = random.nextInt();
+            float z = random.nextInt();
+            targetPosition = new Vector3f(x, agent.getLocalTranslation().getY(), z);
+            time = timeInterval;
+        }
+    }
+
+    /**
+     * Get time interval for changing target position.
+     *
+     * @return
+     */
+    public float getTimeInterval() {
+        return timeInterval;
+    }
+
+    /**
+     * Setting time interval for changing target position.
+     *
+     * @param timeInterval
+     */
+    public void setTimeInterval(float timeInterval) {
+        this.timeInterval = timeInterval;
     }
 }

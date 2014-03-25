@@ -1,17 +1,24 @@
 package com.jme3.ai.agents;
 
 import com.jme3.ai.agents.behaviours.Behaviour;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
+import com.jme3.ai.agents.behaviours.npc.SimpleMainBehaviour;
 import com.jme3.scene.Spatial;
 import com.jme3.ai.agents.util.AbstractWeapon;
+import com.jme3.ai.agents.util.GameObject;
+import com.jme3.renderer.Camera;
+import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 
 /**
- * Class that represents Agent. Note: Not recommended for extending. Use generics.
+ * Class that represents Agent. Note: Not recommended for extending. Use
+ * generics.
+ *
  * @author Tihomir Radosavljević
+ * @version 1.0
  */
-public class Agent<T> {
+public class Agent<T> extends GameObject {
+
     /**
      * Class that enables you to add all variable you need for your agent.
      */
@@ -21,41 +28,9 @@ public class Agent<T> {
      */
     private String name;
     /**
-     * Spatial contains animation that is active when agent isn't doing any behaviour.
-     */
-    private Spatial spatial;
-    /**
-     * Maximum health that Agent can have.
-     */
-    private float maxHealth = 100f;
-    /**
-     * Current health status of Agent.
-     */
-    private float health = 100f;
-    /**
-     * Move speed of agent.
-     */
-    private float moveSpeed;
-    /**
-     * Agent acceleration speed.
-     */
-    private Vector3f acceleration;
-    /**
-     * Mass of agent.
-     */
-    private float mass;
-    /**
-     * Maximum force that can be applied to this agent.
-     */
-    private float maxForce;
-    /**
      * Name of team. Primarily used for enabling friendly fire.
      */
-    private String teamName;
-    /**
-     * Status of agent. Agent won't update its status if alive==false.
-     */
-    private boolean alive = true;
+    private Team team;
     /**
      * AbstractWeapon used by agent.
      */
@@ -65,9 +40,13 @@ public class Agent<T> {
      */
     private Behaviour mainBehaviour;
     /**
-     * Visibility range.
+     * Visibility range. How far agent can see.
      */
     private float visibilityRange;
+    /**
+     * Camera that is attached to agent.
+     */
+    private Camera camera;
 
     /**
      * @param name unique name/id of agent
@@ -86,194 +65,120 @@ public class Agent<T> {
     }
 
     /**
-     * 
-     * @return local translation of agent
-     */
-    public Vector3f getLocalTranslation() {
-        return spatial.getLocalTranslation();
-    }
-
-    /**
-     * 
-     * @param position local translation of agent
-     */
-    public void setLocalTranslation(Vector3f position) {
-        this.spatial.setLocalTranslation(position);
-    }
-    
-    /**
-     * Setting local translation of agent
-     * @param x x translation
-     * @param y y translation
-     * @param z z translation
-     */
-    public void setLocalTranslation(float x, float y, float z) {
-        this.spatial.setLocalTranslation(x, y, z);
-    }
-
-    /**
      * Retrive information is agent alive.
+     *
+     * @see Agent#enabled
      * @return true - alive, false - dead
      */
     public boolean isAlive() {
-        return alive;
+        return enabled;
     }
 
+    /**
+     * @see Agent#setEnabled(boolean)
+     * @param alive
+     */
     public void setAlive(boolean alive) {
-        this.alive = alive;
+        enabled = alive;
     }
 
+    /**
+     * @return weapon that agent is currently using
+     */
     public AbstractWeapon getWeapon() {
         return weapon;
     }
 
+    /**
+     * It will add weapon to agent and add its spatial to agent, if there
+     * already was weapon before with its own spatial, it will remove it before
+     * adding new weapon spatial.
+     *
+     * @param weapon that agent will use
+     */
     public void setWeapon(AbstractWeapon weapon) {
         //remove previous weapon spatial
-        if (this.weapon!= null && this.weapon.getSpatial()!= null) {
+        if (this.weapon != null && this.weapon.getSpatial() != null) {
             this.weapon.getSpatial().removeFromParent();
         }
         //add new weapon spatial if there is any
-        if (weapon.getSpatial()!= null) {
+        if (weapon.getSpatial() != null) {
             ((Node) spatial).attachChild(weapon.getSpatial());
         }
         this.weapon = weapon;
     }
 
+    /**
+     * @return main behaviour of agent
+     */
     public Behaviour getMainBehaviour() {
         return mainBehaviour;
     }
 
+    /**
+     * Setting main behaviour to agent. For more how should main behaviour look
+     * like:
+     *
+     * @see SimpleMainBehaviour
+     * @param mainBehaviour
+     */
     public void setMainBehaviour(Behaviour mainBehaviour) {
         this.mainBehaviour = mainBehaviour;
         mainBehaviour.setEnabled(false);
     }
 
+    /**
+     * @return unique name/id of agent
+     */
     public String getName() {
         return name;
     }
 
-    public Spatial getSpatial() {
-        return spatial;
-    }
-
-    /**
-     * Method for increasing agents health for fixed amount. If adding health
-     * will cross the maximum health of agent, then agent's health status will
-     * be set to maximum allowed health for that agent.
-     * @see Agent#maxHealth
-     * @param potionHealth amount of health that should be added
-     */
-    public void increaseHealth(float potionHealth){
-        health += potionHealth;
-        if (health > maxHealth) {
-            health = maxHealth;
-        }
-    }
-    
-    /**
-     * Method for decreasing agents health for fixed amount. If health drops to 
-     * zero or bellow, agent's health status will be set to zero and he will be
-     * dead.
-     * @see Agent#alive
-     * @param damage amount of health that should be removed
-     */
-    public void decreaseHealth(double damage) {
-        health -= damage;
-        if (health<=0) {
-            health = 0;
-            alive = false;
-        }
-    }
-
-    public Quaternion getLocalRotation() {
-        return spatial.getLocalRotation();
-    }
-
-    public void setLocalRotation(Quaternion rotation) {
-        spatial.setLocalRotation(rotation);
-    }
-
-    public float getHealth() {
-        return health;
-    }
-
-    public void setHealth(float health) {
-        this.health = health;
-    }
     /**
      * Method for starting agent. Note: Agent must be alive to be started.
-     * @see Agent#alive
+     *
+     * @see Agent#enabled
      */
     public void start() {
-         mainBehaviour.setEnabled(alive);
-     } 
-
-    public float getMaxHealth() {
-        return maxHealth;
+        mainBehaviour.setEnabled(enabled);
     }
 
-    public void setMaxHealth(float maxHealth) {
-        this.maxHealth = maxHealth;
-    }
-
+    /**
+     * @return visibility range of agent
+     */
     public float getVisibilityRange() {
         return visibilityRange;
     }
 
+    /**
+     * @param visibilityRange how far agent can see
+     */
     public void setVisibilityRange(float visibilityRange) {
         this.visibilityRange = visibilityRange;
     }
 
-    public float getMoveSpeed() {
-        return moveSpeed;
-    }
-
-    public void setMoveSpeed(float moveSpeed) {
-        this.moveSpeed = moveSpeed;
-    }
-     /**
-      * Update method for agent.<br>
-      * Note: Agent must be alive and to have mainBehaviour.<br>
-      * Warrning: Game.update() will update all agents in game and is not recommended
-      * for use.
-      * @see Agent#mainBehaviour
-      * @see Agent#alive
-      * @see util.Game
-      * @param tpf time per frame
-      */
-    public void update(float tpf) {
-        if(mainBehaviour!=null && alive)
-        mainBehaviour.update(tpf);
-    }
-
+    /**
+     * @return model of agent
+     */
     public T getModel() {
         return model;
     }
 
+    /**
+     * @param model of agent
+     */
     public void setModel(T model) {
         this.model = model;
     }
 
-    public Vector3f getAcceleration() {
-        return acceleration;
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 47 * hash + (this.model != null ? this.model.hashCode() : 0);
+        hash = 47 * hash + (this.team != null ? this.team.hashCode() : 0);
+        return hash;
     }
 
-    public void setAcceleration(Vector3f acceleration) {
-        this.acceleration = acceleration;
-    }
-
-    public String getTeamName() {
-        return teamName;
-    }
-
-    public void setTeamName(String teamName) {
-        this.teamName = teamName;
-    }
-    
-    public boolean isSameTeam(Agent agent) {
-        return teamName.equals(agent.getTeamName());
-    }
-    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -286,35 +191,53 @@ public class Agent<T> {
         if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
             return false;
         }
-        if ((this.teamName == null) ? (other.teamName != null) : !this.teamName.equals(other.teamName)) {
+        if (this.team != other.team && (this.team == null || !this.team.equals(other.team))) {
             return false;
         }
         return true;
     }
 
     @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 71 * hash + (this.name != null ? this.name.hashCode() : 0);
-        hash = 71 * hash + (this.teamName != null ? this.teamName.hashCode() : 0);
-        return hash;
+    protected void controlUpdate(float tpf) {
+        if (mainBehaviour != null) {
+            mainBehaviour.update(tpf);
+        }
     }
 
-    public float getMass() {
-        return mass;
+    @Override
+    protected void controlRender(RenderManager rm, ViewPort vp) {
+        throw new UnsupportedOperationException("You should override it youself");
     }
 
-    public void setMass(float mass) {
-        this.mass = mass;
+    /**
+     * @return team in which agent belongs
+     */
+    public Team getTeam() {
+        return team;
     }
 
-    public float getMaxForce() {
-        return maxForce;
+    /**
+     * @param team in which agent belongs
+     */
+    public void setTeam(Team team) {
+        this.team = team;
     }
 
-    public void setMaxForce(float maxForce) {
-        this.maxForce = maxForce;
+    /**
+     * Check if this agent is in same team as another agent.
+     *
+     * @param agent
+     * @return true if they are in same team, false otherwise
+     */
+    public boolean isSameTeam(Agent agent) {
+        return team.equals(agent.getTeam());
     }
-    
-    
+
+    public Camera getCamera() {
+        return camera;
+    }
+
+    public void setCamera(Camera camera) {
+        this.camera = camera;
+    }
 }

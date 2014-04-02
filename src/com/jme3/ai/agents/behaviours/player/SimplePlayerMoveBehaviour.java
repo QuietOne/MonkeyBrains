@@ -3,7 +3,6 @@ package com.jme3.ai.agents.behaviours.player;
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.ai.agents.behaviours.npc.SimpleMoveBehaviour;
-import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -13,12 +12,12 @@ import java.util.List;
 
 /**
  * Simple moveBehaviour for player controled agent. It has support for
- * AnalogListener and ActionListener.
+ * AnalogListener.
  *
  * @author Tihomir Radosavljević
  * @version 1.0
  */
-public class SimplePlayerMoveBehaviour extends SimpleMoveBehaviour implements AnalogListener, ActionListener {
+public class SimplePlayerMoveBehaviour extends SimpleMoveBehaviour implements AnalogListener {
 
     /**
      * Name of operation that should be done.
@@ -38,10 +37,14 @@ public class SimplePlayerMoveBehaviour extends SimpleMoveBehaviour implements An
     public SimplePlayerMoveBehaviour(Agent agent, Spatial spatial) {
         super(agent, spatial);
         supportedOperations = new HashMap<String, Behaviour>();
+        enabled = true;
     }
 
     @Override
     protected void controlUpdate(float tpf) {
+        if (operation == null) {
+            return;
+        }
         supportedOperations.get(operation).update(tpf);
     }
 
@@ -53,12 +56,9 @@ public class SimplePlayerMoveBehaviour extends SimpleMoveBehaviour implements An
     public void onAnalog(String name, float value, float tpf) {
         operation = name;
         if (value != 0) {
-            enabled = true;
+            supportedOperations.get(operation).setEnabled(true);
+            controlUpdate(tpf);
         }
-    }
-
-    public void onAction(String name, boolean isPressed, float tpf) {
-        //FIXME: check if it has to turn left or right
     }
 
     /**

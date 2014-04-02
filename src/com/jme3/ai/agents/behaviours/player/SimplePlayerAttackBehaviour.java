@@ -2,8 +2,13 @@ package com.jme3.ai.agents.behaviours.player;
 
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.Behaviour;
+import com.jme3.ai.agents.behaviours.npc.SimpleAttackBehaviour;
+import com.jme3.ai.agents.util.control.Game;
 import com.jme3.input.controls.ActionListener;
-import com.jme3.input.controls.AnalogListener;
+import com.jme3.math.Plane;
+import com.jme3.math.Ray;
+import com.jme3.math.Vector2f;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
@@ -12,12 +17,12 @@ import java.util.List;
 
 /**
  * Simple attackBehaviour for player controled agent. It has support for
- * AnalogListener and ActionListener.
+ * ActionListener.
  *
  * @author Tihomir Radosavljević
  * @version 1.0
  */
-public class SimplePlayerAttackBehaviour extends Behaviour implements ActionListener, AnalogListener {
+public class SimplePlayerAttackBehaviour extends Behaviour implements ActionListener {
 
     /**
      * Operation that should be done.
@@ -37,10 +42,14 @@ public class SimplePlayerAttackBehaviour extends Behaviour implements ActionList
     public SimplePlayerAttackBehaviour(Agent agent, Spatial spatial) {
         super(agent, spatial);
         supportedOperations = new HashMap<String, Behaviour>();
+        enabled = true;
     }
 
     @Override
     protected void controlUpdate(float tpf) {
+        if (operation == null) {
+            return;
+        }
         supportedOperations.get(operation).update(tpf);
     }
 
@@ -52,16 +61,18 @@ public class SimplePlayerAttackBehaviour extends Behaviour implements ActionList
     public void onAction(String name, boolean isPressed, float tpf) {
         operation = name;
         if (isPressed) {
-            enabled = true;
+            supportedOperations.get(operation).setEnabled(true);
+            Vector2f click2d = Game.getInstance().getInputManager().getCursorPosition();
+            Vector3f click3d = agent.getCamera().getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 0f).clone();
+            Vector3f dir = agent.getCamera().getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
+            Ray ray = new Ray(click3d, dir);
+            Plane ground = new Plane(Vector3f.UNIT_Y, 0);
+            Vector3f groundpoint = new Vector3f();
+            ray.intersectsWherePlane(ground, groundpoint);
+            ((SimpleAttackBehaviour) supportedOperations.get(operation)).setTarget(groundpoint);
         } else {
-            enabled = false;
+            operation = null;
         }
-        //TODO: see if other paramethers can be used
-    }
-
-    public void onAnalog(String name, float value, float tpf) {
-        operation = name;
-        //TODO: see if other paramethers can be used
     }
 
     /**

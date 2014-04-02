@@ -3,7 +3,8 @@ package com.jme3.ai.agents.util;
 import com.jme3.ai.agents.util.control.Game;
 import com.jme3.ai.agents.Agent;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Spatial;
+import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.ViewPort;
 
 /**
  * Abstract class for defining weapons used by agents.
@@ -11,7 +12,7 @@ import com.jme3.scene.Spatial;
  * @author Tihomir Radosavljević
  * @version 1.0
  */
-public abstract class AbstractWeapon {
+public abstract class AbstractWeapon extends PhysicalObject {
 
     /**
      * Name of weapon.
@@ -38,14 +39,18 @@ public abstract class AbstractWeapon {
      */
     protected int numberOfBullets;
     /**
-     * Spatial for weapon.
-     */
-    protected Spatial spatial;
-    /**
      * One weapon have one type of bullet. Each fired bullet can be in it's own
      * update().
      */
     protected AbstractBullet bullet;
+    /**
+     * How much time is needed for next attack.
+     */
+    protected float cooldown;
+    /**
+     * Time used for calculating cooldown of weapons.
+     */
+    private float timeSinceFired = 0;
 
     /**
      * Check if enemy agent is in range of weapon.
@@ -53,7 +58,7 @@ public abstract class AbstractWeapon {
      * @param target
      * @return
      */
-    public boolean isInRange(GameObject target) {
+    public boolean isInRange(PhysicalObject target) {
         if (agent.getLocalTranslation().distance(target.getLocalTranslation()) > maxAttackRange) {
             return false;
         }
@@ -98,13 +103,23 @@ public abstract class AbstractWeapon {
      * @param tpf time per frame
      */
     public void attack(Vector3f direction, float tpf) {
-        if (hasBullets()) {
+        //does weapon have bullets
+        if (!hasBullets()) {
             return;
         }
+        //is weapon in cooldown
+        if (timeSinceFired > 0) {
+            return;
+        }
+        //fire bullet
         AbstractBullet firedBullet = controlAttack(direction, tpf);
         if (firedBullet != null) {
+            //if there is bullet than add it to be updated regulary in game
             Game.getInstance().addGameObject(firedBullet);
         }
+        //set weapon cooldown
+        timeSinceFired = cooldown;
+        //decrease number of bullets if weapon have limited number of bullets
         if (numberOfBullets != -1) {
             numberOfBullets--;
         }
@@ -116,7 +131,7 @@ public abstract class AbstractWeapon {
      * @param target
      * @param tpf time per frame
      */
-    public void attack(GameObject target, float tpf) {
+    public void attack(PhysicalObject target, float tpf) {
         attack(target.getLocalTranslation(), tpf);
     }
 
@@ -138,10 +153,6 @@ public abstract class AbstractWeapon {
         return numberOfBullets;
     }
 
-    public Spatial getSpatial() {
-        return spatial;
-    }
-
     public void setAgent(Agent agent) {
         this.agent = agent;
     }
@@ -156,10 +167,6 @@ public abstract class AbstractWeapon {
 
     public void addNumberOfBullets(int numberOfBullets) {
         this.numberOfBullets += numberOfBullets;
-    }
-
-    public void setSpatial(Spatial spatial) {
-        this.spatial = spatial;
     }
 
     public AbstractBullet getBullet() {
@@ -184,5 +191,23 @@ public abstract class AbstractWeapon {
 
     public void setMinAttackRange(float minAttackRange) {
         this.minAttackRange = minAttackRange;
+    }
+
+    public float getCooldown() {
+        return cooldown;
+    }
+
+    public void setCooldown(float cooldown) {
+        this.cooldown = cooldown;
+    }
+
+    @Override
+    protected void controlUpdate(float tpf) {
+        timeSinceFired -= tpf;
+    }
+
+    @Override
+    protected void controlRender(RenderManager rm, ViewPort vp) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

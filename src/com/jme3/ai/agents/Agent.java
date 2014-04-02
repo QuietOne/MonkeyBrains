@@ -4,7 +4,7 @@ import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.ai.agents.behaviours.npc.SimpleMainBehaviour;
 import com.jme3.scene.Spatial;
 import com.jme3.ai.agents.util.AbstractWeapon;
-import com.jme3.ai.agents.util.GameObject;
+import com.jme3.ai.agents.util.PhysicalObject;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -17,7 +17,7 @@ import com.jme3.scene.Node;
  * @author Tihomir Radosavljević
  * @version 1.0
  */
-public class Agent<T> extends GameObject {
+public class Agent<T> extends PhysicalObject {
 
     /**
      * Class that enables you to add all variable you need for your agent.
@@ -65,24 +65,6 @@ public class Agent<T> extends GameObject {
     }
 
     /**
-     * Retrive information is agent alive.
-     *
-     * @see Agent#enabled
-     * @return true - alive, false - dead
-     */
-    public boolean isAlive() {
-        return enabled;
-    }
-
-    /**
-     * @see Agent#setEnabled(boolean)
-     * @param alive
-     */
-    public void setAlive(boolean alive) {
-        enabled = alive;
-    }
-
-    /**
      * @return weapon that agent is currently using
      */
     public AbstractWeapon getWeapon() {
@@ -124,7 +106,7 @@ public class Agent<T> extends GameObject {
      */
     public void setMainBehaviour(Behaviour mainBehaviour) {
         this.mainBehaviour = mainBehaviour;
-        mainBehaviour.setEnabled(false);
+        this.mainBehaviour.setEnabled(false);
     }
 
     /**
@@ -140,7 +122,8 @@ public class Agent<T> extends GameObject {
      * @see Agent#enabled
      */
     public void start() {
-        mainBehaviour.setEnabled(enabled);
+        enabled = true;
+        mainBehaviour.setEnabled(true);
     }
 
     /**
@@ -202,6 +185,10 @@ public class Agent<T> extends GameObject {
         if (mainBehaviour != null) {
             mainBehaviour.update(tpf);
         }
+        //for updating cooldown on weapon
+        if (weapon != null) {
+            weapon.update(tpf);
+        }
     }
 
     @Override
@@ -233,10 +220,18 @@ public class Agent<T> extends GameObject {
         return team.equals(agent.getTeam());
     }
 
+    /**
+     * @return camera that is attached to agent
+     */
     public Camera getCamera() {
         return camera;
     }
 
+    /**
+     * Setting camera for agent. It is recommended for use mouse input.
+     *
+     * @param camera
+     */
     public void setCamera(Camera camera) {
         this.camera = camera;
     }

@@ -1,12 +1,8 @@
 package com.jme3.ai.agents.util.control;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.Behaviour;
-import com.jme3.ai.agents.util.GameObject;
-import com.jme3.input.controls.ActionListener;
-import com.jme3.input.controls.AnalogListener;
+import com.jme3.ai.agents.util.PhysicalObject;
 import com.jme3.math.Vector3f;
-import java.util.HashMap;
 
 /**
  * Base interface for game genres.
@@ -20,18 +16,25 @@ public interface GameGenre {
      * Add all inputManagerMapping that will player use.
      */
     public void loadInputManagerMapping();
-
+    /**
+     * Method for marking the end of game. Should also set over to true.
+     * @return 
+     */
     public boolean finish();
-
+    /**
+     * Calculating if the agent won the game.
+     * @param agent
+     * @return 
+     */
     public boolean win(Agent agent);
-
+    /**
+     * Restarting all game parameters.
+     */
     public void restart();
-
-    public void spawn(GameObject gameObject, Vector3f... area);
-
-    public void addMoveListener(Agent agent, AnalogListener behaviour);
-
-    public void addMoveListener(Agent agent, ActionListener behaviour);
-
-    public HashMap<String, Behaviour> getPlayerMoveSupportedOperations(Agent agent);
+    /**
+     * Method for creating objects in given area.
+     * @param physicalObject object that should be created
+     * @param area where object will be created
+     */
+    public void spawn(PhysicalObject physicalObject, Vector3f... area);
 }

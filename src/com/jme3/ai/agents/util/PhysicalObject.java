@@ -13,74 +13,74 @@ import com.jme3.scene.control.AbstractControl;
  * @see Game#addAgent(com.jme3.ai.agents.Agent)
  * @see Game#addAgent(com.jme3.ai.agents.Agent, com.jme3.math.Vector3f)
  * @see Game#addAgent(com.jme3.ai.agents.Agent, float, float, float) For other
- * GameObject use:
- * @see Game#addGameObject(com.jme3.ai.agents.util.GameObject)
+ * PhysicalObject use:
+ * @see Game#addGameObject(com.jme3.ai.agents.util.PhysicalObject)
  *
  * @author Tihomir Radosavljević
  * @version 1.0
  */
-public abstract class GameObject extends AbstractControl {
+public abstract class PhysicalObject extends AbstractControl {
 
     /**
-     * Mass of GameObject.
+     * Mass of PhysicalObject.
      */
     protected float mass;
     /**
-     * GameObject acceleration speed.
+     * PhysicalObject acceleration speed.
      */
     protected Vector3f acceleration;
     /**
-     * Current move speed of GameObject.
+     * Current move speed of PhysicalObject.
      */
     protected float moveSpeed;
     /**
-     * Maximum move speed of GameObject
+     * Maximum move speed of PhysicalObject
      */
     protected float maxMoveSpeed;
     /**
-     * Maximum force that can be applied to this GameObject.
+     * Maximum force that can be applied to this PhysicalObject.
      */
     protected float maxForce;
     /**
-     * Current health status of GameObject.
+     * Current hitPoint status of PhysicalObject.
      */
-    protected float health;
+    protected float hitPoint = 100f;
     /**
-     * Maximum health that GameObject can have.
+     * Maximum hitPoint that PhysicalObject can have.
      */
-    protected float maxHealth = 100f;
+    protected float maxHitPoint = 100f;
     /**
-     * Rotation speed of GameObject.
+     * Rotation speed of PhysicalObject.
      */
     protected float rotationSpeed;
 
     /**
-     * Method for increasing agents health for fixed amount. If adding health
-     * will cross the maximum health of agent, then agent's health status will
-     * be set to maximum allowed health for that agent.
+     * Method for increasing agents hitPoint for fixed amount. If adding
+     * hitPoint will cross the maximum hitPoint of agent, then agent's hitPoint
+     * status will be set to maximum allowed hitPoint for that agent.
      *
-     * @see Agent#maxHealth
-     * @param potionHealth amount of health that should be added
+     * @see Agent#maxHitPoint
+     * @param potionHitPoint amount of hitPoint that should be added
      */
-    public void increaseHealth(float potionHealth) {
-        health += potionHealth;
-        if (health > maxHealth) {
-            health = maxHealth;
+    public void increaseHitPoint(float potionHitPoint) {
+        hitPoint += potionHitPoint;
+        if (hitPoint > maxHitPoint) {
+            hitPoint = maxHitPoint;
         }
     }
 
     /**
-     * Method for decreasing agents health for fixed amount. If health drops to
-     * zero or bellow, agent's health status will be set to zero and he will be
-     * dead.
+     * Method for decreasing agents hitPoint for fixed amount. If hitPoint drops
+     * to zero or bellow, agent's hitPoint status will be set to zero and he
+     * will be dead.
      *
      * @see Agent#alive
-     * @param damage amount of health that should be removed
+     * @param damage amount of hitPoint that should be removed
      */
-    public void decreaseHealth(double damage) {
-        health -= damage;
-        if (health <= 0) {
-            health = 0;
+    public void decreaseHitPoints(double damage) {
+        hitPoint -= damage;
+        if (hitPoint <= 0) {
+            hitPoint = 0;
             enabled = false;
         }
     }
@@ -120,23 +120,23 @@ public abstract class GameObject extends AbstractControl {
         this.maxForce = maxForce;
     }
 
-    public float getHealth() {
-        return health;
+    public float getHitPoint() {
+        return hitPoint;
     }
 
-    public void setHealth(float health) {
-        if (maxHealth < health) {
-            this.health = maxHealth;
+    public void setHitPoint(float hitPoint) {
+        if (maxHitPoint < hitPoint) {
+            this.hitPoint = maxHitPoint;
         }
-        this.health = health;
+        this.hitPoint = hitPoint;
     }
 
-    public float getMaxHealth() {
-        return maxHealth;
+    public float getMaxHitPoint() {
+        return maxHitPoint;
     }
 
-    public void setMaxHealth(float maxHealth) {
-        this.maxHealth = maxHealth;
+    public void setMaxHitPoint(float maxHitPoint) {
+        this.maxHitPoint = maxHitPoint;
     }
 
     public Quaternion getLocalRotation() {

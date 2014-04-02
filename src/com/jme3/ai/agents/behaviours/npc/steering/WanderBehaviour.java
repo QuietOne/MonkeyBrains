@@ -1,7 +1,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.Behaviour;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -16,24 +16,24 @@ import java.util.Random;
  * @author Tihomir Radosavljević
  * @version 1.0
  */
-public class WanderBehaviour extends Behaviour {
+public class WanderBehaviour extends AbstractSteeringBehaviour {
 
     /**
      * Position of target
      */
-    private Vector3f targetPosition;
-    /**
-     * Current velocity of agent.
-     */
-    private Vector3f velocity;
+    protected Vector3f targetPosition;
     /**
      * Time interval durring which target position doesn't change.
      */
-    private float timeInterval;
+    protected float timeInterval;
     /**
      * Current time.
      */
-    private float time;
+    protected float time;
+    /**
+     * Area in which agent will wander.
+     */
+    protected Vector3f[] area;
 
     /**
      * Constructor for wander behaviour.
@@ -46,6 +46,7 @@ public class WanderBehaviour extends Behaviour {
         velocity = new Vector3f();
         timeInterval = 2f;
         time = timeInterval;
+        area = new Vector3f[2];
     }
 
     /**
@@ -65,8 +66,7 @@ public class WanderBehaviour extends Behaviour {
     @Override
     protected void controlUpdate(float tpf) {
         changeTargetPosition(tpf);
-        Vector3f vel = calculateNewVelocity().mult(tpf);
-        agent.setLocalTranslation(agent.getLocalTranslation().add(vel));
+        super.controlUpdate(tpf);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class WanderBehaviour extends Behaviour {
         if (steering.length() > agent.getMaxForce()) {
             steering = steering.normalize().mult(agent.getMaxForce());
         }
-        agent.setAcceleration(steering.mult(1 / agent.getMass()));
+        agent.setAcceleration(steering.mult(1 / agentTotalMass()));
         velocity = velocity.add(agent.getAcceleration());
         if (velocity.length() > agent.getMoveSpeed()) {
             velocity = velocity.normalize().mult(agent.getMoveSpeed());
@@ -111,8 +111,17 @@ public class WanderBehaviour extends Behaviour {
         time -= tpf;
         if (time <= 0) {
             Random random = new Random();
-            float x = random.nextInt();
-            float z = random.nextInt();
+            float x, z;
+            int distance = (int) FastMath.abs(area[1].x - area[0].x);
+            x = random.nextInt(distance / 2);
+            if (random.nextBoolean()) {
+                x *= -1;
+            }
+            distance = (int) FastMath.abs(area[1].z - area[0].z);
+            z = random.nextInt(distance / 2);
+            if (random.nextBoolean()) {
+                z *= -1;
+            }
             targetPosition = new Vector3f(x, agent.getLocalTranslation().getY(), z);
             time = timeInterval;
         }
@@ -135,4 +144,14 @@ public class WanderBehaviour extends Behaviour {
     public void setTimeInterval(float timeInterval) {
         this.timeInterval = timeInterval;
     }
+    /**
+     * Setting area for wander.
+     * @param from
+     * @param to 
+     */
+    public void setArea(Vector3f from, Vector3f to){
+        area[0] = from;
+        area[1] = to;
+    }
+    
 }

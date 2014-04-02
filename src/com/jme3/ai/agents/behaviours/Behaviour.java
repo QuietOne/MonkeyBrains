@@ -31,7 +31,7 @@ public abstract class Behaviour extends AbstractControl {
      * Constructor for behaviour that has spatial during execution.
      *
      * @param agent to whom behaviour belongs
-     * @param spatial
+     * @param spatial which is active during execution
      */
     public Behaviour(Agent agent, Spatial spatial) {
         this.agent = agent;

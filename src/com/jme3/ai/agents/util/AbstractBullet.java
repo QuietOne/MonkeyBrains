@@ -8,7 +8,7 @@ import com.jme3.scene.Spatial;
  * @author Tihomir Radosavljević
  * @version 1.0
  */
-public abstract class AbstractBullet extends GameObject {
+public abstract class AbstractBullet extends PhysicalObject {
 
     /**
      * Weapon from which bullet was fired.

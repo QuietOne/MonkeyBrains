@@ -1,7 +1,7 @@
 package com.jme3.ai.agents.util.control;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.util.GameObject;
+import com.jme3.ai.agents.util.PhysicalObject;
 import com.jme3.input.InputManager;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
@@ -12,8 +12,7 @@ import java.util.List;
 /**
  * Class with information about agents and consequences of their behaviours in
  * game. It is not necessary to use it but it enables easier game status
- * updates.
- * Contains agents and gameObjects and provides generic game control.
+ * updates. Contains agents and gameObjects and provides generic game control.
  *
  * @author Tihomir Radosavljević
  * @version 1.0
@@ -23,35 +22,35 @@ public class Game {
     /**
      * Status of game with agents.
      */
-    private boolean over = false;
+    protected boolean over = false;
     /**
      * Indicator if the agent in same team can damage each other.
      */
-    private boolean friendlyFire = false;
+    protected boolean friendlyFire = true;
     /**
      * Node for all game geometry representation.
      */
-    private Node rootNode;
+    protected Node rootNode;
     /**
      * Managing input for player.
      */
-    private InputManager inputManager;
+    protected InputManager inputManager;
     /**
      * Genre of game.
      */
-    private GameGenre genre;
+    protected GameGenre genre;
     /**
      * List of all agents that are active in game.
      */
-    private List<Agent> agents;
+    protected List<Agent> agents;
     /**
-     * List of all GameObjects in game except for agents.
+     * List of all PhysicalObjects in game except for agents.
      */
-    private List<GameObject> gameObjects;
+    protected List<PhysicalObject> physicalObjects;
 
-    private Game() {
+    protected Game() {
         agents = new ArrayList<Agent>();
-        gameObjects = new LinkedList<GameObject>();
+        physicalObjects = new LinkedList<PhysicalObject>();
     }
 
     /**
@@ -61,7 +60,7 @@ public class Game {
      * @param agent agent which is added to game
      */
     public void addAgent(Agent agent) {
-        agent.setAlive(true);
+        agent.setEnabled(true);
         agents.add(agent);
         rootNode.attachChild(agent.getSpatial());
     }
@@ -75,7 +74,7 @@ public class Game {
      */
     public void addAgent(Agent agent, Vector3f position) {
         agent.setLocalTranslation(position);
-        agent.setAlive(true);
+        agent.setEnabled(true);
         agents.add(agent);
         rootNode.attachChild(agent.getSpatial());
     }
@@ -91,7 +90,7 @@ public class Game {
      */
     public void addAgent(Agent agent, float x, float y, float z) {
         agent.setLocalTranslation(x, y, z);
-        agent.setAlive(true);
+        agent.setEnabled(true);
         agents.add(agent);
         rootNode.attachChild(agent.getSpatial());
     }
@@ -100,12 +99,12 @@ public class Game {
      * Removing agent from list of agents to be updated and its spatial from
      * game.
      *
-     * @param agent agent who shoud be removed
+     * @param agent agent who should be removed
      */
     public void removeAgent(Agent agent) {
         for (int i = 0; i < agents.size(); i++) {
             if (agents.get(i).equals(agent)) {
-                agents.get(i).setAlive(false);
+                agents.get(i).setEnabled(false);
                 agents.get(i).getSpatial().removeFromParent();
                 agents.remove(i);
                 break;
@@ -121,52 +120,31 @@ public class Game {
     public void disableAgent(Agent agent) {
         for (int i = 0; i < agents.size(); i++) {
             if (agents.get(i).equals(agent)) {
-                agents.get(i).setAlive(false);
+                agents.get(i).setEnabled(false);
                 break;
             }
         }
     }
 
     /**
-     * Decreasing health of agent for value of damage.
+     * Decreasing hitPoints of agent for value of damage.
      *
      * @param agent
      * @param damage
      */
-    public void decreaseHealth(Agent agent, double damage) {
+    public void decreaseHitPoints(Agent agent, double damage) {
         //finding agent and decreasing his healthbar
         for (int i = 0; i < agents.size(); i++) {
             if (agents.get(i).equals(agent)) {
-                agents.get(i).decreaseHealth(damage);
-                if (!agents.get(i).isAlive()) {
-                    agents.get(i).setAlive(false);
+                agents.get(i).decreaseHitPoints(damage);
+                if (!agents.get(i).isEnabled()) {
+                    agents.get(i).setEnabled(false);
                     agents.get(i).getSpatial().removeFromParent();
                 }
                 break;
             }
         }
-        //checking if one team left if it has, then game over
-        int i = 0;
-        //find first alive agent in list
-        while (i < agents.size() && !agents.get(i).isAlive()) {
-            i++;
-        }
-        int j = i + 1;
-        while (j < agents.size()) {
-            //finding next agent that is alive
-            if (!agents.get(j).isAlive()) {
-                j++;
-                continue;
-            }
-            //if agent is not in the same team, game is certainly not over
-            if (!agents.get(i).isSameTeam(agents.get(j))) {
-                break;
-            }
-            j++;
-        }
-        if (j >= agents.size()) {
-            over = true;
-        }
+
     }
 
     /**
@@ -176,17 +154,17 @@ public class Game {
      * @param viewAngle
      * @return all agents that is seen by agent
      */
-    public List<GameObject> look(Agent agent, float viewAngle) {
-        List<GameObject> temp = new LinkedList<GameObject>();
+    public List<PhysicalObject> look(Agent agent, float viewAngle) {
+        List<PhysicalObject> temp = new LinkedList<PhysicalObject>();
         //are there seen agents
         for (int i = 0; i < agents.size(); i++) {
-            if (agents.get(i).isAlive()) {
+            if (agents.get(i).isEnabled()) {
                 if (!agents.get(i).equals(agent) && lookable(agent, agents.get(i), viewAngle)) {
                     temp.add(agents.get(i));
                 }
             }
         }
-        for (GameObject gameObject : gameObjects) {
+        for (PhysicalObject gameObject : physicalObjects) {
             if (gameObject.isEnabled() && lookable(agent, gameObject, viewAngle)) {
                 temp.add(gameObject);
             }
@@ -204,7 +182,7 @@ public class Game {
      * @param widthAngle
      * @return
      */
-    public boolean lookable(Agent observer, GameObject gameObject, float viewAngle) {
+    public boolean lookable(Agent observer, PhysicalObject gameObject, float viewAngle) {
         //if agent is not in visible range
         if (observer.getLocalTranslation().distance(gameObject.getLocalTranslation())
                 > observer.getVisibilityRange()) {
@@ -226,8 +204,8 @@ public class Game {
         for (Agent agent : agents) {
             agent.update(tpf);
         }
-        for (int i = 0; i < gameObjects.size(); i++) {
-            gameObjects.get(i).update(tpf);
+        for (int i = 0; i < physicalObjects.size(); i++) {
+            physicalObjects.get(i).update(tpf);
 
         }
     }
@@ -260,8 +238,8 @@ public class Game {
         return agents;
     }
 
-    public List<GameObject> getGameObjects() {
-        return gameObjects;
+    public List<PhysicalObject> getGameObjects() {
+        return physicalObjects;
     }
 
     public boolean isFriendlyFire() {
@@ -273,10 +251,10 @@ public class Game {
     }
 
     /**
-     * Check friendly fire and decreaseHealth of target if conditions are ok.
+     * Check friendly fire and decreaseHitPoints of target if conditions are ok.
      *
      * @see Game#friendlyFire
-     * @see Game#decreaseHealth(com.jme3.ai.agents.Agent, double)
+     * @see Game#decreaseHitPoints(com.jme3.ai.agents.Agent, double)
      * @param attacker agent who attacks
      * @param target agent who is attacked
      */
@@ -284,16 +262,16 @@ public class Game {
         if (friendlyFire && attacker.isSameTeam(target)) {
             return;
         }
-        decreaseHealth(target, attacker.getWeapon().getAttackDamage());
+        decreaseHitPoints(target, attacker.getWeapon().getAttackDamage());
     }
 
-    public void addGameObject(GameObject gameObject) {
-        gameObjects.add(gameObject);
+    public void addGameObject(PhysicalObject gameObject) {
+        physicalObjects.add(gameObject);
     }
 
-    public void removeGameObject(GameObject gameObject) {
+    public void removeGameObject(PhysicalObject gameObject) {
         gameObject.getSpatial().removeFromParent();
-        gameObjects.remove(gameObject);
+        physicalObjects.remove(gameObject);
     }
 
     public static Game getInstance() {
@@ -312,11 +290,10 @@ public class Game {
 
         private static final Game INSTANCE = new Game();
     }
-    
-    
-   public void start() {
-       for (Agent agent : agents) {
-           agent.start();
-       }
-   }
+
+    public void start() {
+        for (Agent agent : agents) {
+            agent.start();
+        }
+    }
 }

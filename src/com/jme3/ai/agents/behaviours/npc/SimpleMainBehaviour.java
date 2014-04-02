@@ -44,6 +44,7 @@ public class SimpleMainBehaviour extends Behaviour {
         super(agent);
         game = Game.getInstance();
         behaviours = new LinkedList<Behaviour>();
+        enabled = true;
     }
 
     @Override

@@ -8,13 +8,14 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 
 /**
- * Simple rotate behaviour. If spatial isn't added, then it will rotate all agent
- * spatials. If spatial is added then it will rotate only that spatial.
- * 
+ * Simple rotate behaviour. If spatial isn't added, then it will rotate all
+ * agent spatials. If spatial is added then it will rotate only that spatial.
+ *
  * @author Tihomir Radosavljević
  * @version 1.0
  */
-public class SimpleRotateBehaviour extends Behaviour{
+public class SimpleRotateBehaviour extends Behaviour {
+
     /**
      * Direction of rotation in whic agent should rotate.
      */
@@ -23,22 +24,24 @@ public class SimpleRotateBehaviour extends Behaviour{
      * Rotation to which agent should turn.
      */
     private Quaternion rotationTarget;
+
     /**
-     * 
+     *
      * @param agent to whom behaviour belongs
      */
     public SimpleRotateBehaviour(Agent agent) {
         super(agent);
     }
+
     /**
-     * 
+     *
      * @param agent to whom behaviour belongs
      * @param spatial that will rotate
      */
     public SimpleRotateBehaviour(Agent agent, Spatial spatial) {
         super(agent, spatial);
     }
-    
+
     @Override
     protected void controlUpdate(float tpf) {
         //if there isn't spatial
@@ -74,33 +77,36 @@ public class SimpleRotateBehaviour extends Behaviour{
     protected void controlRender(RenderManager rm, ViewPort vp) {
         throw new UnsupportedOperationException("You should override it youself");
     }
+
     /**
-     * 
+     *
      * @return direction of rotation
      */
     public Quaternion getRotationDirection() {
         return rotationDirection;
     }
+
     /**
-     * 
+     *
      * @param rotationDirection direction of rotation
      */
     public void setRotationDirection(Quaternion rotationDirection) {
         this.rotationDirection = rotationDirection;
     }
+
     /**
-     * 
+     *
      * @return rotation of target
      */
     public Quaternion getRotationTarget() {
         return rotationTarget;
     }
+
     /**
-     * 
+     *
      * @param rotationTarget rotation of target
      */
     public void setRotationTarget(Quaternion rotationTarget) {
         this.rotationTarget = rotationTarget;
     }
-
 }

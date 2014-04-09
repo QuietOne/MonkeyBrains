@@ -2,6 +2,7 @@ package com.jme3.ai.agents.behaviours.npc;
 
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.Behaviour;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -24,15 +25,15 @@ public class SimpleMoveBehaviour extends Behaviour {
     /**
      * Targeted position.
      */
-    private Vector3f targetPosition;
+    protected Vector3f targetPosition;
     /**
      * Move direction of agent.
      */
-    private Vector3f moveDirection;
+    protected Vector3f moveDirection;
     /**
      * Distance of targetPosition that is acceptable.
      */
-    private float distanceError;
+    protected float distanceError;
 
     public SimpleMoveBehaviour(Agent agent) {
         super(agent);
@@ -59,6 +60,7 @@ public class SimpleMoveBehaviour extends Behaviour {
         //if there is movement direction in which agent should move
         if (moveDirection != null) {
             agent.getSpatial().move(moveDirection.mult(agent.getMoveSpeed() * tpf));
+            rotateAgent(tpf);
         }
     }
 
@@ -111,5 +113,16 @@ public class SimpleMoveBehaviour extends Behaviour {
      */
     public void setDistanceError(float distanceError) {
         this.distanceError = distanceError;
+    }
+    
+    /**
+     * Method for rotating agent in direction of velocity of agent.
+     *
+     * @param tpf time per frame
+     */
+    public void rotateAgent(float tpf) {
+        Quaternion q = new Quaternion();
+        q.lookAt(moveDirection, new Vector3f(0, 1, 0));
+        agent.getLocalRotation().slerp(q, agent.getRotationSpeed() * tpf);
     }
 }

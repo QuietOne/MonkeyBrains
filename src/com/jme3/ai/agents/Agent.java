@@ -217,6 +217,9 @@ public class Agent<T> extends PhysicalObject {
      * @return true if they are in same team, false otherwise
      */
     public boolean isSameTeam(Agent agent) {
+        if (team == null || agent.getTeam() == null) {
+            return false;
+        }
         return team.equals(agent.getTeam());
     }
 

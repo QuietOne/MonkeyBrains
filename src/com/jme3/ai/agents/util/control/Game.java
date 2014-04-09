@@ -36,9 +36,9 @@ public class Game {
      */
     protected InputManager inputManager;
     /**
-     * Genre of game.
+     * Controls of game.
      */
-    protected GameGenre genre;
+    protected GameControl genre;
     /**
      * List of all agents that are active in game.
      */
@@ -49,7 +49,7 @@ public class Game {
     protected List<PhysicalObject> physicalObjects;
 
     protected Game() {
-        agents = new ArrayList<Agent>();
+        agents = new LinkedList<Agent>();
         physicalObjects = new LinkedList<PhysicalObject>();
     }
 
@@ -201,8 +201,8 @@ public class Game {
      * Method that will update all alive agents and fired bullets while active.
      */
     public void update(float tpf) {
-        for (Agent agent : agents) {
-            agent.update(tpf);
+        for (int i = 0; i < agents.size(); i++) {
+            agents.get(i).update(tpf);
         }
         for (int i = 0; i < physicalObjects.size(); i++) {
             physicalObjects.get(i).update(tpf);
@@ -278,11 +278,11 @@ public class Game {
         return GameHolder.INSTANCE;
     }
 
-    public GameGenre getGenre() {
+    public GameControl getGameControl() {
         return genre;
     }
 
-    public void setGenre(GameGenre genre) {
+    public void setGameControl(GameControl genre) {
         this.genre = genre;
     }
 

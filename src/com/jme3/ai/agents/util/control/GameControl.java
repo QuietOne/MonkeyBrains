@@ -10,7 +10,7 @@ import com.jme3.math.Vector3f;
  * @author Tihomir Radosavljević
  * @version 0.1
  */
-public interface GameGenre {
+public interface GameControl {
 
     /**
      * Add all inputManagerMapping that will player use.

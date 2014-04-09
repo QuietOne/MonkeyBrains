@@ -103,4 +103,12 @@ public class SimpleAttackBehaviour extends Behaviour implements PhysicalObjectSe
         targetObject = event.getPhysicalObjectSeen();
         enabled = true;
     }
+
+    public PhysicalObject getTargetObject() {
+        return targetObject;
+    }
+
+    public Vector3f getTargetPosition() {
+        return targetPosition;
+    }
 }

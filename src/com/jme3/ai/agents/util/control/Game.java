@@ -5,7 +5,6 @@ import com.jme3.ai.agents.util.PhysicalObject;
 import com.jme3.input.InputManager;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 

@@ -2,12 +2,10 @@ package com.jme3.ai.agents.behaviours.npc;
 
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.Behaviour;
-import com.jme3.ai.agents.events.PhysicalObjectSeenEvent;
-import com.jme3.ai.agents.events.PhysicalObjectSeenListener;
-import com.jme3.ai.agents.util.PhysicalObject;
+import com.jme3.ai.agents.events.GameObjectSeenEvent;
+import com.jme3.ai.agents.events.GameObjectSeenListener;
+import com.jme3.ai.agents.util.GameObject;
 import com.jme3.ai.agents.util.AbstractWeapon;
-import com.jme3.ai.agents.util.control.Game;
-import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -15,22 +13,22 @@ import com.jme3.scene.Spatial;
 
 /**
  * Simple attack behaviour for NPC. This behaviour is for to agent to attack
- * targetObject or fixed point in space. It will attack with weapon, and it
+ * targetedObject or fixed point in space. It will attack with weapon, and it
  * doesn't check if it has ammo.
  *
  * @see AbstractWeapon#hasBullets()
  * @see AbstractWeapon#isInRange(com.jme3.math.Vector3f)
- * @see AbstractWeapon#isInRange(com.jme3.ai.agents.util.PhysicalObject)
+ * @see AbstractWeapon#isInRange(com.jme3.ai.agents.util.GameObject)
  *
  * @author Tihomir Radosavljević
  * @version 1.0
  */
-public class SimpleAttackBehaviour extends Behaviour implements PhysicalObjectSeenListener {
+public class SimpleAttackBehaviour extends Behaviour implements GameObjectSeenListener {
 
     /**
      * Target for attack behaviour.
      */
-    protected PhysicalObject targetObject;
+    protected GameObject targetedObject;
     /**
      * Target for attack behaviour.
      */
@@ -54,8 +52,8 @@ public class SimpleAttackBehaviour extends Behaviour implements PhysicalObjectSe
     /**
      * @param target at which agent will attack
      */
-    public void setTarget(PhysicalObject target) {
-        this.targetObject = target;
+    public void setTarget(GameObject target) {
+        this.targetedObject = target;
     }
 
     /**
@@ -72,27 +70,26 @@ public class SimpleAttackBehaviour extends Behaviour implements PhysicalObjectSe
             if (targetPosition != null) {
                 agent.getWeapon().attack(targetPosition, tpf);
                 targetPosition = null;
-            } else if (targetObject != null && targetObject.isEnabled()) {
-                agent.getWeapon().attack(targetObject, tpf);
+            } else if (targetedObject != null && targetedObject.isEnabled()) {
+                agent.getWeapon().attack(targetedObject, tpf);
             }
         }
     }
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-        throw new UnsupportedOperationException("You should override it youself");
     }
 
     /**
-     * Behaviour can automaticaly update its targetObject with
-     * PhysicalObjectSeenEvent, if it is agent, then it check if it is in range and
-     * check if they are in same team.
+     * Behaviour can automaticaly update its targetedObject with
+     * GameObjectSeenEvent, if it is agent, then it check if it is in range
+     * and check if they are in same team.
      *
      * @param event
      */
-    public void handlePhysicalObjectSeenEvent(PhysicalObjectSeenEvent event) {
-        if (event.getPhysicalObjectSeen() instanceof Agent) {
-            Agent targetAgent = (Agent) event.getPhysicalObjectSeen();
+    public void handleGameObjectSeenEvent(GameObjectSeenEvent event) {
+        if (event.getGameObjectSeen() instanceof Agent) {
+            Agent targetAgent = (Agent) event.getGameObjectSeen();
             if (agent.isSameTeam(targetAgent)) {
                 return;
             }
@@ -100,15 +97,15 @@ public class SimpleAttackBehaviour extends Behaviour implements PhysicalObjectSe
                 return;
             }
         }
-        targetObject = event.getPhysicalObjectSeen();
+        targetedObject = event.getGameObjectSeen();
         enabled = true;
     }
 
-    public PhysicalObject getTargetObject() {
-        return targetObject;
-    }
-
-    public Vector3f getTargetPosition() {
-        return targetPosition;
+    /**
+     * Method for checking is there any target that agent should attack.
+     * @return true if target is set
+     */
+    public boolean isTargetSet() {
+        return targetPosition != null && targetedObject != null;
     }
 }

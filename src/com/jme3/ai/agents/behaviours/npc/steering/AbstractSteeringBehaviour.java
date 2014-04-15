@@ -35,7 +35,7 @@ public abstract class AbstractSteeringBehaviour extends Behaviour {
      *
      * @return
      */
-    public abstract Vector3f calculateSteering();
+    protected abstract Vector3f calculateSteering();
 
     /**
      * Method for calculating new velocity of agent based on steering vector.
@@ -43,14 +43,14 @@ public abstract class AbstractSteeringBehaviour extends Behaviour {
      * @see AbstractSteeringBehaviour#calculateSteering()
      * @return
      */
-    public abstract Vector3f calculateNewVelocity();
+    protected abstract Vector3f calculateNewVelocity();
 
     /**
      * Method for rotating agent in direction of velocity of agent.
      *
      * @param tpf time per frame
      */
-    public void rotateAgent(float tpf) {
+    protected void rotateAgent(float tpf) {
         Quaternion q = new Quaternion();
         q.lookAt(velocity, new Vector3f(0, 1, 0));
         agent.getLocalRotation().slerp(q, agent.getRotationSpeed() * tpf);
@@ -63,7 +63,7 @@ public abstract class AbstractSteeringBehaviour extends Behaviour {
      *
      * @return total mass of agents
      */
-    public float agentTotalMass() {
+    protected float agentTotalMass() {
         float mass = 0;
         mass += agent.getMass();
         if (agent.getWeapon() != null) {

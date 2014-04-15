@@ -1,7 +1,7 @@
 package com.jme3.ai.agents.util.control;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.util.PhysicalObject;
+import com.jme3.ai.agents.util.GameObject;
 import com.jme3.input.InputManager;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
@@ -37,19 +37,19 @@ public class Game {
     /**
      * Controls of game.
      */
-    protected GameControl genre;
+    protected GameControl gameControl;
     /**
      * List of all agents that are active in game.
      */
     protected List<Agent> agents;
     /**
-     * List of all PhysicalObjects in game except for agents.
+     * List of all GameObjects in game except for agents.
      */
-    protected List<PhysicalObject> physicalObjects;
+    protected List<GameObject> gameObjects;
 
     protected Game() {
         agents = new LinkedList<Agent>();
-        physicalObjects = new LinkedList<PhysicalObject>();
+        gameObjects = new LinkedList<GameObject>();
     }
 
     /**
@@ -153,8 +153,8 @@ public class Game {
      * @param viewAngle
      * @return all agents that is seen by agent
      */
-    public List<PhysicalObject> look(Agent agent, float viewAngle) {
-        List<PhysicalObject> temp = new LinkedList<PhysicalObject>();
+    public List<GameObject> look(Agent agent, float viewAngle) {
+        List<GameObject> temp = new LinkedList<GameObject>();
         //are there seen agents
         for (int i = 0; i < agents.size(); i++) {
             if (agents.get(i).isEnabled()) {
@@ -163,7 +163,7 @@ public class Game {
                 }
             }
         }
-        for (PhysicalObject gameObject : physicalObjects) {
+        for (GameObject gameObject : gameObjects) {
             if (gameObject.isEnabled() && lookable(agent, gameObject, viewAngle)) {
                 temp.add(gameObject);
             }
@@ -181,7 +181,7 @@ public class Game {
      * @param widthAngle
      * @return
      */
-    public boolean lookable(Agent observer, PhysicalObject gameObject, float viewAngle) {
+    public boolean lookable(Agent observer, GameObject gameObject, float viewAngle) {
         //if agent is not in visible range
         if (observer.getLocalTranslation().distance(gameObject.getLocalTranslation())
                 > observer.getVisibilityRange()) {
@@ -203,8 +203,8 @@ public class Game {
         for (int i = 0; i < agents.size(); i++) {
             agents.get(i).update(tpf);
         }
-        for (int i = 0; i < physicalObjects.size(); i++) {
-            physicalObjects.get(i).update(tpf);
+        for (int i = 0; i < gameObjects.size(); i++) {
+            gameObjects.get(i).update(tpf);
 
         }
     }
@@ -237,8 +237,8 @@ public class Game {
         return agents;
     }
 
-    public List<PhysicalObject> getGameObjects() {
-        return physicalObjects;
+    public List<GameObject> getGameObjects() {
+        return gameObjects;
     }
 
     public boolean isFriendlyFire() {
@@ -264,13 +264,13 @@ public class Game {
         decreaseHitPoints(target, attacker.getWeapon().getAttackDamage());
     }
 
-    public void addGameObject(PhysicalObject gameObject) {
-        physicalObjects.add(gameObject);
+    public void addGameObject(GameObject gameObject) {
+        gameObjects.add(gameObject);
     }
 
-    public void removeGameObject(PhysicalObject gameObject) {
+    public void removeGameObject(GameObject gameObject) {
         gameObject.getSpatial().removeFromParent();
-        physicalObjects.remove(gameObject);
+        gameObjects.remove(gameObject);
     }
 
     public static Game getInstance() {
@@ -278,11 +278,11 @@ public class Game {
     }
 
     public GameControl getGameControl() {
-        return genre;
+        return gameControl;
     }
 
-    public void setGameControl(GameControl genre) {
-        this.genre = genre;
+    public void setGameControl(GameControl gameControl) {
+        this.gameControl = gameControl;
     }
 
     private static class GameHolder {

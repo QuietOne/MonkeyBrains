@@ -12,7 +12,7 @@ import com.jme3.renderer.ViewPort;
  * @author Tihomir Radosavljević
  * @version 1.0
  */
-public abstract class AbstractWeapon extends PhysicalObject {
+public abstract class AbstractWeapon extends GameObject {
 
     /**
      * Name of weapon.
@@ -58,7 +58,7 @@ public abstract class AbstractWeapon extends PhysicalObject {
      * @param target
      * @return
      */
-    public boolean isInRange(PhysicalObject target) {
+    public boolean isInRange(GameObject target) {
         if (agent.getLocalTranslation().distance(target.getLocalTranslation()) > maxAttackRange) {
             return false;
         }
@@ -131,7 +131,7 @@ public abstract class AbstractWeapon extends PhysicalObject {
      * @param target
      * @param tpf time per frame
      */
-    public void attack(PhysicalObject target, float tpf) {
+    public void attack(GameObject target, float tpf) {
         attack(target.getLocalTranslation(), tpf);
     }
 

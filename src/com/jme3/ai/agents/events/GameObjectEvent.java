@@ -8,14 +8,14 @@ import java.util.EventObject;
  * @author Tihomir Radosavljević
  * @version 1.0
  */
-public class PhysicalObjectEvent extends EventObject {
+public class GameObjectEvent extends EventObject {
 
     /**
-     * Constructor for PhysicalObjectEvent
+     * Constructor for GameObjectEvent
      *
      * @param source GameObject that have produced this Event
      */
-    public PhysicalObjectEvent(Object source) {
+    public GameObjectEvent(Object source) {
         super(source);
     }
 }

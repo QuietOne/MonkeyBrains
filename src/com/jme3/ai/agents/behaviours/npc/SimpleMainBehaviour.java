@@ -52,12 +52,10 @@ public class SimpleMainBehaviour extends Behaviour {
         for (Behaviour behaviour : behaviours) {
             behaviour.update(tpf);
         }
-
     }
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-        throw new UnsupportedOperationException("You should override it youself");
     }
 
     /**

@@ -4,7 +4,7 @@ import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.ai.agents.behaviours.npc.SimpleMainBehaviour;
 import com.jme3.scene.Spatial;
 import com.jme3.ai.agents.util.AbstractWeapon;
-import com.jme3.ai.agents.util.PhysicalObject;
+import com.jme3.ai.agents.util.GameObject;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -17,7 +17,7 @@ import com.jme3.scene.Node;
  * @author Tihomir Radosavljević
  * @version 1.0
  */
-public class Agent<T> extends PhysicalObject {
+public class Agent<T> extends GameObject {
 
     /**
      * Class that enables you to add all variable you need for your agent.

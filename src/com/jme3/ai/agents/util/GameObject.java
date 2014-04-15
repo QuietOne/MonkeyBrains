@@ -13,44 +13,44 @@ import com.jme3.scene.control.AbstractControl;
  * @see Game#addAgent(com.jme3.ai.agents.Agent)
  * @see Game#addAgent(com.jme3.ai.agents.Agent, com.jme3.math.Vector3f)
  * @see Game#addAgent(com.jme3.ai.agents.Agent, float, float, float) For other
- * PhysicalObject use:
- * @see Game#addGameObject(com.jme3.ai.agents.util.PhysicalObject)
+ * GameObject use:
+ * @see Game#addGameObject(com.jme3.ai.agents.util.GameObject)
  *
  * @author Tihomir Radosavljević
  * @version 1.0
  */
-public abstract class PhysicalObject extends AbstractControl {
+public abstract class GameObject extends AbstractControl {
 
     /**
-     * Mass of PhysicalObject.
+     * Mass of GameObject.
      */
     protected float mass;
     /**
-     * PhysicalObject acceleration speed.
+     * GameObject acceleration speed.
      */
     protected Vector3f acceleration;
     /**
-     * Current move speed of PhysicalObject.
+     * Current move speed of GameObject.
      */
     protected float moveSpeed;
     /**
-     * Maximum move speed of PhysicalObject
+     * Maximum move speed of GameObject
      */
     protected float maxMoveSpeed;
     /**
-     * Maximum force that can be applied to this PhysicalObject.
+     * Maximum force that can be applied to this GameObject.
      */
     protected float maxForce;
     /**
-     * Current hitPoint status of PhysicalObject.
+     * Current hitPoint status of GameObject.
      */
     protected float hitPoint = 100f;
     /**
-     * Maximum hitPoint that PhysicalObject can have.
+     * Maximum hitPoint that GameObject can have.
      */
     protected float maxHitPoint = 100f;
     /**
-     * Rotation speed of PhysicalObject.
+     * Rotation speed of GameObject.
      */
     protected float rotationSpeed;
 
@@ -107,7 +107,7 @@ public abstract class PhysicalObject extends AbstractControl {
 
     public void setMoveSpeed(float moveSpeed) {
         if (maxMoveSpeed < moveSpeed) {
-            this.moveSpeed = maxMoveSpeed;
+            this.maxMoveSpeed = moveSpeed;
         }
         this.moveSpeed = moveSpeed;
     }

@@ -1,11 +1,11 @@
 package com.jme3.ai.agents.util.control;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.util.PhysicalObject;
+import com.jme3.ai.agents.util.GameObject;
 import com.jme3.math.Vector3f;
 
 /**
- * Base interface for game genres.
+ * Base interface for game controls.
  *
  * @author Tihomir Radosavljević
  * @version 0.1
@@ -31,10 +31,11 @@ public interface GameControl {
      * Restarting all game parameters.
      */
     public void restart();
+   
     /**
      * Method for creating objects in given area.
-     * @param physicalObject object that should be created
+     * @param gameObject object that should be created
      * @param area where object will be created
      */
-    public void spawn(PhysicalObject physicalObject, Vector3f... area);
+    public void spawn(GameObject gameObject, Vector3f... area);
 }

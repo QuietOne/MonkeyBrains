@@ -71,7 +71,6 @@ public class WanderBehaviour extends AbstractSteeringBehaviour {
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-        throw new UnsupportedOperationException("You should override it youself");
     }
 
     /**
@@ -79,7 +78,7 @@ public class WanderBehaviour extends AbstractSteeringBehaviour {
      *
      * @return steering vector
      */
-    public Vector3f calculateSteering() {
+    protected Vector3f calculateSteering() {
         Vector3f desiredVelocity = targetPosition.subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
         return desiredVelocity.subtract(velocity);
     }
@@ -89,15 +88,15 @@ public class WanderBehaviour extends AbstractSteeringBehaviour {
      *
      * @return velocity vector
      */
-    public Vector3f calculateNewVelocity() {
+    protected Vector3f calculateNewVelocity() {
         Vector3f steering = calculateSteering();
         if (steering.length() > agent.getMaxForce()) {
             steering = steering.normalize().mult(agent.getMaxForce());
         }
         agent.setAcceleration(steering.mult(1 / agentTotalMass()));
         velocity = velocity.add(agent.getAcceleration());
-        if (velocity.length() > agent.getMoveSpeed()) {
-            velocity = velocity.normalize().mult(agent.getMoveSpeed());
+        if (velocity.length() > agent.getMaxMoveSpeed()) {
+            velocity = velocity.normalize().mult(agent.getMaxMoveSpeed());
         }
         return velocity;
     }
@@ -107,7 +106,7 @@ public class WanderBehaviour extends AbstractSteeringBehaviour {
      *
      * @param tpf time per frame
      */
-    public void changeTargetPosition(float tpf) {
+    protected void changeTargetPosition(float tpf) {
         time -= tpf;
         if (time <= 0) {
             Random random = new Random();
@@ -144,14 +143,15 @@ public class WanderBehaviour extends AbstractSteeringBehaviour {
     public void setTimeInterval(float timeInterval) {
         this.timeInterval = timeInterval;
     }
+
     /**
      * Setting area for wander.
+     *
      * @param from
-     * @param to 
+     * @param to
      */
-    public void setArea(Vector3f from, Vector3f to){
+    public void setArea(Vector3f from, Vector3f to) {
         area[0] = from;
         area[1] = to;
     }
-    
 }

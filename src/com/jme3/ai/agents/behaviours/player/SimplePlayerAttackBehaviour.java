@@ -55,7 +55,6 @@ public class SimplePlayerAttackBehaviour extends Behaviour implements ActionList
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-        throw new UnsupportedOperationException("You should override it youself");
     }
 
     public void onAction(String name, boolean isPressed, float tpf) {

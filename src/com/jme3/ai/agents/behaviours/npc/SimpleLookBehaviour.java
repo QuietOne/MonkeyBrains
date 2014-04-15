@@ -5,21 +5,21 @@ import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.math.FastMath;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
-import com.jme3.ai.agents.events.PhysicalObjectSeenEvent;
-import com.jme3.ai.agents.events.PhysicalObjectSeenListener;
+import com.jme3.ai.agents.events.GameObjectSeenEvent;
+import com.jme3.ai.agents.events.GameObjectSeenListener;
 import java.util.ArrayList;
 import java.util.List;
 import com.jme3.ai.agents.util.control.Game;
-import com.jme3.ai.agents.util.PhysicalObject;
+import com.jme3.ai.agents.util.GameObject;
 
 /**
  * Simple look behaviour for NPC. It calls for all behaviour that are added in
- * listeners. That behaviours must implement PhysicalObjectSeenListener.
+ * listeners. That behaviours must implement GameObjectSeenListener.
  *
- * @see PhysicalObjectSeenListener
+ * @see GameObjectSeenListener
  *
- * This behaviour can only see PhysicalObject if it is added to game.
- * @see Game#addGameObject(com.jme3.ai.agents.util.PhysicalObject)
+ * This behaviour can only see GameObject if it is added to game.
+ * @see Game#addGameObject(com.jme3.ai.agents.util.GameObject)
  * <br>or for agents
  * @see Game#addAgent(com.jme3.ai.agents.Agent) For seeing things on terrain it
  * uses
@@ -33,18 +33,18 @@ public class SimpleLookBehaviour extends Behaviour {
     /**
      * List of listeners to which behaviours GameObjectSeen should forward to.
      */
-    private List<PhysicalObjectSeenListener> listeners;
+    protected List<GameObjectSeenListener> listeners;
     /**
      * Angle in which GameObjects will be seen.
      */
-    private float viewAngle;
+    protected float viewAngle;
 
     /**
      * @param agent to whom behaviour belongs
      */
     public SimpleLookBehaviour(Agent agent) {
         super(agent);
-        listeners = new ArrayList<PhysicalObjectSeenListener>();
+        listeners = new ArrayList<GameObjectSeenListener>();
         //default value
         viewAngle = FastMath.QUARTER_PI;
     }
@@ -55,7 +55,7 @@ public class SimpleLookBehaviour extends Behaviour {
      */
     public SimpleLookBehaviour(Agent agent, float viewAngle) {
         super(agent);
-        listeners = new ArrayList<PhysicalObjectSeenListener>();
+        listeners = new ArrayList<GameObjectSeenListener>();
         this.viewAngle = viewAngle;
     }
 
@@ -65,18 +65,18 @@ public class SimpleLookBehaviour extends Behaviour {
      *
      * @param gameObjectSeen Agent that have been seen
      */
-    private void triggerListeners(PhysicalObject gameObjectSeen) {
-        //create PhysicalObjectSeenEvent
-        PhysicalObjectSeenEvent event = new PhysicalObjectSeenEvent(agent, gameObjectSeen);
+    protected void triggerListeners(GameObject gameObjectSeen) {
+        //create GameObjectSeenEvent
+        GameObjectSeenEvent event = new GameObjectSeenEvent(agent, gameObjectSeen);
         //forward it to all listeners
-        for (PhysicalObjectSeenListener listener : listeners) {
-            listener.handlePhysicalObjectSeenEvent(event);
+        for (GameObjectSeenListener listener : listeners) {
+            listener.handleGameObjectSeenEvent(event);
         }
     }
 
     @Override
     protected void controlUpdate(float tpf) {
-        List<PhysicalObject> agents = Game.getInstance().look(agent, viewAngle);
+        List<GameObject> agents = Game.getInstance().look(agent, viewAngle);
         for (int i = 0; i < agents.size(); i++) {
             triggerListeners(agents.get(i));
         }
@@ -84,15 +84,14 @@ public class SimpleLookBehaviour extends Behaviour {
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-        throw new UnsupportedOperationException("You should override it youself");
     }
 
     /**
-     * Adding listener that will trigger when PhysicalObject is seen.
+     * Adding listener that will trigger when GameObject is seen.
      *
      * @param listener
      */
-    public void addListener(PhysicalObjectSeenListener listener) {
+    public void addListener(GameObjectSeenListener listener) {
         listeners.add(listener);
     }
 
@@ -101,7 +100,7 @@ public class SimpleLookBehaviour extends Behaviour {
      *
      * @param listener
      */
-    public void removeListener(PhysicalObjectSeenListener listener) {
+    public void removeListener(GameObjectSeenListener listener) {
         listeners.remove(listener);
     }
 

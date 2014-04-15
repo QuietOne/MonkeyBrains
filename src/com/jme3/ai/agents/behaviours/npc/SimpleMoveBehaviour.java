@@ -66,7 +66,6 @@ public class SimpleMoveBehaviour extends Behaviour {
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-        throw new UnsupportedOperationException("You should override it youself");
     }
 
     /**

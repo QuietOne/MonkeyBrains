@@ -45,7 +45,6 @@ public class SeekBehaviour extends AbstractSteeringBehaviour {
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-        throw new UnsupportedOperationException("You should override it youself");
     }
 
     /**
@@ -53,7 +52,7 @@ public class SeekBehaviour extends AbstractSteeringBehaviour {
      *
      * @return steering vector
      */
-    public Vector3f calculateSteering() {
+    protected Vector3f calculateSteering() {
         Vector3f desiredVelocity = target.getLocalTranslation().subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
         return desiredVelocity.subtract(velocity);
     }
@@ -63,15 +62,15 @@ public class SeekBehaviour extends AbstractSteeringBehaviour {
      *
      * @return velocity vector
      */
-    public Vector3f calculateNewVelocity() {
+    protected Vector3f calculateNewVelocity() {
         Vector3f steering = calculateSteering();
         if (steering.length() > agent.getMaxForce()) {
             steering = steering.normalize().mult(agent.getMaxForce());
         }
         agent.setAcceleration(steering.mult(1 / agentTotalMass()));
         velocity = velocity.add(agent.getAcceleration());
-        if (velocity.length() > agent.getMoveSpeed()) {
-            velocity = velocity.normalize().mult(agent.getMoveSpeed());
+        if (velocity.length() > agent.getMaxMoveSpeed()) {
+            velocity = velocity.normalize().mult(agent.getMaxMoveSpeed());
         }
         return velocity;
     }

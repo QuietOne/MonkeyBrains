@@ -50,7 +50,6 @@ public class SimplePlayerMoveBehaviour extends SimpleMoveBehaviour implements An
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-        throw new UnsupportedOperationException("You should override it youself");
     }
 
     public void onAnalog(String name, float value, float tpf) {

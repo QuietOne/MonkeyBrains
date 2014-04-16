@@ -9,7 +9,7 @@ Wrapper class for agent. It contains attributes and operations on those attribut
 Team – agent’s team. It contains attributes of team. By default team name is unique ID used for calculating friendly fire if it is off (agent can’t damage agent from its own team)
 
 ###Behaviour
-Base class for agent behaviours. Every behavior that is made must extend this class. Every behavior then must implement ```java controlUpdate(float tpf)``` and ```java controlRender(RenderManager rm, ViewPort vp)```. Those have been requested by ```java com.jme3.scene.control.AbstractControl```, which behaviour is extending. Also class that is extending Behaviour must have constructor that contains agent as input. With this, behaviour can change attributes of agent that is behaving. In ```java com.jme3.ai.agents.behaviours.npc``` you can see examples of some simple behaviours that are easy for using for your NPC (Non-player character) agents. In ```java com.jme3.ai.agents.behaviours.player``` are some simple behaviours adequate for player agents.
+Base class for agent behaviours. Every behavior that is made must extend this class. Every behavior then must implement ```controlUpdate(float tpf)``` and ```controlRender(RenderManager rm, ViewPort vp)```. Those have been requested by ```com.jme3.scene.control.AbstractControl```, which behaviour is extending. Also class that is extending Behaviour must have constructor that contains agent as input. With this, behaviour can change attributes of agent that is behaving. In ```com.jme3.ai.agents.behaviours.npc``` you can see examples of some simple behaviours that are easy for using for your NPC (Non-player character) agents. In ```com.jme3.ai.agents.behaviours.player``` are some simple behaviours adequate for player agents.
 
 ###GameObject
 Class for all objects in game, that can be updated or destroyed. Example for these would be: Items, bullets, obstacles, agent (agent extends GameObjects)…
@@ -97,3 +97,7 @@ public class Example extends SimpleApplication {
 
 For more examples of working games built with MonkeyBrains see:
 https://github.com/QuietOne/MonkeyBrainsDemoGames
+
+##Suggestions and questions:
+If you have suggestion or any questions, please see forum:
+http://hub.jmonkeyengine.org/forum/board/projects/monkeybrains/

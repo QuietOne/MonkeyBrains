@@ -5,29 +5,29 @@ MonkeyBrains is a sophisticated AI Engine for jMonkeyEngine. It uses an agent fr
 ##Basic concepts
 
 ###Agent<T>
-wrapper class for agent. It contains attributes and operations on those attributes. It is not recommended for extending. Instead of extending, you can use method setModel(T model) and set your attributes for agent.
+Wrapper class for agent. It contains attributes and operations on those attributes. It is not recommended for extending. Instead of extending, you can use method setModel(T model) and set your attributes for agent.
 Team – agent’s team. It contains attributes of team. By default team name is unique ID used for calculating friendly fire if it is off (agent can’t damage agent from its own team)
 
 ###Behaviour
-base class for agent behaviours. Every behavior that is made must extend this class. Every behavior then must implement controlUpdate(float tpf) and controlRender(RenderManager rm, ViewPort vp). Those have been requested by com.jme3.scene.control.AbstractControl, which behaviour is extending. Also class that is extending Behaviour must have constructor that contains agent as input. With this, behaviour can change attributes of agent that is behaving. In com.jme3.ai.agents.behaviours.npc you can see examples of some simple behaviours that are easy for using for your NPC (Non-player character) agents. In com.jme3.ai.agents.behaviours.player are some simple behaviours adequate for player agents.
+Base class for agent behaviours. Every behavior that is made must extend this class. Every behavior then must implement ```java controlUpdate(float tpf)``` and ```java controlRender(RenderManager rm, ViewPort vp)```. Those have been requested by ```java com.jme3.scene.control.AbstractControl```, which behaviour is extending. Also class that is extending Behaviour must have constructor that contains agent as input. With this, behaviour can change attributes of agent that is behaving. In ```java com.jme3.ai.agents.behaviours.npc``` you can see examples of some simple behaviours that are easy for using for your NPC (Non-player character) agents. In ```java com.jme3.ai.agents.behaviours.player``` are some simple behaviours adequate for player agents.
 
 ###GameObject
-class for all objects in game, that can be updated or destroyed. Example for these would be: Items, bullets, obstacles, agent (agent extends GameObjects)…
+Class for all objects in game, that can be updated or destroyed. Example for these would be: Items, bullets, obstacles, agent (agent extends GameObjects)…
 
 ###Game
-singleton class that contains all GameObjects and updated them. It is built for easier manipulation of agents.
+Singleton class that contains all GameObjects and updated them. It is built for easier manipulation of agents.
 
 ###GameControl
-interface that is added to Game for additional manipulation of game.
+Interface that is added to Game for additional manipulation of game.
 
 ###GameObjectEvent
 MonkeyBrains is event-based framework and GameObjectEvent is base class for all other events. It is recommended that first layer of extending GameObjectEvent be other event that is generic for all other GameObjects like GameObjectSeenEvent and then extending GameObjectSeenEvent with events like AgentSeenEvent, ItemSeenEvent…
 
 ###AbstractWeapon and AbstractBullet
-classes that also extend GameObject. Because MonkeyBrains will be used for games, agent contains attribute weapon and using attack behaviours will attack with that weapon. Use these class for making your weapons and bullets that will come out of those weapons.
+Classes that also extend GameObject. Because MonkeyBrains will be used for games, agent contains attribute weapon and using attack behaviours will attack with that weapon. Use these class for making your weapons and bullets that will come out of those weapons.
 
 ##Code example for agent:
-'''
+```java
 public class Example extends SimpleApplication {
 
     Game game = Game.getInstance(); //creating game
@@ -91,7 +91,7 @@ public class Example extends SimpleApplication {
         game.update(tpf);
     }
 }
-'''
+```
 
 ##Working games:
 

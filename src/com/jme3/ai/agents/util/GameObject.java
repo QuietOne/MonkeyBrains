@@ -20,7 +20,7 @@ import com.jme3.scene.control.AbstractControl;
  * @version 1.0
  */
 public abstract class GameObject extends AbstractControl {
-
+     
     /**
      * Mass of GameObject.
      */

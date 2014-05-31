@@ -1,3 +1,5 @@
+//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
@@ -11,7 +13,8 @@ import com.jme3.scene.Spatial;
  * attributes that are all common for steering behaviours.
  *
  * @author Tihomir Radosavljević
- * @version 1.0
+ * @author Jesús Martín Berlanga
+ * @version 1.1
  */
 public abstract class AbstractSteeringBehaviour extends Behaviour {
 
@@ -36,14 +39,28 @@ public abstract class AbstractSteeringBehaviour extends Behaviour {
      * @return
      */
     protected abstract Vector3f calculateSteering();
-
+    
     /**
      * Method for calculating new velocity of agent based on steering vector.
-     *
+     * 
      * @see AbstractSteeringBehaviour#calculateSteering()
-     * @return
+     * 
+     * @return The new velocity for this agent based on steering vector
+     * 
+     * @author Jesús Martín Berlanga
+     * @author Tihomir Radosavljević
      */
-    protected abstract Vector3f calculateNewVelocity();
+    protected Vector3f calculateNewVelocity() {
+
+        agent.setAcceleration(this.calculateSteering().mult(1 / agentTotalMass()));
+        velocity = velocity.add(agent.getAcceleration());
+        
+        if (velocity.length() > agent.getMaxMoveSpeed()) 
+            velocity = velocity.normalize().mult(agent.getMaxMoveSpeed());
+        
+        return velocity;
+        
+    }
 
     /**
      * Method for rotating agent in direction of velocity of agent.

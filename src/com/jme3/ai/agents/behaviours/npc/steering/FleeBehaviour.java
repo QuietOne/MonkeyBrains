@@ -1,3 +1,5 @@
+//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
@@ -12,9 +14,10 @@ import com.jme3.scene.Spatial;
  * points in the opposite direction.
  *
  * @author Tihomir Radosavljević
- * @version 1.0
+ * @author Jesús Martín Berlanga
+ * @version 1.1
  */
-public class FleeBehaviour extends AbstractSteeringBehaviour {
+public class FleeBehaviour extends AbstractStrengthSteeringBehaviour {
 
     /**
      * Agent from whom we flee.
@@ -52,28 +55,12 @@ public class FleeBehaviour extends AbstractSteeringBehaviour {
      * Calculate steering vector.
      *
      * @return steering vector
+     * 
+     * @see AbstractStrengthSteeringBehaviour#calculateFullSteering() 
      */
-    protected Vector3f calculateSteering() {
+    protected Vector3f calculateFullSteering() {
         Vector3f desiredVelocity = target.getLocalTranslation().subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
         return desiredVelocity.subtract(velocity).negate();
-    }
-
-    /**
-     * Calculate new velocity for agent based on calculated steering behaviour.
-     *
-     * @return velocity vector
-     */
-    protected Vector3f calculateNewVelocity() {
-        Vector3f steering = calculateSteering();
-        if (steering.length() > agent.getMaxForce()) {
-            steering = steering.normalize().mult(agent.getMaxForce());
-        }
-        agent.setAcceleration(steering.mult(1 / agentTotalMass()));
-        velocity = velocity.add(agent.getAcceleration());
-        if (velocity.length() > agent.getMaxMoveSpeed()) {
-            velocity = velocity.normalize().mult(agent.getMaxMoveSpeed());
-        }
-        return velocity;
     }
 
     /**

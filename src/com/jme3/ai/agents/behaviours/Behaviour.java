@@ -11,7 +11,7 @@ import com.jme3.scene.control.AbstractControl;
  * @version 1.0
  */
 public abstract class Behaviour extends AbstractControl {
-
+    
     /**
      * Agent to whom behaviour belongs.
      */

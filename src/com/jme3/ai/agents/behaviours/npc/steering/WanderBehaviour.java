@@ -1,3 +1,5 @@
+//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
@@ -14,9 +16,10 @@ import java.util.Random;
  * target for this behaviour are random positions that changes durring time.
  *
  * @author Tihomir Radosavljević
- * @version 1.0
+ * @author Jesús Martín Berlanga
+ * @version 1.1
  */
-public class WanderBehaviour extends AbstractSteeringBehaviour {
+public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
 
     /**
      * Position of target
@@ -78,27 +81,9 @@ public class WanderBehaviour extends AbstractSteeringBehaviour {
      *
      * @return steering vector
      */
-    protected Vector3f calculateSteering() {
+    protected Vector3f calculateFullSteering() {
         Vector3f desiredVelocity = targetPosition.subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
         return desiredVelocity.subtract(velocity);
-    }
-
-    /**
-     * Calculate new velocity for agent based on calculated steering behaviour.
-     *
-     * @return velocity vector
-     */
-    protected Vector3f calculateNewVelocity() {
-        Vector3f steering = calculateSteering();
-        if (steering.length() > agent.getMaxForce()) {
-            steering = steering.normalize().mult(agent.getMaxForce());
-        }
-        agent.setAcceleration(steering.mult(1 / agentTotalMass()));
-        velocity = velocity.add(agent.getAcceleration());
-        if (velocity.length() > agent.getMaxMoveSpeed()) {
-            velocity = velocity.normalize().mult(agent.getMaxMoveSpeed());
-        }
-        return velocity;
     }
 
     /**

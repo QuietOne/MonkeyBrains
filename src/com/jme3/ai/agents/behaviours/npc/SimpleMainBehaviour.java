@@ -27,6 +27,7 @@ public class SimpleMainBehaviour extends Behaviour {
      * @see LinkedList
      */
     protected List<Behaviour> behaviours;
+
     /**
      * Instance of game. Main behaviour will not work if game is over.
      *
@@ -51,7 +52,7 @@ public class SimpleMainBehaviour extends Behaviour {
     protected void controlUpdate(float tpf) {
         for (Behaviour behaviour : behaviours) {
             behaviour.update(tpf);
-        }
+        } 
     }
 
     @Override

@@ -1,3 +1,5 @@
+//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
@@ -11,9 +13,10 @@ import com.jme3.scene.Spatial;
  * object. Basically it's movement behaviour.
  *
  * @author Tihomir Radosavljević
- * @version 1.0
+ * @author Jesús Martín Berlanga
+ * @version 1.1
  */
-public class SeekBehaviour extends AbstractSteeringBehaviour {
+public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
 
     /**
      * Agent whom we seek.
@@ -44,37 +47,23 @@ public class SeekBehaviour extends AbstractSteeringBehaviour {
     }
 
     @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
-    }
+    protected void controlRender(RenderManager rm, ViewPort vp) { }
 
     /**
      * Calculate steering vector.
      *
      * @return steering vector
+     * 
+     * @see AbstractStrengthSteeringBehaviour#calculateFullSteering() 
+     * 
+     * @author Tihomir Radosavljević
+     * @author Jesús Martín Berlanga
      */
-    protected Vector3f calculateSteering() {
+    protected Vector3f calculateFullSteering() {
         Vector3f desiredVelocity = target.getLocalTranslation().subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
         return desiredVelocity.subtract(velocity);
     }
-
-    /**
-     * Calculate new velocity for agent based on calculated steering behaviour.
-     *
-     * @return velocity vector
-     */
-    protected Vector3f calculateNewVelocity() {
-        Vector3f steering = calculateSteering();
-        if (steering.length() > agent.getMaxForce()) {
-            steering = steering.normalize().mult(agent.getMaxForce());
-        }
-        agent.setAcceleration(steering.mult(1 / agentTotalMass()));
-        velocity = velocity.add(agent.getAcceleration());
-        if (velocity.length() > agent.getMaxMoveSpeed()) {
-            velocity = velocity.normalize().mult(agent.getMaxMoveSpeed());
-        }
-        return velocity;
-    }
-
+    
     /**
      * Get agent from we seek.
      *

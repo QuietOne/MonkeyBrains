@@ -1,3 +1,5 @@
+//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+
 package com.jme3.ai.agents;
 
 import com.jme3.ai.agents.behaviours.Behaviour;
@@ -5,6 +7,7 @@ import com.jme3.ai.agents.behaviours.npc.SimpleMainBehaviour;
 import com.jme3.scene.Spatial;
 import com.jme3.ai.agents.util.AbstractWeapon;
 import com.jme3.ai.agents.util.GameObject;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -14,11 +17,14 @@ import com.jme3.scene.Node;
  * Class that represents Agent. Note: Not recommended for extending. Use
  * generics.
  *
+ * @author Jesús Martín Berlanga
  * @author Tihomir Radosavljević
- * @version 1.0
+ * @version 1.1
  */
 public class Agent<T> extends GameObject {
 
+    private float tpf;
+    
     /**
      * Class that enables you to add all variable you need for your agent.
      */
@@ -179,9 +185,16 @@ public class Agent<T> extends GameObject {
         }
         return true;
     }
-
+    
+    /**
+     * @author Tihomir Radosavljević
+     * @author Jesús Martín Berlanga
+     */ 
     @Override
     protected void controlUpdate(float tpf) {
+        
+        this.tpf = tpf;
+        
         if (mainBehaviour != null) {
             mainBehaviour.update(tpf);
         }
@@ -189,6 +202,40 @@ public class Agent<T> extends GameObject {
         if (weapon != null) {
             weapon.update(tpf);
         }
+    }
+    
+    /**
+     * Calculates the projected location in relation with other target
+     * 
+     * @param target The other agent
+     * @return The projected location in relation with other target
+     * 
+     * @author Jesús Martín Berlanga
+     */
+    public Vector3f calculateProjectedLocation(Agent target) {
+        float targetSpeed = target.getMoveSpeed();
+        float speedDiff = targetSpeed - this.getMoveSpeed();
+        float desiredSpeed = (targetSpeed + speedDiff) * this.tpf;
+     
+        if(target.getAcceleration() == null)
+             target.setAcceleration(new Vector3f());
+        
+        return target.getLocalTranslation().add(target.getAcceleration().mult(desiredSpeed));
+    } 
+  
+    
+   /**
+    * Gets the predicted position for this 'frame', 
+    * taking into account current position and velocity.
+    * 
+    * @author Jesús Martín Berlanga
+    */
+    public Vector3f getPredictedPosition() {
+        
+       if(this.getAcceleration() == null)
+            this.setAcceleration(new Vector3f());
+        
+       return this.getLocalTranslation().add(this.getAcceleration());
     }
 
     @Override

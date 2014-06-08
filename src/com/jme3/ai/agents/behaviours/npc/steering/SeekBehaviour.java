@@ -14,7 +14,7 @@ import com.jme3.scene.Spatial;
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
- * @version 1.1
+ * @version 1.2
  */
 public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
 
@@ -61,7 +61,12 @@ public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
      */
     protected Vector3f calculateFullSteering() {
         Vector3f desiredVelocity = target.getLocalTranslation().subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
-        return desiredVelocity.subtract(velocity);
+        Vector3f aVelocity = this.agent.getVelocity();
+        
+        if(aVelocity == null)
+            aVelocity = new Vector3f();
+        
+        return desiredVelocity.subtract(aVelocity);
     }
     
     /**

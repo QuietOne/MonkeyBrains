@@ -1,3 +1,5 @@
+//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+
 package com.jme3.ai.agents.util;
 
 import com.jme3.math.Quaternion;
@@ -17,10 +19,23 @@ import com.jme3.scene.control.AbstractControl;
  * @see Game#addGameObject(com.jme3.ai.agents.util.GameObject)
  *
  * @author Tihomir Radosavljević
- * @version 1.0
+ * @author Jesús Martín Berlanga
+ * @version 1.1
  */
 public abstract class GameObject extends AbstractControl {
      
+    /**
+     * Container for the velocity of the game object
+     * @author Jesús Martín Berlanga 
+     */
+    protected Vector3f velocity;
+    
+    /** @author Jesús Martín Berlanga */
+    public void setVelocity(Vector3f velocity){ this.velocity = velocity; }
+    
+    /** @author Jesús Martín Berlanga */
+    public Vector3f getVelocity() { return this.velocity; }
+    
     /**
      * Mass of GameObject.
      */

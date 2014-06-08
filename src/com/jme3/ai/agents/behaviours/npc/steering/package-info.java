@@ -6,7 +6,7 @@
  * Basic steering behaviour ai structure provided by Tihomir Radosavljević. 
  * Incorporate full steer behaviour project into MonkeyBrains by Jesús Martín Berlanga.
  * 
- * @version 1.5
+ * @version 1.6
  * 
  * @author Jesús Martin Berlanga
  * @author Tihomir Radosavljević

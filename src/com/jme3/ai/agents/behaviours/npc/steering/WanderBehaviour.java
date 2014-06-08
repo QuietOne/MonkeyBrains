@@ -17,7 +17,7 @@ import java.util.Random;
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
- * @version 1.1
+ * @version 1.2
  */
 public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
 
@@ -49,7 +49,7 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
         velocity = new Vector3f();
         timeInterval = 2f;
         time = timeInterval;
-        area = new Vector3f[2];
+        this.area = new Vector3f[] {Vector3f.ZERO, Vector3f.POSITIVE_INFINITY };
     }
 
     /**
@@ -57,6 +57,9 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
      *
      * @param agent to whom behaviour belongs
      * @param spatial active spatial during excecution of behaviour
+     * 
+     * @author Tihomir Radosavljević
+     * @author Jesús Martín Berlanga
      */
     public WanderBehaviour(Agent agent, Spatial spatial) {
         super(agent, spatial);
@@ -64,12 +67,7 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
         velocity = new Vector3f();
         timeInterval = 2f;
         time = timeInterval;
-    }
-
-    @Override
-    protected void controlUpdate(float tpf) {
-        changeTargetPosition(tpf);
-        super.controlUpdate(tpf);
+        this.area = new Vector3f[] {Vector3f.ZERO, Vector3f.POSITIVE_INFINITY };
     }
 
     @Override
@@ -80,10 +78,14 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
      * Calculate steering vector.
      *
      * @return steering vector
+     * 
+     * @author Jesús Martín Berlanga
      */
     protected Vector3f calculateFullSteering() {
+        changeTargetPosition(this.getTPF());
         Vector3f desiredVelocity = targetPosition.subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
-        return desiredVelocity.subtract(velocity);
+        desiredVelocity.subtract(velocity);     
+        return desiredVelocity;
     }
 
     /**

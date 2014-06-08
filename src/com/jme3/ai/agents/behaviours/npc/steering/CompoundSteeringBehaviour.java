@@ -22,9 +22,20 @@ import java.util.List;
  * AbstractSteeringBehaviour.
  * 
  * @author Jesús Martín Berlanga
+ * @version 1.1
  */
 public class CompoundSteeringBehaviour extends AbstractSteeringBehaviour {
-
+    
+    /** @see AbstractSteeringBehaviour#freezeTheMovement */
+    @Override
+    public void setFreezeTheMovement(boolean freezeTheMovement) { 
+        this.freezeTheMovement = freezeTheMovement;
+        
+        if(freezeTheMovement == true)
+          for(AbstractSteeringBehaviour steerBehaviour : behaviours)
+              steerBehaviour.setFreezeTheMovement(freezeTheMovement);
+    }
+    
     private List<AbstractSteeringBehaviour> behaviours;
     
     protected List<AbstractSteeringBehaviour> getBehaviours() {
@@ -68,10 +79,18 @@ public class CompoundSteeringBehaviour extends AbstractSteeringBehaviour {
     protected Vector3f calculateSteering() {
         
         Vector3f totalForce = new Vector3f();
-        
+         
         for(AbstractSteeringBehaviour steerBehaviour : behaviours)
         {
-            totalForce = totalForce.add(this.calculatePartialForce(steerBehaviour));
+            this.setFreezeTheMovement(false);
+            
+            if(steerBehaviour.getFreezeTheMovement() == false)
+                 totalForce = totalForce.add(this.calculatePartialForce(steerBehaviour));
+            else
+            { 
+                this.setFreezeTheMovement(true);
+                break;
+            }
         }
         
         return totalForce;
@@ -89,4 +108,18 @@ public class CompoundSteeringBehaviour extends AbstractSteeringBehaviour {
 
     protected void controlRender(RenderManager rm, ViewPort vp) {  }
 
+    /**
+     * Usual update pattern for steering behaviours.
+     *
+     * @param tpf
+     */
+    @Override
+    protected void controlUpdate(float tpf) {
+        
+        for(AbstractSteeringBehaviour steerBehaviour : behaviours)
+            steerBehaviour.setTPF(tpf);
+        
+        super.controlUpdate(tpf);
+    }
+    
 }

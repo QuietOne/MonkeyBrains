@@ -27,7 +27,7 @@ import java.util.List;
  * ignore anything behind the character."
  * 
  * @author Jesús Martín Berlanga
- * @version 1.1
+ * @version 1.2
  */
 public class SeparationBehaviour extends AbstractStrengthSteeringBehaviour {
     
@@ -50,7 +50,7 @@ public class SeparationBehaviour extends AbstractStrengthSteeringBehaviour {
      * @param spatial active spatial during excecution of behaviour
      * @see SeparationBehaviour#SeparationBehaviour(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent[]) 
      */
-    public SeparationBehaviour(Agent agent, List<Agent> initialObstacles, Spatial spatial) {
+    public SeparationBehaviour(Agent agent, Spatial spatial, List<Agent> initialObstacles) {
         super(agent, spatial);
         this.obstacles = initialObstacles;
     }

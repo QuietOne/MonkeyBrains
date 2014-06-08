@@ -7,6 +7,7 @@ import com.jme3.ai.agents.behaviours.npc.SimpleMainBehaviour;
 import com.jme3.scene.Spatial;
 import com.jme3.ai.agents.util.AbstractWeapon;
 import com.jme3.ai.agents.util.GameObject;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
@@ -19,12 +20,11 @@ import com.jme3.scene.Node;
  *
  * @author Jesús Martín Berlanga
  * @author Tihomir Radosavljević
- * @version 1.1
+ * @version 1.2
  */
 public class Agent<T> extends GameObject {
-
-    private float tpf;
     
+    private float tpf;
     /**
      * Class that enables you to add all variable you need for your agent.
      */
@@ -53,6 +53,26 @@ public class Agent<T> extends GameObject {
      * Camera that is attached to agent.
      */
     private Camera camera;
+    /**
+     * Size of bounding sphere, for steer behaviours
+     *
+     * @author Jesús Martín Berlanga
+     */
+    float radius = 0;
+
+    /**
+     * @author Jesús Martín Berlanga
+     */
+    public void setRadius(float radius) {
+        this.radius = radius;
+    }
+
+    /**
+     * @author Jesús Martín Berlanga
+     */
+    public float getRadius() {
+        return this.radius;
+    }
 
     /**
      * @param name unique name/id of agent
@@ -159,7 +179,7 @@ public class Agent<T> extends GameObject {
     public void setModel(T model) {
         this.model = model;
     }
-
+    
     @Override
     public int hashCode() {
         int hash = 7;
@@ -167,7 +187,7 @@ public class Agent<T> extends GameObject {
         hash = 47 * hash + (this.team != null ? this.team.hashCode() : 0);
         return hash;
     }
-
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -185,11 +205,11 @@ public class Agent<T> extends GameObject {
         }
         return true;
     }
-    
+
     /**
      * @author Tihomir Radosavljević
      * @author Jesús Martín Berlanga
-     */ 
+     */
     @Override
     protected void controlUpdate(float tpf) {
         
@@ -203,41 +223,42 @@ public class Agent<T> extends GameObject {
             weapon.update(tpf);
         }
     }
-    
+
     /**
      * Calculates the projected location in relation with other target
-     * 
+     *
      * @param target The other agent
      * @return The projected location in relation with other target
-     * 
+     *
      * @author Jesús Martín Berlanga
      */
     public Vector3f calculateProjectedLocation(Agent target) {
         float targetSpeed = target.getMoveSpeed();
         float speedDiff = targetSpeed - this.getMoveSpeed();
         float desiredSpeed = (targetSpeed + speedDiff) * this.tpf;
-     
-        if(target.getAcceleration() == null)
-             target.setAcceleration(new Vector3f());
+        
+        if (target.getAcceleration() == null) {
+            target.setAcceleration(new Vector3f());
+        }
         
         return target.getLocalTranslation().add(target.getAcceleration().mult(desiredSpeed));
-    } 
-  
-    
-   /**
-    * Gets the predicted position for this 'frame', 
-    * taking into account current position and velocity.
-    * 
-    * @author Jesús Martín Berlanga
-    */
-    public Vector3f getPredictedPosition() {
-        
-       if(this.getAcceleration() == null)
-            this.setAcceleration(new Vector3f());
-        
-       return this.getLocalTranslation().add(this.getAcceleration());
     }
 
+    /**
+     * Gets the predicted position for this 'frame', taking into account current
+     * position and velocity.
+     *
+     * @author Jesús Martín Berlanga
+     */
+    public Vector3f getPredictedPosition() {
+        
+        if (this.getAcceleration() == null) {
+            this.setAcceleration(new Vector3f());
+        }
+        
+        return this.getLocalTranslation().add(this.getAcceleration());
+    }
+    
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
         throw new UnsupportedOperationException("You should override it youself");
@@ -284,5 +305,139 @@ public class Agent<T> extends GameObject {
      */
     public void setCamera(Camera camera) {
         this.camera = camera;
+    }
+
+    /**
+     * Check if this agent is considered in the same "neighborhood" in relation
+     * with another agent. <br> <br>
+     *
+     * If the distance is lower than minDistance It is definitely considered in
+     * the same neighborhood. <br> <br>
+     *
+     * If the distance is higher than maxDistance It is defenitely not
+     * considered in the same neighborhood. <br> <br>
+     *
+     * If the distance is inside [minDistance. maxDistance] It is considered in
+     * teh same neighborhood if the forwardness is higher than the 1 -
+     * sinMaxAngle.
+     *
+     * @param Agent The other agent
+     * @param minDistance Min. distance to be in the same "neighborhood"
+     * @param maxDistance Max. distance to be in the same "neighborhood"
+     * @param MaxAngle Max angle in radians
+     *
+     * @author Jesús Martín Berlanga
+     */
+    public boolean inBoidNeighborhood(
+            Agent neighbour,
+            float minDistance,
+            float maxDistance,
+            float MaxAngle) {
+        boolean isInBoidNeighborhood;
+        
+        if (this == neighbour) {
+            isInBoidNeighborhood = false;
+        } else {
+            float distanceSquared = this.distanceSquaredRelativeToAgent(neighbour);
+
+            // definitely in neighborhood if inside minDistance sphere
+            if (distanceSquared < (minDistance * minDistance)) {
+                isInBoidNeighborhood = true;
+            } // definitely not in neighborhood if outside maxDistance sphere
+            else if (distanceSquared > maxDistance * maxDistance) {
+                isInBoidNeighborhood = false;
+            } // otherwise, test angular offset from forward axis.
+            else {
+                
+                if(this.getAcceleration() != null)
+                {
+                    Vector3f unitOffset = this.offset(neighbour).divide(distanceSquared);
+                    float forwardness = this.forwardness(unitOffset);
+                    isInBoidNeighborhood = forwardness > FastMath.cos(MaxAngle);
+                //    System.out.println("Offset:" + unitOffset + ";Fordwardness = " + forwardness + "; cosMaxAngle =" + FastMath.cos(MaxAngle) + "; " + isInBoidNeighborhood);//debug
+                }
+                else
+                {
+                    isInBoidNeighborhood = false;
+                }
+            }
+        }
+        
+        return isInBoidNeighborhood;
+    }
+
+    /**
+     * Calculates the forwardness in relation with another agent. That is how
+     * "forward" is the direction to the quarry (1 means dead ahead, 0 is
+     * directly to the side, -1 is straight back)
+     *
+     * @param agent Other agent
+     * @return The forwardness in relation with another agent
+     *
+     * @author Jesús Martín Berlanga
+     */
+    public float forwardness(Agent agent) 
+    {
+        Vector3f agentLooks = this.fordwardVector();
+        float radiansAngleBetwen = agentLooks.angleBetween(this.offset(agent).normalize()); 
+        return (float) FastMath.cos(radiansAngleBetwen); 
+    }
+    
+    public Vector3f fordwardVector() {
+        return this.getLocalRotation().mult(new Vector3f(0,0,1)).normalize();
+    }
+
+    /**
+     * Calculates the forwardness in relation with a position vector
+     *
+     * @param positionVector Offset vector.
+     * @see Agent#forwardness(com.jme3.ai.agents.Agent)
+     *
+     * @author Jesús Martín Berlanga
+     */
+    public float forwardness(Vector3f offsetVector) {
+        Vector3f agentLooks = this.getLocalRotation().mult(new Vector3f(0,0,1)).normalize();
+        float radiansAngleBetwen = agentLooks.angleBetween(offsetVector.normalize());
+        return FastMath.cos(radiansAngleBetwen); 
+    }
+
+    /**
+     * @param agent Other agent
+     * @return Distance relative to another Agent
+     *
+     * @author Jesús Martín Berlanga
+     */
+    public float distanceRelativeToAgent(Agent agent) {
+        return this.offset(agent).length();
+    }
+
+    /**
+     * @param agent Other agent
+     * @return Distance squared relative to another Agent
+     *
+     * @author Jesús Martín Berlanga
+     */
+    public float distanceSquaredRelativeToAgent(Agent agent) {
+        return this.offset(agent).lengthSquared();
+    }
+
+    /**
+     * @param agent Other agent
+     * @return The offset relative to another Agent
+     *
+     * @author Jesús Martín Berlanga
+     */
+    public Vector3f offset(Agent agent) {
+        return agent.getLocalTranslation().subtract(this.getLocalTranslation());
+    }
+    
+    /**
+     * @param agent Other agent
+     * @return The offset relative to an position vector
+     *
+     * @author Jesús Martín Berlanga
+     */
+    public Vector3f offset(Vector3f positionVector) {
+        return positionVector.subtract(this.getLocalTranslation());
     }
 }

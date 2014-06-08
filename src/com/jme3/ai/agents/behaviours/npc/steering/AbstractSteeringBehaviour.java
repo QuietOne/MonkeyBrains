@@ -14,10 +14,35 @@ import com.jme3.scene.Spatial;
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
- * @version 1.1
+ * @version 1.2
  */
 public abstract class AbstractSteeringBehaviour extends Behaviour {
 
+    /**
+     * If this is true the new Velocity upated in controlUpdate will be (0,0,0)
+     * 
+     * @author Jesús Martín Berlanga
+     */
+    protected boolean freezeTheMovement = false;
+    
+    /** @author Jesús Martín Berlanga */
+    public void setFreezeTheMovement(boolean freezeTheMovement) { this.freezeTheMovement = freezeTheMovement; }
+    
+    /** @author Jesús Martín Berlanga */
+    public boolean getFreezeTheMovement() { return this.freezeTheMovement; }
+    
+    private float tpf;
+    
+    /** @author Jesús Martín Berlanga */
+    public float getTPF(){ return this.tpf; }
+    
+    /**
+     * Manually update the tpf
+     * @param tpf tpf
+     * @author Jesús Martín Berlanga
+     */
+    public void setTPF(float tpf) { this.tpf = tpf; }
+    
     /**
      * Velocity of our agent.
      */
@@ -50,16 +75,16 @@ public abstract class AbstractSteeringBehaviour extends Behaviour {
      * @author Jesús Martín Berlanga
      * @author Tihomir Radosavljević
      */
-    protected Vector3f calculateNewVelocity() {
-
+    protected Vector3f calculateNewVelocity() 
+    {
         agent.setAcceleration(this.calculateSteering().mult(1 / agentTotalMass()));
         velocity = velocity.add(agent.getAcceleration());
-        
+        agent.setVelocity(velocity);
+  
         if (velocity.length() > agent.getMaxMoveSpeed()) 
             velocity = velocity.normalize().mult(agent.getMaxMoveSpeed());
         
         return velocity;
-        
     }
 
     /**
@@ -110,10 +135,21 @@ public abstract class AbstractSteeringBehaviour extends Behaviour {
      * Usual update pattern for steering behaviours.
      *
      * @param tpf
+     * 
+     * @author Jesús Martín Berlanga
+     * @author Tihomir Radosavljević
      */
     @Override
     protected void controlUpdate(float tpf) {
-        Vector3f vel = calculateNewVelocity().mult(tpf);
+        this.tpf = tpf;
+        
+        Vector3f vel = new Vector3f();
+        
+        if(this.freezeTheMovement == false)
+        {
+             vel = calculateNewVelocity().mult(tpf);
+        }
+
         agent.setLocalTranslation(agent.getLocalTranslation().add(vel));
         rotateAgent(tpf);
     }

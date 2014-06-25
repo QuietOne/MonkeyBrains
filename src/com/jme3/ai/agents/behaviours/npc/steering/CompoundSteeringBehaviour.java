@@ -22,30 +22,13 @@ import java.util.List;
  * AbstractSteeringBehaviour.
  * 
  * @author Jesús Martín Berlanga
- * @version 1.1
+ * @version 1.2
  */
 public class CompoundSteeringBehaviour extends AbstractSteeringBehaviour {
     
-    /** @see AbstractSteeringBehaviour#freezeTheMovement */
-    @Override
-    public void setFreezeTheMovement(boolean freezeTheMovement) { 
-        this.freezeTheMovement = freezeTheMovement;
-        
-        if(freezeTheMovement == true)
-          for(AbstractSteeringBehaviour steerBehaviour : behaviours)
-              steerBehaviour.setFreezeTheMovement(freezeTheMovement);
-    }
-    
-    private List<AbstractSteeringBehaviour> behaviours;
-    
-    protected List<AbstractSteeringBehaviour> getBehaviours() {
-        return this.behaviours;
-    }
-    
-    public void setSteerBehaviours(List<AbstractSteeringBehaviour> behaviours) {
-        this.behaviours = behaviours;
-    }
-    
+    /** Partial behaviours */
+    protected List<AbstractSteeringBehaviour> behaviours;
+       
     /** @see  AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent)  */
     public CompoundSteeringBehaviour(Agent agent) 
     { 
@@ -61,14 +44,15 @@ public class CompoundSteeringBehaviour extends AbstractSteeringBehaviour {
     }
     
     /**
-     * Adds a behaviour to the compound behaviour
+     * Adds a behaviour to the compound behaviour.  
      * 
      * @param behaviour Behaviour that you want to add
      */
     public void addSteerBehaviour (AbstractSteeringBehaviour behaviour) {
         this.behaviours.add(behaviour);
-    }
-
+        behaviour.setIsAPartialSteer(true);
+        behaviour.setContainer(this);
+    }  
 
     /**
      * Calculates the composed steering force. The composed force is the sumatory
@@ -82,15 +66,7 @@ public class CompoundSteeringBehaviour extends AbstractSteeringBehaviour {
          
         for(AbstractSteeringBehaviour steerBehaviour : behaviours)
         {
-            this.setFreezeTheMovement(false);
-            
-            if(steerBehaviour.getFreezeTheMovement() == false)
                  totalForce = totalForce.add(this.calculatePartialForce(steerBehaviour));
-            else
-            { 
-                this.setFreezeTheMovement(true);
-                break;
-            }
         }
         
         return totalForce;

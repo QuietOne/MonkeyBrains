@@ -4,9 +4,11 @@
  * Steer behaviours. 
  * 
  * Basic steering behaviour ai structure provided by Tihomir Radosavljević. 
- * Incorporate full steer behaviour project into MonkeyBrains by Jesús Martín Berlanga.
+ * Incorporate full steer behaviour project into MonkeyBrains by Jesús Martín Berlanga. <br> <br>
  * 
- * @version 1.6
+ * For more information visit: http://jmesteer.bdevel.org/
+ * 
+ * @version 1.7
  * 
  * @author Jesús Martin Berlanga
  * @author Tihomir Radosavljević

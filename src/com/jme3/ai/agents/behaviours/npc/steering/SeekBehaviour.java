@@ -10,11 +10,14 @@ import com.jme3.scene.Spatial;
 
 /**
  * Purpose of seek behaviour is to steer agent towards a specified position or
- * object. Basically it's movement behaviour.
+ * object. Basically it's movement behaviour. <br> <br>
+ * 
+ * Jesús Martín Berlanga: "You can seek another agent or a specific 
+ * space location".
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
- * @version 1.2
+ * @version 1.3
  */
 public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
 
@@ -22,6 +25,8 @@ public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
      * Agent whom we seek.
      */
     private Agent target;
+    
+    private Vector3f seekingPos;
 
     /**
      * Constructor for seek behaviour.
@@ -33,12 +38,35 @@ public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
         super(agent);
         this.target = target;
     }
+    
+    /**
+     * Constructor for seek behaviour.
+     *
+     * @param agent to whom behaviour belongs
+     * @param seekingPos position that we seek
+     */
+    public SeekBehaviour(Agent agent, Vector3f seekingPos) {
+        super(agent);
+        this.seekingPos = seekingPos;
+    }
 
     /**
      * Constructor for seek behaviour.
      *
      * @param agent to whom behaviour belongs
      * @param target agent from we seek
+     * @param spatial active spatial during excecution of behaviour
+     */
+    public SeekBehaviour(Agent agent, Vector3f seekingPos, Spatial spatial) {
+        super(agent, spatial);
+        this.seekingPos = seekingPos;
+    }
+    
+    /**
+     * Constructor for seek behaviour.
+     *
+     * @param agent to whom behaviour belongs
+     * @param seekingPos position that we seek
      * @param spatial active spatial during excecution of behaviour
      */
     public SeekBehaviour(Agent agent, Agent target, Spatial spatial) {
@@ -59,8 +87,17 @@ public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
      * @author Tihomir Radosavljević
      * @author Jesús Martín Berlanga
      */
-    protected Vector3f calculateFullSteering() {
-        Vector3f desiredVelocity = target.getLocalTranslation().subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
+    protected Vector3f calculateFullSteering()
+    {
+        Vector3f desiredVelocity;
+        
+        if(this.target != null)
+            desiredVelocity = target.getLocalTranslation().subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
+        else if(this.seekingPos != null)
+            desiredVelocity = this.seekingPos.subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
+        else
+            return new Vector3f(); //We do not have a target or position to seek
+            
         Vector3f aVelocity = this.agent.getVelocity();
         
         if(aVelocity == null)
@@ -85,5 +122,13 @@ public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
      */
     public void setTarget(Agent target) {
         this.target = target;
+        this.seekingPos = null;
+    }
+    
+    public Vector3f getSeekingPos() { return this.seekingPos; }
+    
+    public void setSeekingPos(Vector3f seekingPos) {
+        this.seekingPos = seekingPos; 
+        this.target = null;
     }
 }

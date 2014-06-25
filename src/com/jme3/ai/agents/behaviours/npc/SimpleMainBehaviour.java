@@ -1,3 +1,5 @@
+//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+
 package com.jme3.ai.agents.behaviours.npc;
 
 import com.jme3.ai.agents.Agent;
@@ -11,10 +13,13 @@ import java.util.List;
 
 /**
  * Simple main behaviour for NPC. Main behaviour contains other Behaviours and
- * if active it will update all behavioour that are enabled.
- *
+ * if active it will update all behavioour that are enabled. <br> <br>
+ * 
+ * Jesús Martín Berlanga: "You can only add one steer behaviour to this container. But you can use
+ * CompoundSteeringBehaviour to merge many steer behaviours."
+ * 
  * @author Tihomir Radosavljević
- * @version 1.0
+ * @version 1.1
  */
 public class SimpleMainBehaviour extends Behaviour {
 

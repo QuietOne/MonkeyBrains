@@ -20,6 +20,7 @@ import java.util.List;
  * @see CompoundSteeringBehaviour
  *
  * @author Jesús Martín Berlanga
+ * @version 1.1
  */
 public class BalancedCompoundSteeringBehaviour extends CompoundSteeringBehaviour {
     
@@ -46,14 +47,7 @@ public class BalancedCompoundSteeringBehaviour extends CompoundSteeringBehaviour
         super(agent, spatial);
         this.strengthIsBalanced = true;
     }
-    
-    /** @see BalancedCompoundSteeringBehaviour#setSteerBehaviours(java.util.List)  */
-    @Override
-    public void setSteerBehaviours(List<AbstractSteeringBehaviour> behaviours) {
-        super.setSteerBehaviours(behaviours);
-        this.numberOfBehaviours = behaviours.size();
-    }
-    
+       
     /** @see BalancedCompoundSteeringBehaviour#addSteerBehaviour(com.jme3.ai.agents.behaviours.npc.steering.AbstractSteeringBehaviour)   */
     @Override
     public void addSteerBehaviour (AbstractSteeringBehaviour behaviour) {
@@ -88,7 +82,7 @@ public class BalancedCompoundSteeringBehaviour extends CompoundSteeringBehaviour
         {
             Vector3f totalForceAux = new Vector3f();
             
-            for(AbstractSteeringBehaviour steerBehaviour : super.getBehaviours())
+            for(AbstractSteeringBehaviour steerBehaviour : this.behaviours)
             {
                 Vector3f partial = steerBehaviour.calculateSteering();
                 this.partialForces.add(partial);

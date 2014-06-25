@@ -14,22 +14,27 @@ import com.jme3.scene.Spatial;
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
- * @version 1.2
+ * @version 1.3
  */
 public abstract class AbstractSteeringBehaviour extends Behaviour {
 
+    private boolean isAPartialSteer = false; 
+    private AbstractSteeringBehaviour container;
+    
+    public void setIsAPartialSteer(boolean isAPartialSteer) { this.isAPartialSteer = isAPartialSteer; }
+    public void setContainer(AbstractSteeringBehaviour container) { this.container = container; }
+    public AbstractSteeringBehaviour getContainer() { return this.container; }
+    public boolean getIsAPartialSteer() { return this.isAPartialSteer; }
+    
+    private float velocityStrength = 1;
+    
     /**
-     * If this is true the new Velocity upated in controlUpdate will be (0,0,0)
+     * Final steer velocity multiplier.
      * 
-     * @author Jesús Martín Berlanga
+     * @param velocityStrength Strength multiplier
      */
-    protected boolean freezeTheMovement = false;
-    
-    /** @author Jesús Martín Berlanga */
-    public void setFreezeTheMovement(boolean freezeTheMovement) { this.freezeTheMovement = freezeTheMovement; }
-    
-    /** @author Jesús Martín Berlanga */
-    public boolean getFreezeTheMovement() { return this.freezeTheMovement; }
+    public void setVelocityStrength(float velocityStrength) { this.velocityStrength = velocityStrength; }
+    public float getVelocityStrength() { return this.velocityStrength; }
     
     private float tpf;
     
@@ -132,7 +137,9 @@ public abstract class AbstractSteeringBehaviour extends Behaviour {
     }
 
     /**
-     * Usual update pattern for steering behaviours.
+     * Usual update pattern for steering behaviours. <br> <br>
+     * 
+     * The final velocity is multiplied by the velocityStrength atribute.
      *
      * @param tpf
      * 
@@ -143,12 +150,7 @@ public abstract class AbstractSteeringBehaviour extends Behaviour {
     protected void controlUpdate(float tpf) {
         this.tpf = tpf;
         
-        Vector3f vel = new Vector3f();
-        
-        if(this.freezeTheMovement == false)
-        {
-             vel = calculateNewVelocity().mult(tpf);
-        }
+        Vector3f vel = calculateNewVelocity().mult(tpf).mult(this.velocityStrength);
 
         agent.setLocalTranslation(agent.getLocalTranslation().add(vel));
         rotateAgent(tpf);

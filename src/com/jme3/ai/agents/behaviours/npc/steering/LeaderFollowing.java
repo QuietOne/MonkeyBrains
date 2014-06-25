@@ -3,148 +3,143 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 
 /**
- * This is similar to pursuit behaviour, but pursuiers must stay away from the pursued path.
+ * This is similar to pursuit behaviour, but pursuiers must stay away from the pursued path. 
+ * In order to stay away from that path the pursuers resort to "evade".
+ * Furthermore pursuers use "arrive" instead of "seek" to approach to their objective.
  *
+ * @see PursuitBehaviour
+ * 
  * @author Jesús Martín Berlanga
- * @version 1.2
+ * @version 1.3
  */
 public class LeaderFollowing extends SeekBehaviour {
-    
+       
     private float distanceToChangeFocus;
-    private double minimumAngle;
-    private float porcentajeSpeedWhenCorrectBehind;
-    private float porcentajeSpeedDistance;
+    private float distanceToEvade;
+    private float minimumAngle;
+    private ArriveBehaviour arriveBehaviour;
+    private EvadeBehaviour evadeBehaviour;
+    private boolean containerSettedUp = false;
     
+    public void setContainerSettedUp(boolean containerSettedUp) { this.containerSettedUp = containerSettedUp; }
+       
     /** @see SeekBehaviour#SeekBehaviour(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent)  */
-    public LeaderFollowing(Agent agent, Agent target) {
+    public LeaderFollowing(Agent agent, Agent target)
+    {
         super(agent, target);
+        this.evadeBehaviour = new EvadeBehaviour(agent, target);
+        this.arriveBehaviour = new ArriveBehaviour(agent, target);
         
         //Default values
+        this.distanceToEvade = 2;
         this.distanceToChangeFocus = 5;
-        this.minimumAngle = Math.PI / 2;
-        this.porcentajeSpeedWhenCorrectBehind = 0.18f;
-        this.porcentajeSpeedDistance = 4;
+        this.minimumAngle = FastMath.PI / 2.35f;
+    }
+    
+    /** @see SeekBehaviour#SeekBehaviour(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent, com.jme3.scene.Spatial)   */
+    public LeaderFollowing(Agent agent, Agent target, Spatial spatial)
+    {
+        super(agent, target, spatial);
+        this.evadeBehaviour = new EvadeBehaviour(agent, target, spatial);
+        this.arriveBehaviour = new ArriveBehaviour(agent, target);
+        
+        //Default values
+        this.distanceToEvade = 2;
+        this.distanceToChangeFocus = 5;
+        this.minimumAngle = FastMath.PI / 2.35f;
     }
     
     /** 
      * @param distanceToChangeFocus Distance to change the focus.
      * @param minimunAngle  Minimum angle betwen the target velocity and the vehicle location.
-     * @param porcentajeSpeedWhenCorrectBehind  Porcentaje of speed when the vehicle is in the correct position.
-     * @param porcentajeSpeedDistance The distance factor of porcentajeSpeedWhenCorrectBehind.
      * 
-     * @see PursuitBehaviour#PursuitBehaviour(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent) 
+     * @see LeaderFollowing#LeaderFollowing(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent) 
      */
-    public LeaderFollowing(Agent agent, Agent target, float distanceToChangeFocus, float minimunAngle,
-            float porcentajeSpeedWhenCorrectBehind, float porcentajeSpeedDistance) {
-        
+    public LeaderFollowing(Agent agent, Agent target, float distanceToEvade,float distanceToChangeFocus, float minimunAngle) 
+    {
         super(agent, target);
-        
+        this.distanceToEvade = distanceToEvade;
+        this.evadeBehaviour = new EvadeBehaviour(agent, target);
+        this.arriveBehaviour = new ArriveBehaviour(agent, target);
         this.distanceToChangeFocus = distanceToChangeFocus;
         this.minimumAngle = minimunAngle;
-        this.porcentajeSpeedWhenCorrectBehind = porcentajeSpeedWhenCorrectBehind;
-        this.porcentajeSpeedDistance = porcentajeSpeedDistance;
     }
     
-    /** @see AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent, com.jme3.scene.Spatial) 
-     *  @see PursuitBehaviour#PursuitBehaviour(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent, float, float, float, float) */
-    public LeaderFollowing(Agent agent, Agent target, Spatial spatial, float distanceToChangeFocus, float minimunAngle,
-            float porcentajeSpeedWhenCorrectBehind, float porcentajeSpeedDistance) {
-        
+    /**
+     *  @see LeaderFollowing#LeaderFollowing(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent, com.jme3.scene.Spatial) 
+     *  @see LeaderFollowing#LeaderFollowing(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent, float, float, float) 
+     */
+    public LeaderFollowing(Agent agent, Agent target, Spatial spatial, float distanceToEvade, float distanceToChangeFocus, float minimunAngle) 
+    {
         super(agent, target, spatial);
-        
+        this.distanceToEvade = distanceToEvade;
+        this.evadeBehaviour = new EvadeBehaviour(agent, target, spatial);
+        this.arriveBehaviour = new ArriveBehaviour(agent, target);
         this.distanceToChangeFocus = distanceToChangeFocus;
         this.minimumAngle = minimunAngle;
-        this.porcentajeSpeedWhenCorrectBehind = porcentajeSpeedWhenCorrectBehind;
-        this.porcentajeSpeedDistance = porcentajeSpeedDistance;
+    }
+    
+    private void setupArriveContainer()
+    {
+        if(this.getIsAPartialSteer())
+        {
+            this.arriveBehaviour.setContainer(this.getContainer());
+            this.arriveBehaviour.setIsAPartialSteer(true);
+        }
+        else
+            this.arriveBehaviour.setContainer(this);
     }
     
     /** @see AbstractStrengthSteeringBehaviour#calculateFullSteering()  */
     @Override
-    protected Vector3f calculateSteering(){
+    protected Vector3f calculateFullSteering() 
+    {
+         if(!this.containerSettedUp)
+             this.setupArriveContainer();
         
-        Vector3f desierdVel;
+         Vector3f steer;
+         float distanceBetwen = this.agent.distanceRelativeToAgent(this.getTarget());
+
+
+         //See how far ahead we need to leed
+         Vector3f fullProjectedLocation = this.getTarget().getPredictedPosition();
+         Vector3f predictedPositionDiff = fullProjectedLocation.subtract(this.getTarget().getLocalTranslation());
+         Vector3f projectedLocation = this.getTarget().getLocalTranslation().add(predictedPositionDiff.mult(
+            this.calculateFocusFactor(distanceBetwen)));
         
-        float agentSpeed = this.agent.getMoveSpeed();
-        Vector3f agentLocation = agent.getLocalTranslation();
-        
-        float targetSpeed = this.getTarget().getMoveSpeed();
-        
-        Vector3f targetVelocity;
-        
-        if(this.getTarget().getAcceleration() == null)
-            targetVelocity = new Vector3f();
-        else
-            targetVelocity = this.getTarget().getAcceleration();
-        
-        Vector3f targetTrueLocation = this.getTarget().getLocalTranslation();
-        
-        //Calculate de desired speed
-        float speedDiff = targetSpeed - agentSpeed;
-        
-        float desiredSpeed = (targetSpeed + speedDiff) * this.getTPF();
-        
-        //Vehicle distance from the true location
-        float distanceFromTrueLocation = agentLocation.distance(targetTrueLocation);
-        
-        //Change the focus, non finite posible solutions
-        double focusFactor = this.changeFocusFactor(distanceFromTrueLocation);
-        
-        Vector3f seekingLocation = targetTrueLocation.add(this.getTarget().getPredictedPosition().subtract(
-                targetTrueLocation).mult((float) focusFactor));
-        
-        //Project the location you want to reach
-        Vector3f projectedLocation = seekingLocation.add(targetVelocity.mult(desiredSpeed));
+         this.arriveBehaviour.setSeekingPos(projectedLocation);
            
-        //Angle controls
-        if(distanceFromTrueLocation < this.distanceToChangeFocus){
-            if(checkAngle(targetVelocity, targetTrueLocation, agentLocation))
-                //If the vehicle is in the correct position, maintain it using the proper factor
-                desierdVel = projectedLocation.subtract(agentLocation).normalize().mult((agentSpeed * porcentajeSpeedWhenCorrectBehind
-                        * distanceFromTrueLocation)/this.porcentajeSpeedDistance);
-            else{
-                //If not, get out of the way
-                projectedLocation = seekingLocation.add(targetVelocity.negate().mult((targetSpeed / (distanceFromTrueLocation * 0.05f))));
-                desierdVel = projectedLocation.subtract(agentLocation).normalize().mult(agentSpeed);
-            }
-        }else
-            //If is still away from the target, move normally
-            desierdVel = projectedLocation.subtract(agentLocation).normalize().mult(agentSpeed);
-        
-        return desierdVel.subtract(velocity);
-        
+         steer = this.arriveBehaviour.calculateFullSteering();
+           
+         if(!(distanceBetwen > this.distanceToEvade) && !(this.getTarget().forwardness(this.agent) < FastMath.cos(this.minimumAngle))) 
+         { //Incorrect angle and Is in the proper distance to evade -> Evade the leader
+             
+            Vector3f arriveSteer = steer.mult(distanceBetwen / this.distanceToEvade);
+            Vector3f evadeSteer = this.evadeBehaviour.calculateFullSteering();
+            evadeSteer.mult( this.distanceToEvade / (1 + distanceBetwen));
+            steer = (new Vector3f()).add(arriveSteer).add(evadeSteer);
+         }
+
+        return steer;
     }
     
     
     //Calculates the factor in order to change the focus
-    private double changeFocusFactor(float distanceFromFocus){
-        double factor;
+    private float calculateFocusFactor(float distanceFromFocus)
+    {
+        float factor;
         
         if(distanceFromFocus > this.distanceToChangeFocus)
             factor = 1;
         else
-            factor = Math.pow((1 + distanceFromFocus/this.distanceToChangeFocus), 2);
+            factor = FastMath.pow((1 + distanceFromFocus/this.distanceToChangeFocus), 2);
         
         return factor;
-    }
-    
-    //Return false if the angle is not correct.
-    private boolean checkAngle(Vector3f targetVelocity,
-            Vector3f targetTrueLocation,
-            Vector3f vehicleLocation){
-        return calculateAngle(targetVelocity, targetTrueLocation, vehicleLocation) > minimumAngle;
-    }
-    
-    //Calculate the angle
-    private float calculateAngle(Vector3f targetVelocity,
-            Vector3f targetTrueLocation,
-            Vector3f vehicleLocation){
-        
-        Vector3f fromTagetToVehicle = vehicleLocation.subtract(targetTrueLocation);
-        return targetVelocity.angleBetween(fromTagetToVehicle);
     }
     
 }

@@ -11,7 +11,7 @@ import com.jme3.scene.Spatial;
  * character. Effective pursuit requires a prediction of the target’s future position." 
  *
  * @author Jesús Martín Berlanga
- * @version 1.0
+ * @version 1.1
  */
 public class PursuitBehaviour extends SeekBehaviour {
     
@@ -29,7 +29,7 @@ public class PursuitBehaviour extends SeekBehaviour {
     @Override
     protected Vector3f calculateFullSteering() 
     {   
-        // calculate speed difference to see how far ahead we need to leed
+        //See how far ahead we need to leed
         Vector3f projectedLocation = this.getTarget().getPredictedPosition();
         
         //Seek behaviour

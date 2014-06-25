@@ -20,11 +20,10 @@ import com.jme3.scene.Node;
  *
  * @author Jesús Martín Berlanga
  * @author Tihomir Radosavljević
- * @version 1.2
+ * @version 1.3
  */
 public class Agent<T> extends GameObject {
     
-    private float tpf;
     /**
      * Class that enables you to add all variable you need for your agent.
      */
@@ -212,9 +211,7 @@ public class Agent<T> extends GameObject {
      */
     @Override
     protected void controlUpdate(float tpf) {
-        
-        this.tpf = tpf;
-        
+               
         if (mainBehaviour != null) {
             mainBehaviour.update(tpf);
         }
@@ -225,38 +222,19 @@ public class Agent<T> extends GameObject {
     }
 
     /**
-     * Calculates the projected location in relation with other target
-     *
-     * @param target The other agent
-     * @return The projected location in relation with other target
-     *
-     * @author Jesús Martín Berlanga
-     */
-    public Vector3f calculateProjectedLocation(Agent target) {
-        float targetSpeed = target.getMoveSpeed();
-        float speedDiff = targetSpeed - this.getMoveSpeed();
-        float desiredSpeed = (targetSpeed + speedDiff) * this.tpf;
-        
-        if (target.getAcceleration() == null) {
-            target.setAcceleration(new Vector3f());
-        }
-        
-        return target.getLocalTranslation().add(target.getAcceleration().mult(desiredSpeed));
-    }
-
-    /**
      * Gets the predicted position for this 'frame', taking into account current
      * position and velocity.
      *
      * @author Jesús Martín Berlanga
      */
-    public Vector3f getPredictedPosition() {
+    public Vector3f getPredictedPosition()
+    {
+        Vector3f acc = this.getAcceleration();
         
-        if (this.getAcceleration() == null) {
-            this.setAcceleration(new Vector3f());
-        }
+        if (acc == null) 
+            acc = new Vector3f();
         
-        return this.getLocalTranslation().add(this.getAcceleration());
+        return this.getLocalTranslation().add(acc);
     }
     
     @Override

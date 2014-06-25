@@ -4,7 +4,6 @@ package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 
 /**
@@ -12,6 +11,7 @@ import com.jme3.scene.Spatial;
  * from the predicted future position of the target character."
  * 
  * @author Jesús Martín Berlanga
+ * @version 1.1
  */
 public class EvadeBehaviour extends FleeBehaviour {
 
@@ -22,23 +22,19 @@ public class EvadeBehaviour extends FleeBehaviour {
     }
 
      /** @see FleeBehaviour#FleeBehaviour(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent, com.jme3.scene.Spatial)   */
-    public EvadeBehaviour(Agent agent, Spatial spatial, Agent target) {
+    public EvadeBehaviour(Agent agent, Agent target, Spatial spatial) {
         super(agent, target, spatial);
     }
    
-    /** @see FleeBehaviour#calculateSteering(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent) */
+    /** @see FleeBehaviour#calculateFullSteering()  */
     @Override
-    protected Vector3f calculateSteering() {
-        
-        //Calculate future position
-        Vector3f projectedLocation = agent.calculateProjectedLocation(this.getTarget());
-        Agent projectedAgent = new Agent("Projected Target Agent", 
-                new Node("Projected Target Node").move(projectedLocation));
-        
-        this.setTarget(projectedAgent);
+    protected Vector3f calculateFullSteering() 
+    { 
+        Vector3f projectedLocation = this.getTarget().getPredictedPosition();
         
         //Return flee steering force
-        return super.calculateSteering();   
+        Vector3f desiredVelocity = projectedLocation.subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
+        return desiredVelocity.subtract(velocity).negate();  
     }
 
 }

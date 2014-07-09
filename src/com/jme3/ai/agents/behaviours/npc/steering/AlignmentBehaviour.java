@@ -21,7 +21,7 @@ import java.util.List;
  * steering will tend to turn our character so it is aligned with its neighbors."
  *
  * @author Jesús Martín Berlanga
- * @version 1.0
+ * @version 1.1
  */
 public class AlignmentBehaviour extends AbstractStrengthSteeringBehaviour {
     
@@ -76,6 +76,7 @@ public class AlignmentBehaviour extends AbstractStrengthSteeringBehaviour {
         this.maxAngle = maxAngle;
      }
     
+    /** @see AbstractSteeringBehaviour#calculateSteering() */
     @Override
     Vector3f calculateFullSteering() 
     {         

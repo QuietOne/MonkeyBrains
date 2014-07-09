@@ -238,9 +238,7 @@ public class Agent<T> extends GameObject {
     }
     
     @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
-        throw new UnsupportedOperationException("You should override it youself");
-    }
+    protected void controlRender(RenderManager rm, ViewPort vp) { }
 
     /**
      * @return team in which agent belongs

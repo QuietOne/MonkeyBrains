@@ -17,7 +17,7 @@ import com.jme3.scene.Spatial;
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
- * @version 1.3
+ * @version 1.4
  */
 public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
 
@@ -87,6 +87,7 @@ public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
      * @author Tihomir Radosavljević
      * @author Jesús Martín Berlanga
      */
+    @Override
     protected Vector3f calculateFullSteering()
     {
         Vector3f desiredVelocity;

@@ -17,7 +17,7 @@ import java.util.Random;
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
- * @version 1.2
+ * @version 1.3
  */
 public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
 
@@ -81,6 +81,7 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
      * 
      * @author Jesús Martín Berlanga
      */
+    @Override
     protected Vector3f calculateFullSteering() {
         changeTargetPosition(this.getTPF());
         Vector3f desiredVelocity = targetPosition.subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());

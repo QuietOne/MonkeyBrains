@@ -27,7 +27,7 @@ import java.util.List;
  * ignore anything behind the character."
  * 
  * @author Jesús Martín Berlanga
- * @version 1.2
+ * @version 1.3
  */
 public class SeparationBehaviour extends AbstractStrengthSteeringBehaviour {
     
@@ -67,6 +67,7 @@ public class SeparationBehaviour extends AbstractStrengthSteeringBehaviour {
     * 
     * @see AbstractSteeringBehaviour#calculateSteering() 
     */
+    @Override
     protected Vector3f calculateFullSteering(){
         
         //Propities whom behaviour belongs.

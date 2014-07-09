@@ -58,6 +58,7 @@ public class FleeBehaviour extends AbstractStrengthSteeringBehaviour {
      * 
      * @see AbstractStrengthSteeringBehaviour#calculateFullSteering() 
      */
+    @Override
     protected Vector3f calculateFullSteering() {
         Vector3f desiredVelocity = target.getLocalTranslation().subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
         return desiredVelocity.subtract(velocity).negate();

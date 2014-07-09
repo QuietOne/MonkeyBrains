@@ -14,7 +14,7 @@ import com.jme3.scene.Spatial;
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
- * @version 1.3
+ * @version 1.4
  */
 public abstract class AbstractSteeringBehaviour extends Behaviour {
 

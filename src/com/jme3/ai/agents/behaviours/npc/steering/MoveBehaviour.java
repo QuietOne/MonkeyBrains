@@ -1,3 +1,5 @@
+//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
@@ -12,7 +14,7 @@ import com.jme3.scene.Spatial;
  * @see Agent#moveSpeed
  *
  * @autor Jesús Martín Berlanga
- * @version 1.0
+ * @version 1.1
  */
 public class MoveBehaviour extends AbstractStrengthSteeringBehaviour {
 

@@ -15,7 +15,7 @@ import java.util.List;
  * Move toward center of neighbors.
  *
  * @author Jesús Martín Berlanga
- * @version 1.0
+ * @version 1.1
  */
 public class CohesionBehaviour extends AbstractStrengthSteeringBehaviour {
     
@@ -70,6 +70,7 @@ public class CohesionBehaviour extends AbstractStrengthSteeringBehaviour {
         this.maxAngle = maxAngle;
      }
     
+    /** @see AbstractSteeringBehaviour#calculateSteering() */
     @Override
     protected Vector3f calculateFullSteering()
     {

@@ -35,7 +35,7 @@ public abstract class AbstractWeapon extends GameObject {
      */
     protected float attackDamage;
     /**
-     * Number of bullet that this weapon have left.
+     * Number of bullet that this weapon have left. Set to -1 if infinite.
      */
     protected int numberOfBullets;
     /**

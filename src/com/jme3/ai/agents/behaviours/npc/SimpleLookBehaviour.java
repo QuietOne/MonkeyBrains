@@ -76,10 +76,25 @@ public class SimpleLookBehaviour extends Behaviour {
 
     @Override
     protected void controlUpdate(float tpf) {
-        List<GameObject> agents = Game.getInstance().look(agent, viewAngle);
+        List<GameObject> agents = look(agent, viewAngle);
         for (int i = 0; i < agents.size(); i++) {
             triggerListeners(agents.get(i));
         }
+    }
+
+    /**
+     * Method for determining what agent sees. There is default implementation
+     * for agent seeing without obstacles.
+     *
+     * @see Game#look(com.jme3.ai.agents.Agent, float)
+     * @see Game#lookable(com.jme3.ai.agents.Agent,
+     * com.jme3.ai.agents.util.GameObject, float)
+     * @param agent - watcher
+     * @param viewAngle - viewing angle
+     * @return list of all game objects that can be seen by agent
+     */
+    protected List<GameObject> look(Agent agent, float viewAngle) {
+        return Game.getInstance().look(agent, viewAngle);
     }
 
     @Override

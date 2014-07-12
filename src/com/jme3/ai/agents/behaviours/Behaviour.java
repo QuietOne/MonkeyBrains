@@ -25,6 +25,7 @@ public abstract class Behaviour extends AbstractControl {
      */
     public Behaviour(Agent agent) {
         this.agent = agent;
+        this.spatial = agent.getSpatial();
     }
 
     /**

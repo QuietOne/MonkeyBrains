@@ -30,6 +30,7 @@ public interface GameControl {
     public void setFlyCameraSettings(FlyByCamera flyCam);
     /**
      * Method for marking the end of game. Should also set over to true.
+     * @see Game#over
      * @return 
      */
     public boolean finish();

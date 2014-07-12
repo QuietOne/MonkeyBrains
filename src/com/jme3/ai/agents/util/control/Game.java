@@ -1,6 +1,7 @@
 package com.jme3.ai.agents.util.control;
 
 import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.util.AbstractWeapon;
 import com.jme3.ai.agents.util.GameObject;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
@@ -15,7 +16,7 @@ import java.util.List;
  * updates. Contains agents and gameObjects and provides generic game control.
  *
  * @author Tihomir Radosavljević
- * @version 1.0
+ * @version 1.2
  */
 public class Game extends AbstractAppState{
 
@@ -251,6 +252,21 @@ public class Game extends AbstractAppState{
             return;
         }
         decreaseHitPoints(target, attacker.getWeapon().getAttackDamage());
+    }
+    /**
+     * Check friendly fire and decreaseHitPoints of target if conditions are ok.
+     * 
+     * @see Game#friendlyFire
+     * @see Game#decreaseHitPoints(com.jme3.ai.agents.Agent, double)
+     * @param attacker agent who attacks
+     * @param target agent who is attacked
+     * @param weapon weapon with which is target being attacked
+     */
+    public void agentAttack(Agent attacker, Agent target, AbstractWeapon weapon) {
+        if (friendlyFire && attacker.isSameTeam(target)) {
+            return;
+        }
+        decreaseHitPoints(target, weapon.getAttackDamage());
     }
 
     public void addGameObject(GameObject gameObject) {

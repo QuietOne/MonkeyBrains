@@ -6,7 +6,8 @@ MonkeyBrains is a sophisticated AI Engine for jMonkeyEngine. It uses an agent fr
 
 ###Agent<T>
 Wrapper class for agent. It contains attributes and operations on those attributes. It is not recommended for extending. Instead of extending, you can use method setModel(T model) and set your attributes for agent.
-Team – agent’s team. It contains attributes of team. By default team name is unique ID used for calculating friendly fire if it is off (agent can’t damage agent from its own team)
+###Team
+Agent’s team. It contains attributes of team. By default team name is unique ID used for calculating friendly fire if it is off (agent can’t damage agent from its own team)
 
 ###Behaviour
 Base class for agent behaviours. Every behavior that is made must extend this class. Every behavior then must implement ```controlUpdate(float tpf)``` and ```controlRender(RenderManager rm, ViewPort vp)```. Those have been requested by ```com.jme3.scene.control.AbstractControl```, which behaviour is extending. Also class that is extending Behaviour must have constructor that contains agent as input. With this, behaviour can change attributes of agent that is behaving. In ```com.jme3.ai.agents.behaviours.npc``` you can see examples of some simple behaviours that are easy for using for your NPC (Non-player character) agents. In ```com.jme3.ai.agents.behaviours.player``` are some simple behaviours adequate for player agents.
@@ -15,7 +16,7 @@ Base class for agent behaviours. Every behavior that is made must extend this cl
 Class for all objects in game, that can be updated or destroyed. Example for these would be: Items, bullets, obstacles, agent (agent extends GameObjects)…
 
 ###Game
-Singleton class that contains all GameObjects and updated them. It is built for easier manipulation of agents.
+Singleton class that contains all GameObjects and updated them. It is built for easier manipulation of agents. It also extends ```AbstractAppState``` (if you don't what to this with this information, then it is not important for you. :D  )
 
 ###GameControl
 Interface that is added to Game for additional manipulation of game.
@@ -39,14 +40,12 @@ public class Example extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        //defining rootNode for game processing
-        game.setRootNode(rootNode);
-        //defining input manager
-        game.setInputManager(inputManager);
+        //defining app
+        game.setApp(this);
         //setting game control
         game.setGameControl(new CustomMadeGameControl());
         //registering input
-        game.getGameControl().loadInputManagerMapping();
+        game.getGameControl().setInputManagerMapping();
 
         //initialization of Agents with their names and spatials
         Agent agent = new Agent("First agent", createAgentSpatial()); 

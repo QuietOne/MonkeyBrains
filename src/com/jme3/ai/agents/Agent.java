@@ -20,7 +20,7 @@ import com.jme3.scene.Node;
  *
  * @author Jesús Martín Berlanga
  * @author Tihomir Radosavljević
- * @version 1.3
+ * @version 1.4
  */
 public class Agent<T> extends GameObject {
     
@@ -415,5 +415,112 @@ public class Agent<T> extends GameObject {
      */
     public Vector3f offset(Vector3f positionVector) {
         return positionVector.subtract(this.getLocalTranslation());
+    }
+    
+    /**
+     * "Given two vehicles, based on their current positions and velocities,
+     *  determine the time until nearest approach."
+     * 
+     * @param agent Other agent
+     * @return The time until nearest approach
+     *
+     * @author Jesús Martín Berlanga
+     */
+    public float predictNearestApproachTime(Agent other)
+    {
+        Vector3f agentVelocity = this.getVelocity();
+        Vector3f otherVelocity = other.getVelocity();
+        
+        if(agentVelocity == null)
+            agentVelocity = new Vector3f();
+        
+        if(otherVelocity == null)
+            otherVelocity = new Vector3f();
+        
+        /* "imagine we are at the origin with no velocity,
+         compute the relative velocity of the other vehicle" */
+        Vector3f relVel = otherVelocity.subtract(agentVelocity);
+        float relSpeed = relVel.length();
+        
+        /* "Now consider the path of the other vehicle in this relative
+        space, a line defined by the relative position and velocity.
+        The distance from the origin (our vehicle) to that line is
+        the nearest approach." */
+        
+        // "Take the unit tangent along the other vehicle's path"
+        Vector3f relTangent = relVel.divide(relSpeed);
+        
+        /* "find distance from its path to origin (compute offset from
+        other to us, find length of projection onto path)" */
+        Vector3f offset = other.offset(this);
+        float projection = relTangent.dot(offset);
+        
+        return projection / relSpeed;
+    }
+    
+    /**
+     * "Given the time until nearest approach (predictNearestApproachTime)
+     *  determine position of each vehicle at that time, and the distance
+     *  between them"
+     * 
+     * @param agent Other agent
+     * @param time The time until nearest approach
+     * @return The time until nearest approach
+     *
+     * @see Agent#predictNearestApproachTime(com.jme3.ai.agents.Agent) 
+     * @author Jesús Martín Berlanga
+     */
+    public float computeNearestApproachPositions(Agent other, float time)
+    {
+        Vector3f agentVelocity = this.getVelocity();
+        Vector3f otherVelocity = other.getVelocity();
+        
+        if(agentVelocity == null)
+            agentVelocity = new Vector3f();
+        
+        if(otherVelocity == null)
+            otherVelocity = new Vector3f();
+        
+        Vector3f myTravel = agentVelocity.mult(time);
+        Vector3f otherTravel = otherVelocity.mult(time);
+        
+        return myTravel.distance(otherTravel);
+    }
+    
+    /**
+     * "Given the time until nearest approach (predictNearestApproachTime)
+     *  determine position of each vehicle at that time, and the distance
+     *  between them" <br> <br>
+     * 
+     *  Anotates the positions at nearest approach in the given vectors.
+     * 
+     * @param agent Other agent
+     * @param time The time until nearest approach
+     * @return The time until nearest approach
+     * @param ourPositionAtNearestApproach Pointer to a vector, This bector will be changed to our position at nearest approach
+     * @param hisPositionAtNearestApproach Pointer to a vector, This bector will be changed to other position at nearest approach
+     * 
+     * @see Agent#predictNearestApproachTime(com.jme3.ai.agents.Agent) 
+     * @author Jesús Martín Berlanga
+     */
+    public float computeNearestApproachPositions(Agent other, float time, Vector3f ourPositionAtNearestApproach, Vector3f hisPositionAtNearestApproach)
+    {
+        Vector3f agentVelocity = this.getVelocity();
+        Vector3f otherVelocity = other.getVelocity();
+        
+        if(agentVelocity == null)
+            agentVelocity = new Vector3f();
+        
+        if(otherVelocity == null)
+            otherVelocity = new Vector3f();
+        
+        Vector3f myTravel = agentVelocity.mult(time);
+        Vector3f otherTravel = otherVelocity.mult(time);
+        
+        //annotation
+        ourPositionAtNearestApproach.set(myTravel);
+        hisPositionAtNearestApproach.set(otherTravel);
+        
+        return myTravel.distance(otherTravel);
     }
 }

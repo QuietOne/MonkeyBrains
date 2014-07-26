@@ -9,7 +9,7 @@ import com.jme3.renderer.ViewPort;
 /**
  * Abstract class for defining weapons used by agents.
  *
- * @author Tihomir Radosavljević
+ * @author Tihomir RadosavljeviÄ
  * @version 1.0
  */
 public abstract class AbstractWeapon extends GameObject {
@@ -35,7 +35,7 @@ public abstract class AbstractWeapon extends GameObject {
      */
     protected float attackDamage;
     /**
-     * Number of bullet that this weapon have left.
+     * Number of bullet that this weapon have left. Set to -1 if infinite.
      */
     protected int numberOfBullets;
     /**

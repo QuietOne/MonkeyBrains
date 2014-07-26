@@ -7,11 +7,11 @@ import com.jme3.scene.control.AbstractControl;
 /**
  * Base class for agent behaviours.
  *
- * @author Tihomir Radosavljević
+ * @author Tihomir RadosavljeviÄ
  * @version 1.0
  */
 public abstract class Behaviour extends AbstractControl {
-    
+
     /**
      * Agent to whom behaviour belongs.
      */
@@ -25,6 +25,7 @@ public abstract class Behaviour extends AbstractControl {
      */
     public Behaviour(Agent agent) {
         this.agent = agent;
+        this.spatial = agent.getSpatial();
     }
 
     /**

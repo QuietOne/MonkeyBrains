@@ -19,7 +19,7 @@ import java.util.List;
  * Simple attackBehaviour for player controled agent. It has support for
  * ActionListener.
  *
- * @author Tihomir Radosavljević
+ * @author Tihomir RadosavljeviÄ
  * @version 1.0
  */
 public class SimplePlayerAttackBehaviour extends Behaviour implements ActionListener {
@@ -61,7 +61,7 @@ public class SimplePlayerAttackBehaviour extends Behaviour implements ActionList
         operation = name;
         if (isPressed) {
             supportedOperations.get(operation).setEnabled(true);
-            Vector2f click2d = Game.getInstance().getInputManager().getCursorPosition();
+            Vector2f click2d = Game.getInstance().getApp().getInputManager().getCursorPosition();
             Vector3f click3d = agent.getCamera().getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 0f).clone();
             Vector3f dir = agent.getCamera().getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
             Ray ray = new Ray(click3d, dir);

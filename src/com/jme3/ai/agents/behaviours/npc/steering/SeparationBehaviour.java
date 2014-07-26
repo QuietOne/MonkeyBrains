@@ -31,6 +31,7 @@ import java.util.List;
  */
 public class SeparationBehaviour extends AbstractStrengthSteeringBehaviour {
     
+    private float minDistance;
     //List of the obstacles that we want to be separated
     private List<Agent> obstacles = new ArrayList<Agent>();
     
@@ -44,6 +45,7 @@ public class SeparationBehaviour extends AbstractStrengthSteeringBehaviour {
     public SeparationBehaviour(Agent agent, List<Agent> initialObstacles){
         super(agent);
         this.obstacles = initialObstacles;
+        this.minDistance = Float.POSITIVE_INFINITY;
     }
     
     /**
@@ -53,6 +55,27 @@ public class SeparationBehaviour extends AbstractStrengthSteeringBehaviour {
     public SeparationBehaviour(Agent agent, Spatial spatial, List<Agent> initialObstacles) {
         super(agent, spatial);
         this.obstacles = initialObstacles;
+        this.minDistance = Float.POSITIVE_INFINITY;
+    }
+    
+    /**
+     * @param minDistance Min. distance from center to center to consider an obstacle
+     * @see SeparationBehaviour#SeparationBehaviour(com.jme3.ai.agents.Agent, java.util.List) 
+     */
+    public SeparationBehaviour(Agent agent, List<Agent> initialObstacles, float minDistance){
+        super(agent);
+        this.obstacles = initialObstacles;
+        this.minDistance = minDistance;
+    }
+    
+    /**
+     * @param spatial active spatial during excecution of behaviour
+     * @see SeparationBehaviour#SeparationBehaviour(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent[]) 
+     */
+    public SeparationBehaviour(Agent agent, Spatial spatial, List<Agent> initialObstacles, float minDistance) {
+        super(agent, spatial);
+        this.obstacles = initialObstacles;
+        this.minDistance = minDistance;
     }
     
     @Override
@@ -76,7 +99,7 @@ public class SeparationBehaviour extends AbstractStrengthSteeringBehaviour {
         Vector3f steering = new Vector3f();
         
         for (Agent oAgent : this.obstacles) {
-            if(oAgent != this.agent) //If the obstacle is not himself
+            if(oAgent != this.agent && oAgent.distanceRelativeToAgent(this.agent) < this.minDistance) //If the obstacle is not himself
             {
                 Vector3f loc = oAgent.getLocalTranslation().subtract(agentLocation);
                 float len2 = loc.lengthSquared();

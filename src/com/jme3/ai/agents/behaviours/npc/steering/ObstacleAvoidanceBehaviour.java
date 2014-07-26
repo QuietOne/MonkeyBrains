@@ -37,13 +37,17 @@ import java.util.Random;
  * 
  * @see Agent#setRadius(float) 
  * @author Jesús Martín Berlanga
+ * @version 1.1
  */
 public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviour
 {
+    private float minDistance;
     private float minTimeToCollision;
     private List<Agent> obstacles = new ArrayList<Agent>();
     
     public List<Agent> getObstacles(){return this.obstacles;}
+    protected float getMinTimeToCollision() { return this.minTimeToCollision; }
+    protected float getMinDistance() { return this.minDistance; }
     
     /** 
      * @param obstacles A list with the obstacles (Agents)
@@ -56,6 +60,7 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
         super(agent);
         this.minTimeToCollision = minTimeToCollision;
         this.obstacles = obstacles;
+        this.minDistance = Float.POSITIVE_INFINITY;
     }
 
     /** 
@@ -66,6 +71,29 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
         super(agent, spatial);
         this.minTimeToCollision = minTimeToCollision;
         this.obstacles = obstacles;
+        this.minDistance = Float.POSITIVE_INFINITY;
+    }
+    
+    /** 
+     * @param minDistance Min. distance from center to center to consider an obstacle
+     * @see ObstacleAvoidanceBehaviour#ObstacleAvoidanceBehaviour(com.jme3.ai.agents.Agent, java.util.List, float)  
+     */
+    public ObstacleAvoidanceBehaviour(Agent agent, List<Agent> obstacles, float minTimeToCollision, float minDistance) {
+        super(agent);
+        this.minTimeToCollision = minTimeToCollision;
+        this.obstacles = obstacles;
+        this.minDistance = minDistance;
+    }
+
+    /** 
+     * @see ObstacleAvoidanceBehaviour#ObstacleAvoidanceBehaviour(com.jme3.ai.agents.Agent, com.jme3.scene.Spatial, java.util.List, float) 
+     * @see AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent, com.jme3.scene.Spatial)   
+     */
+    public ObstacleAvoidanceBehaviour(Agent agent, Spatial spatial, List<Agent> obstacles, float minTimeToCollision, float minDistance) {
+        super(agent, spatial);
+        this.minTimeToCollision = minTimeToCollision;
+        this.obstacles = obstacles;
+        this.minDistance = minDistance;
     }
 
     /** @see AbstractSteeringBehaviour#calculateSteering() */
@@ -82,8 +110,11 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
             // test all obstacles for intersection with my forward axis,
             // select the one whose intersection is nearest
             for(Agent obstacle : this.obstacles)
-            {               
-                float distanceFromCenterToObstacleSuperf = this.agent.distanceRelativeToAgent(obstacle) - obstacle.getRadius();
+            {             
+                float distanceFromCenterToCenter = this.agent.distanceRelativeToAgent(obstacle); 
+                if(distanceFromCenterToCenter > this.minDistance) break;
+                
+                float distanceFromCenterToObstacleSuperf = distanceFromCenterToCenter - obstacle.getRadius();
                 float distance = distanceFromCenterToObstacleSuperf  - this.agent.getRadius() ;
                 
                 if(distanceFromCenterToObstacleSuperf < 0)
@@ -117,8 +148,8 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
                       else
                           collisionDistanceDirection = randomVectInPlane(this.agent.getVelocity(), this.agent.getLocalTranslation()).normalize();
                       
-                      Vector3f steerForce = collisionDistanceDirection.mult(this.agent.getRadius() - 
-                              collisionDistanceOffset.length());
+                      Vector3f steerForce = collisionDistanceDirection.mult((this.agent.getRadius() - collisionDistanceOffset.length())
+                              / this.agent.getRadius());
                           
                       if(steerForce.length() > nearestObstacleSteerForce.length())
                           nearestObstacleSteerForce = steerForce;
@@ -134,14 +165,14 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
     protected void controlRender(RenderManager rm, ViewPort vp) { }
     
     //Generates a random vector inside a plane defined by a normal vector and a point
-    private Vector3f randomVectInPlane(Vector3f planeNormalV, Vector3f planePoint)
+    protected Vector3f randomVectInPlane(Vector3f planeNormalV, Vector3f planePoint)
     {
         Random rand = FastMath.rand;
         
         /* Plane ecuation: Ax + By + Cz + D = 0 
-         *  => z = (Ax + By + D) / C
-         *  => x = (By + Cz + D) / A
-         *  => y = (Ax + Cz + D) / B
+         *  => z = -(Ax + By + D) / C
+         *  => x = -(By + Cz + D) / A
+         *  => y = -(Ax + Cz + D) / B
          */
         float a = planeNormalV.x;
         float b = planeNormalV.y;
@@ -158,19 +189,19 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
         {
             x = rand.nextFloat();
             y = rand.nextFloat();
-            z = ((a * x) + (b * y) + d) / c;
+            z = -((a * x) + (b * y) + d) / c;
         }
         else if(a != 0)
         {
             y = rand.nextFloat();
             z = rand.nextFloat();
-            x = ((b * y) + (c * z) + d) / a;
+            x = -((b * y) + (c * z) + d) / a;
         }
         else if(b != 0)
         {
             x = rand.nextFloat();
             z = rand.nextFloat();
-            y = ((a * x) + (c * z) + d) / b;
+            y = -((a * x) + (c * z) + d) / b;
         }
         else
         {

@@ -1,8 +1,10 @@
 package com.jme3.ai.agents.util.control;
 
 import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.util.AbstractWeapon;
 import com.jme3.ai.agents.util.GameObject;
-import com.jme3.input.InputManager;
+import com.jme3.app.Application;
+import com.jme3.app.state.AbstractAppState;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import java.util.LinkedList;
@@ -14,9 +16,9 @@ import java.util.List;
  * updates. Contains agents and gameObjects and provides generic game control.
  *
  * @author Tihomir Radosavljević
- * @version 1.0
+ * @version 1.2
  */
-public class Game {
+public class Game extends AbstractAppState{
 
     /**
      * Status of game with agents.
@@ -31,9 +33,9 @@ public class Game {
      */
     protected Node rootNode;
     /**
-     * Managing input for player.
+     * Application to which this game is attached.
      */
-    protected InputManager inputManager;
+    protected Application app;
     /**
      * Controls of game.
      */
@@ -199,13 +201,13 @@ public class Game {
     /**
      * Method that will update all alive agents and fired bullets while active.
      */
+    @Override
     public void update(float tpf) {
         for (int i = 0; i < agents.size(); i++) {
             agents.get(i).update(tpf);
         }
         for (int i = 0; i < gameObjects.size(); i++) {
             gameObjects.get(i).update(tpf);
-
         }
     }
 
@@ -219,18 +221,6 @@ public class Game {
 
     public Node getRootNode() {
         return rootNode;
-    }
-
-    public void setRootNode(Node rootNode) {
-        this.rootNode = rootNode;
-    }
-
-    public InputManager getInputManager() {
-        return inputManager;
-    }
-
-    public void setInputManager(InputManager inputManager) {
-        this.inputManager = inputManager;
     }
 
     public List<Agent> getAgents() {
@@ -262,6 +252,21 @@ public class Game {
             return;
         }
         decreaseHitPoints(target, attacker.getWeapon().getAttackDamage());
+    }
+    /**
+     * Check friendly fire and decreaseHitPoints of target if conditions are ok.
+     * 
+     * @see Game#friendlyFire
+     * @see Game#decreaseHitPoints(com.jme3.ai.agents.Agent, double)
+     * @param attacker agent who attacks
+     * @param target agent who is attacked
+     * @param weapon weapon with which is target being attacked
+     */
+    public void agentAttack(Agent attacker, Agent target, AbstractWeapon weapon) {
+        if (friendlyFire && attacker.isSameTeam(target)) {
+            return;
+        }
+        decreaseHitPoints(target, weapon.getAttackDamage());
     }
 
     public void addGameObject(GameObject gameObject) {
@@ -295,4 +300,14 @@ public class Game {
             agent.start();
         }
     }
+
+    public Application getApp() {
+        return app;
+    }
+
+    public void setApp(Application app) {
+        this.app = app;
+        rootNode = (Node) app.getViewPort().getScenes().get(0);
+    }
+    
 }

@@ -20,7 +20,7 @@ import com.jme3.scene.Node;
  *
  * @author Jesús Martín Berlanga
  * @author Tihomir Radosavljević
- * @version 1.4
+ * @version 1.4.1
  */
 public class Agent<T> extends GameObject {
     
@@ -229,12 +229,13 @@ public class Agent<T> extends GameObject {
      */
     public Vector3f getPredictedPosition()
     {
-        Vector3f acc = this.getAcceleration();
+        Vector3f predictedPos = new Vector3f();
+        Vector3f vel = this.getVelocity();
+          
+        if (vel != null) 
+            predictedPos = this.getLocalTranslation().add(vel);
         
-        if (acc == null) 
-            acc = new Vector3f();
-        
-        return this.getLocalTranslation().add(acc);
+        return predictedPos;
     }
     
     @Override
@@ -330,7 +331,6 @@ public class Agent<T> extends GameObject {
                     Vector3f unitOffset = this.offset(neighbour).divide(distanceSquared);
                     float forwardness = this.forwardness(unitOffset);
                     isInBoidNeighborhood = forwardness > FastMath.cos(MaxAngle);
-                //    System.out.println("Offset:" + unitOffset + ";Fordwardness = " + forwardness + "; cosMaxAngle =" + FastMath.cos(MaxAngle) + "; " + isInBoidNeighborhood);//debug
                 }
                 else
                 {

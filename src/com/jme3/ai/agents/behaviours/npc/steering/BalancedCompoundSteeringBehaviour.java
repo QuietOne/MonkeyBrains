@@ -20,7 +20,7 @@ import java.util.List;
  * @see CompoundSteeringBehaviour
  *
  * @author Jesús Martín Berlanga
- * @version 1.1
+ * @version 2.0
  */
 public class BalancedCompoundSteeringBehaviour extends CompoundSteeringBehaviour {
     
@@ -58,12 +58,12 @@ public class BalancedCompoundSteeringBehaviour extends CompoundSteeringBehaviour
     
     /** @see CompoundSteeringBehaviour#calculatePartialForce(com.jme3.ai.agents.behaviours.npc.steering.AbstractSteeringBehaviour)  */
     @Override
-    protected Vector3f calculatePartialForce(AbstractSteeringBehaviour behaviour) {
-        
+    protected Vector3f calculatePartialForce(AbstractSteeringBehaviour behaviour) 
+    {
         this.calculateTotalForce();
         Vector3f partialForce = this.partialForces.get(this.numberOfPartialForcesAlreadyCalculated);
         
-        if(this.strengthIsBalanced)
+        if(this.strengthIsBalanced && this.totalForce.length() > 0)
         {
             partialForce.mult(partialForce.length()
                     / this.totalForce.length());
@@ -71,25 +71,32 @@ public class BalancedCompoundSteeringBehaviour extends CompoundSteeringBehaviour
         
         
         this.partialForceCalculated();
-        
+             
         return partialForce;
     }
     
     //Calculates the total force if it is not calculated
-    private void calculateTotalForce() {
-        
+    private void calculateTotalForce() 
+    {    
         if(this.numberOfPartialForcesAlreadyCalculated == 0)
         {
             Vector3f totalForceAux = new Vector3f();
             
-            for(AbstractSteeringBehaviour steerBehaviour : this.behaviours)
+            steerBehavioursLayerList.steerBehavioursLayerNode currentPointer = this.behaviours.getPointer(); //We do not want to modify the current pointer
+            
+            this.behaviours.moveAtBeginning();
+
+            while(!this.behaviours.nullPointer())
             {
-                Vector3f partial = steerBehaviour.calculateSteering();
+                Vector3f partial = this.behaviours.getBehaviour().calculateSteering();
                 this.partialForces.add(partial);
                 totalForceAux = totalForceAux.add(partial);
+                
+                this.behaviours.moveNext();
             }
             
-            
+            this.behaviours.setPointer(currentPointer); //Restore the previous pointer
+               
             this.totalForce = totalForceAux;
         }
         

@@ -8,7 +8,7 @@
  * 
  * For more information visit: http://jmesteer.bdevel.org/
  * 
- * @version 1.9
+ * @version 2.0
  * 
  * @author Jesús Martin Berlanga
  * @author Tihomir Radosavljević

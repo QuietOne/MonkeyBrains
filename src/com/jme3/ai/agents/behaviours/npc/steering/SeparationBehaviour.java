@@ -27,7 +27,7 @@ import java.util.List;
  * ignore anything behind the character."
  * 
  * @author Jesús Martín Berlanga
- * @version 1.3
+ * @version 1.3.1
  */
 public class SeparationBehaviour extends AbstractStrengthSteeringBehaviour {
     
@@ -35,6 +35,7 @@ public class SeparationBehaviour extends AbstractStrengthSteeringBehaviour {
     //List of the obstacles that we want to be separated
     private List<Agent> obstacles = new ArrayList<Agent>();
     
+    public void setMinDistance(float minDistance) { this.minDistance = minDistance; }
     public List<Agent> getObstacles(){return this.obstacles;}
     
     /**

@@ -17,7 +17,7 @@ import java.util.Random;
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
- * @version 1.3
+ * @version 1.3.1
  */
 public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
 
@@ -49,7 +49,7 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
         velocity = new Vector3f();
         timeInterval = 2f;
         time = timeInterval;
-        this.area = new Vector3f[] {Vector3f.ZERO, Vector3f.POSITIVE_INFINITY };
+        this.area = new Vector3f[] {Vector3f.NEGATIVE_INFINITY, Vector3f.POSITIVE_INFINITY };
     }
 
     /**
@@ -67,7 +67,7 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
         velocity = new Vector3f();
         timeInterval = 2f;
         time = timeInterval;
-        this.area = new Vector3f[] {Vector3f.ZERO, Vector3f.POSITIVE_INFINITY };
+        this.area = new Vector3f[] {Vector3f.NEGATIVE_INFINITY, Vector3f.POSITIVE_INFINITY };
     }
 
     @Override

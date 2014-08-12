@@ -10,10 +10,13 @@ import com.jme3.scene.Spatial;
  * Arrival behavior is identical to seek while the character is far from its target. 
  * But instead of moving through the target at full speed, this behavior causes the 
  * character to slow down as it approaches the target, eventually slowing to a stop 
- * coincident with the target
+ * coincident with the target <br><br>
+ * 
+ * The slow is applied to the behaviour container. That can be the compound
+ * steering behaviour where the behaviour is attached.
  *
  * @author Jesús Martín Berlanga
- * @version 1.1
+ * @version 1.1.1
  */
 public class ArriveBehaviour extends SeekBehaviour {
 
@@ -110,7 +113,9 @@ public class ArriveBehaviour extends SeekBehaviour {
         if(this.getIsAPartialSteer())
             this.container = this.getContainer();
         else
-            this.container = this;  
+            this.container = this;
+        
+        this.containerSettedUp = true;
     }
     
     /**

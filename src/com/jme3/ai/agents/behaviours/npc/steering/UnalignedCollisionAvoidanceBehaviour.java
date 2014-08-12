@@ -21,7 +21,7 @@ import java.util.List;
  * @see ObstacleAvoidanceBehaviour
  * @see Agent#setRadius(float) 
  * @author Jesús Martín Berlangas
- * @version 1.0
+ * @version 1.1
  */
 public class UnalignedCollisionAvoidanceBehaviour extends ObstacleAvoidanceBehaviour
 {
@@ -153,9 +153,16 @@ public class UnalignedCollisionAvoidanceBehaviour extends ObstacleAvoidanceBehav
                 if((parallelness < -UnalignedCollisionAvoidanceBehaviour.PARALLELNESSCHECK_ANGLE || parallelness > UnalignedCollisionAvoidanceBehaviour.PARALLELNESSCHECK_ANGLE)
                         || forceTreatAsParallel)
                 {
-                    //Calculate side vector
+                    Vector3f agentFordwardVector;
                     
-                    Plane sidePlane = new Plane(agentVelocity.normalize(), this.agent.getLocalTranslation().length());
+                    if(!forceTreatAsParallel)
+                        agentFordwardVector = agentVelocity.normalize();
+                    else
+                        agentFordwardVector = this.agent.fordwardVector();
+                    
+                    //Calculate side vector
+                    Plane sidePlane = new Plane();
+                    sidePlane.setOriginNormal(this.agent.getLocalTranslation(), agentFordwardVector);
 
                         Vector3f sidePoint = sidePlane.getClosestPoint(threat.getLocalTranslation());
                     Vector3f sideVector = this.agent.offset(sidePoint).normalize().negate();
@@ -163,14 +170,14 @@ public class UnalignedCollisionAvoidanceBehaviour extends ObstacleAvoidanceBehav
                     if(sideVector.negate().equals(Vector3f.ZERO)) //Move in a random direction
                         sideVector = randomVectInPlane(this.agent.getVelocity(), this.agent.getLocalTranslation()).normalize();
                     
-                    steer = sideVector;
+                    steer = sideVector;                   
                 }
                 
                 // "perpendicular paths:"  Steer away and slow/increase the speed knowing future positions
                 else steer = xxxOurPositionAtNearestApproach.subtract(xxxThreatPositionAtNearestApproach);
             }
         }
-                 
+               
         if(steer == null) steer = new Vector3f();
         return steer;
     }

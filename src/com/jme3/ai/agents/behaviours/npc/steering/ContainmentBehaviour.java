@@ -3,6 +3,8 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.math.FastMath;
@@ -25,7 +27,7 @@ import com.jme3.scene.Spatial;
  *  players skating within an ice rink."
  * 
  * @author Jesús Martín Berlanga
- * @version 1.0
+ * @version 1.0.1
  */
 public class ContainmentBehaviour extends AbstractStrengthSteeringBehaviour {
 
@@ -34,10 +36,14 @@ public class ContainmentBehaviour extends AbstractStrengthSteeringBehaviour {
     
     /** 
      * @param containmentArea Area where the agent will be restricted
+     * 
+     * @throws ContainmentWithoutContainmentArea If containmentArea is null
+     * 
      * @see AbstractStrengthSteeringBehaviour#AbstractStrengthSteeringBehaviour(com.jme3.ai.agents.Agent)   
      */
     public ContainmentBehaviour(Agent agent, Node containmentArea) {
          super(agent);
+         this.validateContainmentArea(containmentArea);
          this.containmentArea = containmentArea;
     }
 
@@ -47,9 +53,25 @@ public class ContainmentBehaviour extends AbstractStrengthSteeringBehaviour {
       */
     public ContainmentBehaviour(Agent agent, Node containmentArea, Spatial spatial) {
         super(agent, spatial);
+        this.validateContainmentArea(containmentArea);
         this.containmentArea = containmentArea;
     }
    
+    /** @see IllegalBehaviour */
+    public static class ContainmentWithInvalidContainmenetArea extends IllegalBehaviour {
+        private ContainmentWithInvalidContainmenetArea(String msg) { super(msg); }
+    }
+    
+   /** @see IllegalBehaviour */
+    public static class ContainmentWithoutContainmentArea extends IllegalBehaviour {
+        private ContainmentWithoutContainmentArea(String msg) { super(msg); }
+    }
+    
+    private void validateContainmentArea(Node containmentArea) {
+        if(containmentArea == null) throw new ContainmentWithoutContainmentArea("The containment area can not be null.");
+        else if(containmentArea.getWorldBound() == null) throw new ContainmentWithInvalidContainmenetArea("The containment area must be bounded.");
+    }
+    
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) { }
     
@@ -95,7 +117,7 @@ public class ContainmentBehaviour extends AbstractStrengthSteeringBehaviour {
      */ 
     private Vector3f exitPoint;
     private Vector3f surfaceNormal;
-    private void processExitSurface()
+    protected void processExitSurface()
     {
         this.surfaceNormal = null;
         this.exitPoint = null;

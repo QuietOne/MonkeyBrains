@@ -5,6 +5,7 @@ package com.jme3.ai.agents.behaviours.npc.steering;
 import com.jme3.ai.agents.Agent;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,7 @@ import java.util.List;
  * @see CompoundSteeringBehaviour
  *
  * @author Jesús Martín Berlanga
- * @version 2.0
+ * @version 2.0.1
  */
 public class BalancedCompoundSteeringBehaviour extends CompoundSteeringBehaviour {
     
@@ -34,7 +35,7 @@ public class BalancedCompoundSteeringBehaviour extends CompoundSteeringBehaviour
     /**
      * Turn on or off the balance. The balance is activated by default.
      */
-    public void  setStrengthIsBalanced(boolean strengthIsBalanced) { this.strengthIsBalanced = strengthIsBalanced; }
+    public void setStrengthIsBalanced(boolean strengthIsBalanced) { this.strengthIsBalanced = strengthIsBalanced; }
     
     /** @see  AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent)  */
     public BalancedCompoundSteeringBehaviour(Agent agent) {
@@ -76,7 +77,7 @@ public class BalancedCompoundSteeringBehaviour extends CompoundSteeringBehaviour
     }
     
     //Calculates the total force if it is not calculated
-    private void calculateTotalForce() 
+    protected void calculateTotalForce() 
     {    
         if(this.numberOfPartialForcesAlreadyCalculated == 0)
         {
@@ -103,7 +104,7 @@ public class BalancedCompoundSteeringBehaviour extends CompoundSteeringBehaviour
     }
     
     //Reset the forces if we have finished with all the forces
-    private void partialForceCalculated() {
+    protected void partialForceCalculated() {
         
         this.numberOfPartialForcesAlreadyCalculated++;
         

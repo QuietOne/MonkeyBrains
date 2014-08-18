@@ -4,60 +4,78 @@ package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.Behaviour;
+
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 
 /**
  * Base class for all steering behaviours. This behaviour contains some
- * attributes that are all common for steering behaviours.
+ * attributes that are all common for steering behaviours. <br><br>
  *
+ * You can change the braking factor (to a value lower than 1) so that this behaviour 
+ * will slow down the agent velocity.
+ * 
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
- * @version 1.4
+ * @version 1.5
  */
 public abstract class AbstractSteeringBehaviour extends Behaviour {
-
-    private boolean isAPartialSteer = false; 
-    private AbstractSteeringBehaviour container;
     
-    public void setIsAPartialSteer(boolean isAPartialSteer) { this.isAPartialSteer = isAPartialSteer; }
-    public void setContainer(AbstractSteeringBehaviour container) { this.container = container; }
-    public AbstractSteeringBehaviour getContainer() { return this.container; }
-    public boolean getIsAPartialSteer() { return this.isAPartialSteer; }
+    /** @author Jesús Martín Berlanga */
+    private float brakingFactor = 1;
     
-    private float velocityStrength = 1;
-    
-    /**
-     * Final steer velocity multiplier.
-     * 
-     * @param velocityStrength Strength multiplier
+    /** 
+     *  @see IllegalBehaviour 
+     *  @author Jesús Martín Berlanga 
      */
-    public void setVelocityStrength(float velocityStrength) { this.velocityStrength = velocityStrength; }
-    public float getVelocityStrength() { return this.velocityStrength; }
+    public static final class IllegalBrakingFactor extends IllegalArgumentException { 
+        private IllegalBrakingFactor(String msg) { super(msg); }
+    }
     
+    /** 
+     *  Note that 0 means the maximum braking force and 1 No braking force 
+     * 
+     *  @throws IllegalBrakingFactor If the braking factor is not contained in the [0,1] interval
+     * 
+     *  @author Jesús Martín Berlanga 
+     */
+    protected final void setBrakingFactor(float brakingFactor) 
+    { 
+        if(brakingFactor  < 0 || brakingFactor > 1)
+            throw new IllegalBrakingFactor("The braking factor value must be contained in the [0,1] interval. The current value is " + brakingFactor);
+                    
+        this.brakingFactor = brakingFactor; 
+    }
+    
+    /** @author Jesús Martín Berlanga */
+    public final float getBrakingFactor() { return this.brakingFactor; }
+        
+    /** @author Jesús Martín Berlanga */
     private float tpf;
     
     /** @author Jesús Martín Berlanga */
-    public float getTPF(){ return this.tpf; }
+    protected float getTPF(){ return this.tpf; }
     
     /**
      * Manually update the tpf
      * @param tpf tpf
      * @author Jesús Martín Berlanga
      */
-    public void setTPF(float tpf) { this.tpf = tpf; }
+    protected void setTPF(float tpf) { this.tpf = tpf; }
     
     /**
      * Velocity of our agent.
      */
     protected Vector3f velocity;
 
+    /** @see Behaviour#Behaviour(com.jme3.ai.agents.Agent) */
     public AbstractSteeringBehaviour(Agent agent) {
         super(agent);
         velocity = new Vector3f();
     }
 
+    /** @see Behaviour#Behaviour(com.jme3.ai.agents.Agent, com.jme3.scene.Spatial) */
     public AbstractSteeringBehaviour(Agent agent, Spatial spatial) {
         super(agent, spatial);
         velocity = new Vector3f();
@@ -137,9 +155,9 @@ public abstract class AbstractSteeringBehaviour extends Behaviour {
     }
 
     /**
-     * Usual update pattern for steering behaviours. <br> <br>
+     * Usual update pattern for steering behaviours. <br><br>
      * 
-     * The final velocity is multiplied by the velocityStrength atribute.
+     * The final velocity is multiplied by the braking factor.
      *
      * @param tpf
      * 
@@ -150,7 +168,7 @@ public abstract class AbstractSteeringBehaviour extends Behaviour {
     protected void controlUpdate(float tpf) {
         this.tpf = tpf;
         
-        Vector3f vel = calculateNewVelocity().mult(tpf).mult(this.velocityStrength);
+        Vector3f vel = calculateNewVelocity().mult(tpf).mult(this.brakingFactor);
 
         agent.setLocalTranslation(agent.getLocalTranslation().add(vel));
         rotateAgent(tpf);

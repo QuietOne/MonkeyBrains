@@ -3,6 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
+
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -17,7 +18,7 @@ import com.jme3.scene.Spatial;
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
- * @version 1.4
+ * @version 1.5
  */
 public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
 
@@ -26,6 +27,7 @@ public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
      */
     private Agent target;
     
+    /** @author Jesús Martín Berlanga */
     private Vector3f seekingPos;
 
     /**
@@ -44,6 +46,20 @@ public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
      *
      * @param agent to whom behaviour belongs
      * @param seekingPos position that we seek
+     * @param spatial active spatial during excecution of behaviour
+     */
+    public SeekBehaviour(Agent agent, Agent target, Spatial spatial) {
+        super(agent, spatial);
+        this.target = target;
+    }
+    
+    /**
+     * Constructor for seek behaviour.
+     *
+     * @param agent to whom behaviour belongs
+     * @param seekingPos position that we seek
+     * 
+     * @author Jesús Martín Berlanga
      */
     public SeekBehaviour(Agent agent, Vector3f seekingPos) {
         super(agent);
@@ -56,22 +72,12 @@ public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
      * @param agent to whom behaviour belongs
      * @param target agent from we seek
      * @param spatial active spatial during excecution of behaviour
+     * 
+     * @author Jesús Martín Berlanga
      */
     public SeekBehaviour(Agent agent, Vector3f seekingPos, Spatial spatial) {
         super(agent, spatial);
         this.seekingPos = seekingPos;
-    }
-    
-    /**
-     * Constructor for seek behaviour.
-     *
-     * @param agent to whom behaviour belongs
-     * @param seekingPos position that we seek
-     * @param spatial active spatial during excecution of behaviour
-     */
-    public SeekBehaviour(Agent agent, Agent target, Spatial spatial) {
-        super(agent, spatial);
-        this.target = target;
     }
 
     @Override
@@ -84,7 +90,6 @@ public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
      * 
      * @see AbstractStrengthSteeringBehaviour#calculateFullSteering() 
      * 
-     * @author Tihomir Radosavljević
      * @author Jesús Martín Berlanga
      */
     @Override
@@ -93,9 +98,9 @@ public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
         Vector3f desiredVelocity;
         
         if(this.target != null)
-            desiredVelocity = target.getLocalTranslation().subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
+            desiredVelocity = target.getLocalTranslation().subtract(agent.getLocalTranslation());
         else if(this.seekingPos != null)
-            desiredVelocity = this.seekingPos.subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
+            desiredVelocity = this.seekingPos.subtract(agent.getLocalTranslation()).normalize();
         else
             return new Vector3f(); //We do not have a target or position to seek
             
@@ -120,14 +125,19 @@ public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
      * Setting agent from we seek.
      *
      * @param target
+     * 
+     * @author Tihomir Radosavljević
+     * @author Jesús Martín Berlanga
      */
     public void setTarget(Agent target) {
         this.target = target;
         this.seekingPos = null;
     }
     
+    /** @author Jesús Martín Berlanga */
     public Vector3f getSeekingPos() { return this.seekingPos; }
     
+    /** @author Jesús Martín Berlanga */
     public void setSeekingPos(Vector3f seekingPos) {
         this.seekingPos = seekingPos; 
         this.target = null;

@@ -3,21 +3,29 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
+
 import java.util.Random;
 
 /**
+ * This behaviour is based on a easy implementation that "generates random steering 
+ * force each frame, but this produces rather uninteresting motion. It is 'twitchy'
+ * and produces no sustained turns. <br><br>
+ * 
  * Wander behaviour is steering behaviour where agent moves randomly on terrain.
  * This is done by same calculation as seek behaviour, but difference is that
  * target for this behaviour are random positions that changes durring time.
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
- * @version 1.3.1
+ * 
+ * @version 1.4.1
  */
 public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
 
@@ -70,6 +78,24 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
         this.area = new Vector3f[] {Vector3f.NEGATIVE_INFINITY, Vector3f.POSITIVE_INFINITY };
     }
 
+     /** 
+      * @author Jesús Martín Berlanga
+      * @see IllegalBehaviour 
+      */
+     public static class WanderWithoutWanderArea extends IllegalBehaviour {
+        private WanderWithoutWanderArea(String msg) { super(msg); }
+     }
+     
+     /** @author Jesús Martín Berlanga */
+     private void validateWanderArea(Vector3f[] area) {
+         if(
+                 area[0].x == area[1].x ||
+                 area[0].y == area[1].y ||
+                 area[0].z == area[1].z 
+           )
+             throw new WanderWithoutWanderArea("Components from area vectors must be different.");
+     }
+    
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
     }
@@ -79,6 +105,7 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
      *
      * @return steering vector
      * 
+     * @author Tihomir Radosavljević
      * @author Jesús Martín Berlanga
      */
     @Override
@@ -93,12 +120,15 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
      * Metod for changing target position.
      *
      * @param tpf time per frame
+     * 
+     * @author Tihomir Radosavljević
+     * @author Jesús Martín Berlanga
      */
     protected void changeTargetPosition(float tpf) {
         time -= tpf;
         if (time <= 0) {
             Random random = new Random();
-            float x, z;
+            float x, up, z;
             int distance = (int) FastMath.abs(area[1].x - area[0].x);
             x = random.nextInt(distance / 2);
             if (random.nextBoolean()) {
@@ -109,7 +139,12 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
             if (random.nextBoolean()) {
                 z *= -1;
             }
-            targetPosition = new Vector3f(x, agent.getLocalTranslation().getY(), z);
+            distance = (int) FastMath.abs(area[1].y - area[0].y);
+            up = random.nextInt(distance / 2);
+            if (random.nextBoolean()) {
+                up *= -1;
+            }
+            targetPosition = new Vector3f(x, up, z);
             time = timeInterval;
         }
     }
@@ -137,9 +172,12 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
      *
      * @param from
      * @param to
+     * 
+     * @throws WanderWithoutWanderArea If any component from the area vectors match
      */
     public void setArea(Vector3f from, Vector3f to) {
         area[0] = from;
         area[1] = to;
+        this.validateWanderArea(area);
     }
 }

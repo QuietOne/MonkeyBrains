@@ -4,9 +4,11 @@ package com.jme3.ai.agents.behaviours.npc;
 
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.Behaviour;
+import com.jme3.ai.agents.util.control.Game;
+
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
-import com.jme3.ai.agents.util.control.Game;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;

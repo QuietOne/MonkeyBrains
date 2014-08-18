@@ -3,6 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
+
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -28,10 +29,10 @@ import com.jme3.scene.Spatial;
  * 
  * You can assign the same priority to more than one behaviour, If you do that, the 
  * controller only will move to the next priorities if all the behaviours return
- * zero or a value considered as zero. <br> <br>
+ * zero or a value considered as zero.
  * 
  * @author Jesús Martín Berlanga
- * @version 2.0
+ * @version 2.1
  */
 public class CompoundSteeringBehaviour extends AbstractStrengthSteeringBehaviour {
         
@@ -44,14 +45,14 @@ public class CompoundSteeringBehaviour extends AbstractStrengthSteeringBehaviour
     */
     protected class steerBehavioursLayerList
     {   
-        protected class steerBehavioursLayerNode
+        public class steerBehavioursLayerNode
         {   
-            private class layerElementData
+            public class layerElementData
             {
                 private AbstractSteeringBehaviour behaviour;
                 private int layer;
                 private float minLengthToInvalidSteer;
-
+                
                 public layerElementData( AbstractSteeringBehaviour behaviour, int layer, float minLengthToInvalidSteer )
                 {
                     this.behaviour = behaviour;
@@ -63,18 +64,18 @@ public class CompoundSteeringBehaviour extends AbstractStrengthSteeringBehaviour
             private layerElementData data;
             private steerBehavioursLayerNode nextNode;
 
-            private void setData(AbstractSteeringBehaviour behaviour, int layer, float minLengthToInvalidSteer)
+            public void setData(AbstractSteeringBehaviour behaviour, int layer, float minLengthToInvalidSteer)
             {
                 this.data = new layerElementData(behaviour, layer, minLengthToInvalidSteer);
             }
             
-            private steerBehavioursLayerNode(  layerElementData data, steerBehavioursLayerNode nextNode)
+            public steerBehavioursLayerNode(  layerElementData data, steerBehavioursLayerNode nextNode)
             {
                 this.data = data;
                 this.nextNode = nextNode;
             }
             
-            private steerBehavioursLayerNode(  AbstractSteeringBehaviour behaviour, int layer, float minLengthToInvalidSteer, steerBehavioursLayerNode nextNode)
+            public steerBehavioursLayerNode(  AbstractSteeringBehaviour behaviour, int layer, float minLengthToInvalidSteer, steerBehavioursLayerNode nextNode)
             {
                 this.data = new layerElementData(behaviour, layer, minLengthToInvalidSteer);
                 this.nextNode = nextNode;
@@ -109,6 +110,28 @@ public class CompoundSteeringBehaviour extends AbstractStrengthSteeringBehaviour
 
                 aux.setData(behaviour, layer, minLengthToInvalidSteer);
                 aux.nextNode = new steerBehavioursLayerNode(nextData, nextNode);
+            }
+        }
+        
+        public void remove(AbstractSteeringBehaviour behaviour)
+        {
+            if(head.data.behaviour.equals(behaviour))
+                head = head.nextNode;
+            
+            else
+            {
+                steerBehavioursLayerNode current = head;
+
+                while(current.nextNode != null)
+                {
+                    if(current.nextNode.data.behaviour.equals(behaviour))
+                    {
+                        current.nextNode = current.nextNode.nextNode;
+                        break;
+                    }
+                        
+                    current = current.nextNode;
+                }
             }
         }
         
@@ -170,9 +193,16 @@ public class CompoundSteeringBehaviour extends AbstractStrengthSteeringBehaviour
      */
     public void addSteerBehaviour (AbstractSteeringBehaviour behaviour) {
         this.behaviours.add(behaviour, 0, 0);
-        behaviour.setIsAPartialSteer(true);
-        behaviour.setContainer(this);
-    }  
+    } 
+    
+    /**
+     * Removes a behaviour from the compound steer behaviour.
+     * 
+     * @param behaviour Behaviour that you want to remove
+     */
+    public void removeSteerBehaviour (AbstractSteeringBehaviour behaviour) {
+        this.behaviours.remove(behaviour);
+    }
     
     /**
      *  To optimize the process speed add the behaviours with the lowest priority first. 
@@ -184,8 +214,6 @@ public class CompoundSteeringBehaviour extends AbstractStrengthSteeringBehaviour
      */
     public void addSteerBehaviour (AbstractSteeringBehaviour behaviour, int priority, float minLengthToInvalidSteer) {
         this.behaviours.add(behaviour, priority, minLengthToInvalidSteer);
-        behaviour.setIsAPartialSteer(true);
-        behaviour.setContainer(this);
     }
    
     /**
@@ -198,9 +226,9 @@ public class CompoundSteeringBehaviour extends AbstractStrengthSteeringBehaviour
     protected Vector3f calculateFullSteering() {
         
         Vector3f totalForce = new Vector3f();
+        float totalBraking  = 1;
         
         this.behaviours.moveAtBeginning();
-        //steerBehavioursLayerList.steerBehavioursLayerNode savedNod = null; //DEBUG
         
         if(!this.behaviours.nullPointer())
         {
@@ -213,7 +241,11 @@ public class CompoundSteeringBehaviour extends AbstractStrengthSteeringBehaviour
                 if(this.behaviours.getLayer() != currentLayer) //We have finished the last layer, check If it was a valid layer
                 {
                    if(inLayerCounter == validCounter) break; //If we have a valid layer, return the force
-                   else totalForce = new Vector3f(); //If not, reset the total force
+                   else
+                   {
+                       totalForce = new Vector3f(); //If not, reset the total force
+                       totalBraking = 1;            //and braking
+                   }
                           
                    currentLayer = this.behaviours.getLayer();
                    inLayerCounter = 0;
@@ -223,21 +255,14 @@ public class CompoundSteeringBehaviour extends AbstractStrengthSteeringBehaviour
                 Vector3f force = this.calculatePartialForce(this.behaviours.getBehaviour());             
                 if(force.length() > this.behaviours.getMinLengthToInvalidSteer()) validCounter++; 
                 totalForce = totalForce.add(force);
+                totalBraking *=  this.behaviours.getBehaviour().getBrakingFactor();
 
                 inLayerCounter++;
-                //savedNod = behaviours.getPointer();//DEBUG
                 this.behaviours.moveNext();
             }
         }
         
-        /* 
-        //DEBUG
-        if(savedNod != null) 
-        {
-            behaviours.setPointer(savedNod);
-            System.out.println("Active Layer :" + behaviours.getLayer());
-        } 
-        */
+        this.setBrakingFactor(totalBraking);
         return totalForce;
     }
     

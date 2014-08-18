@@ -3,6 +3,8 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 
@@ -10,27 +12,20 @@ import com.jme3.scene.Spatial;
  * Arrival behavior is identical to seek while the character is far from its target. 
  * But instead of moving through the target at full speed, this behavior causes the 
  * character to slow down as it approaches the target, eventually slowing to a stop 
- * coincident with the target <br><br>
- * 
- * The slow is applied to the behaviour container. That can be the compound
- * steering behaviour where the behaviour is attached.
+ * coincident with the target.
  *
+ * @see SeekBehaviour
+ * 
  * @author Jesús Martín Berlanga
- * @version 1.1.1
+ * @version 1.2.1
  */
 public class ArriveBehaviour extends SeekBehaviour {
 
-    private final float ERROR_FACTOR = 0.001f;  
+    private static final float ERROR_FACTOR = 0.001f;  
     private float slowingDistance;
-    private AbstractSteeringBehaviour container;
-    private boolean containerSettedUp = false;
-    
-    public void setContainerSettedUp(boolean containerSettedUp) { this.containerSettedUp = containerSettedUp; }
-    public void setSlowingDistance(float slowingDistance) { this.slowingDistance = slowingDistance; }
-    
+  
     /** 
-     * The slowingDistance is (0.1 * distance betwen agents) by default. <br> <br>
-     * The slow proportion is 0.5 by default.
+     * The slowingDistance is (0.1 * distance betwen agents) by default.
      * 
      * @see SeekBehaviour#SeekBehaviour(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent) 
      */
@@ -40,8 +35,7 @@ public class ArriveBehaviour extends SeekBehaviour {
     }
     
     /**
-     * The slowingDistance is (0.1 * distance betwen agents) by default. <br> <br>
-     * The slow proportion is 0.5 by default.
+     * The slowingDistance is (0.1 * distance betwen agents) by default.
      * 
      * @see SeekBehaviour#SeekBehaviour(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent, com.jme3.scene.Spatial) 
      */
@@ -51,8 +45,7 @@ public class ArriveBehaviour extends SeekBehaviour {
     }
     
     /** 
-     * The slowingDistance is (0.1 * distance betwen agents) by default. <br> <br>
-     * The slow proportion is 0.5 by default.
+     * The slowingDistance is (0.1 * distance betwen agents) by default.
      * 
      * @see SeekBehaviour#SeekBehaviour(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent) 
      */
@@ -62,8 +55,7 @@ public class ArriveBehaviour extends SeekBehaviour {
     }
     
     /**
-     * The slowingDistance is (0.1 * distance betwen agents) by default. <br> <br>
-     * The slow proportion is 0.5 by default.
+     * The slowingDistance is (0.1 * distance betwen agents) by default.
      * 
      * @see SeekBehaviour#SeekBehaviour(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent, com.jme3.scene.Spatial) 
      */
@@ -74,49 +66,54 @@ public class ArriveBehaviour extends SeekBehaviour {
     
     /** 
      * @param slowingDistance Distance where the agent will start slowing
+     * @throws negativeSlowingDistance If slowingDistance is lower than 0
      * @see ArriveBehaviour#ArriveBehaviour(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent) 
      */
     public ArriveBehaviour(Agent agent, Agent target, float slowingDistance) { 
         super(agent, target);
+        this.validateSlowingDistance(slowingDistance);
         this.slowingDistance = slowingDistance;
     }
     
     /** 
-     * @param slowingDistance Distance where the agent will start slowing
-     * @see ArriveBehaviour#ArriveBehaviour(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent) 
+     * @see ArriveBehaviour#ArriveBehaviour(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent, float) 
+     * @see AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent, com.jme3.scene.Spatial) 
      */
-    public ArriveBehaviour(Agent agent, Agent target, Spatial spatial, float slowingDistance) {  
-        super(agent, target, spatial); 
+    public ArriveBehaviour(Agent agent, Agent target, float slowingDistance, Spatial spatial) {  
+        super(agent, target, spatial);
+        this.validateSlowingDistance(slowingDistance);
         this.slowingDistance = slowingDistance;
     }
     
     /** 
-     * @param slowingDistance Distance where the agent will start slowing
-     * @see ArriveBehaviour#ArriveBehaviour(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent) 
+     * @see ArriveBehaviour#ArriveBehaviour(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent, float) 
+     * @see ArriveBehaviour#ArriveBehaviour(com.jme3.ai.agents.Agent, com.jme3.math.Vector3f) 
      */
     public ArriveBehaviour(Agent agent, Vector3f seekingPos, float slowingDistance) { 
         super(agent, seekingPos);
+        this.validateSlowingDistance(slowingDistance);
         this.slowingDistance = slowingDistance;
     }
     
     /** 
-     * @param slowingDistance Distance where the agent will start slowing
-     * @see ArriveBehaviour#ArriveBehaviour(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent) 
+     * @see ArriveBehaviour#ArriveBehaviour(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent, float) 
+     * @see ArriveBehaviour#ArriveBehaviour(com.jme3.ai.agents.Agent, com.jme3.math.Vector3f, com.jme3.scene.Spatial) 
      */
-    public ArriveBehaviour(Agent agent, Vector3f seekingPos, Spatial spatial, float slowingDistance) {  
+    public ArriveBehaviour(Agent agent, Vector3f seekingPos, float slowingDistance, Spatial spatial) {  
         super(agent, seekingPos, spatial); 
+        this.validateSlowingDistance(slowingDistance);
         this.slowingDistance = slowingDistance;
     }
-   
-    private void setUpContainer()
-    {
-        if(this.getIsAPartialSteer())
-            this.container = this.getContainer();
-        else
-            this.container = this;
-        
-        this.containerSettedUp = true;
-    }
+    
+     /** @see IllegalBehaviour */
+     public static class negativeSlowingDistance extends IllegalBehaviour {
+        private negativeSlowingDistance(String msg) { super(msg); }
+     }
+     
+     private void validateSlowingDistance(float  slowingDistance) {
+         if(slowingDistance < 0)
+             throw new negativeSlowingDistance("The slowing distance value can not be negative. Current value is " + slowingDistance);
+     }
     
     /**
      * Calculate steering vector.
@@ -130,10 +127,7 @@ public class ArriveBehaviour extends SeekBehaviour {
      */
     @Override
     protected Vector3f calculateFullSteering() 
-    {
-      if(!this.containerSettedUp)
-          this.setUpContainer();
-        
+    {       
       float distanceToTarget;
       float radious = 0;
       
@@ -147,14 +141,14 @@ public class ArriveBehaviour extends SeekBehaviour {
       else
           return new Vector3f(); //We dont have any target or location to arrive 
                
-      if(distanceToTarget < radious + this.ERROR_FACTOR)
+      if(distanceToTarget < radious + ArriveBehaviour.ERROR_FACTOR)
       {
-          this.container.setVelocityStrength(0);
+          this.setBrakingFactor(0);
       }
       else  if(distanceToTarget < this.slowingDistance)
-          this.container.setVelocityStrength(distanceToTarget / this.slowingDistance);
+          this.setBrakingFactor(distanceToTarget / this.slowingDistance);
       else
-          this.container.setVelocityStrength(1);
+          this.setBrakingFactor(1);
         
        return super.calculateFullSteering();
     }

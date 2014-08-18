@@ -4,12 +4,14 @@ package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+
 import com.jme3.math.Plane;
 import com.jme3.math.Plane.Side;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
+
 import java.util.ArrayList;
 
 /**
@@ -32,24 +34,27 @@ import java.util.ArrayList;
  * steering is required. Otherwise the character is veering away from the path, or is too far away from 
  * the path. To steer back towards the path, the seek behavior is used to steer towards the on-path 
  * projection of the predicted future position. A null or zero value is returned if no corrective steering
- * is required."
+ * is required." <br><br>
+ * 
+ * If you need the agent to pass exactly from the beginning of the first spine you must use seek before
+ * activating path follow.
  * 
  * @author Jesús Martín Berlanga
- * @version  1.0
+ * @version  1.0.1
  */
 public class PathFollowBehaviour extends AbstractStrengthSteeringBehaviour {
 
-    private static class PathFollowIstinsufficientPoints extends IllegalBehaviour
+    public static class PathFollowIstinsufficientPoints extends IllegalBehaviour
     {
         private PathFollowIstinsufficientPoints(String msg) { super(msg); }
     }
     
-    private static class PathFollowNegativeRadius extends IllegalBehaviour
+    public static class PathFollowNegativeRadius extends IllegalBehaviour
     {
         private PathFollowNegativeRadius(String msg) { super(msg); }
     }
     
-    private static class PathFollowNegativeCohesionStrength extends IllegalBehaviour
+    public static class PathFollowNegativeCohesionStrength extends IllegalBehaviour
     {
         private PathFollowNegativeCohesionStrength(String msg) { super(msg); }
     }
@@ -63,6 +68,7 @@ public class PathFollowBehaviour extends AbstractStrengthSteeringBehaviour {
     private boolean active = true;
     
     public void setActive(boolean active) { this.active = active; }
+    public boolean isActive() { return this.active; }
     
     /** 
      * @param orderedPointsList Ordered points that will set the path spine and consequently the path route. The minimum number of points is two.

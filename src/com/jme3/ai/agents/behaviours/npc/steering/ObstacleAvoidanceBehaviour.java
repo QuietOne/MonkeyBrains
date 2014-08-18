@@ -3,11 +3,14 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+
 import com.jme3.math.Vector3f;
 import com.jme3.math.FastMath;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;	
@@ -27,37 +30,43 @@ import java.util.Random;
  * Keep in mind that this relates to obstacle avoidance not necessarily to 
  * collision detection. <br> <br>
  * 
- * The goal of the behavior is to keep an imaginary
- * cylinder of free space in front of the character. The cylinder lies along the character's forward
- * axis, has a diameter equal to the character's bounding sphere, and extends from the
+ * The goal of the behavior is to keep an imaginary cylinder of free space in front 
+ * of the character. The cylinder lies along the character's forward axis, has a 
+ * diameter equal to the character's bounding sphere, and extends from the
  * character's center for a distance based on the character's velocity. <br> <br>
  * 
  * It is needed that the obstacles (Agents) have the "radius" atribute correctly
  * setted up.
  * 
  * @see Agent#setRadius(float) 
+ * 
  * @author Jesús Martín Berlanga
- * @version 1.1
+ * @version 1.1.1
  */
 public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviour
 {
     private float minDistance;
     private float minTimeToCollision;
-    private List<Agent> obstacles = new ArrayList<Agent>();
     
-    public List<Agent> getObstacles(){return this.obstacles;}
+    private List<Agent> obstacles = new ArrayList<Agent>();
+    protected List<Agent> getObstacles() { return this.obstacles; }
+    public void setObstacles(List<Agent> obstacles){this.obstacles = obstacles;}
+    
     protected float getMinTimeToCollision() { return this.minTimeToCollision; }
     protected float getMinDistance() { return this.minDistance; }
     
     /** 
      * @param obstacles A list with the obstacles (Agents)
      * @param minTimeToCollision When the time to collision is lower than this value
-     * the steer force will appear.
+     * the steer force will appear. Time is measured in seconds.
+     * 
+     * @throws ObstacleAvoindanceWithNoMinTimeToCollision If minTimeToCollision is lower or equals to 0
      * 
      * @see AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent)  
      */
     public ObstacleAvoidanceBehaviour(Agent agent, List<Agent> obstacles, float minTimeToCollision) {
         super(agent);
+        this.validateMinTimeToCollision(minTimeToCollision);
         this.minTimeToCollision = minTimeToCollision;
         this.obstacles = obstacles;
         this.minDistance = Float.POSITIVE_INFINITY;
@@ -67,8 +76,9 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
      * @see ObstacleAvoidanceBehaviour#ObstacleAvoidanceBehaviour(com.jme3.ai.agents.Agent, java.util.List, float) 
      * @see AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent, com.jme3.scene.Spatial)   
      */
-    public ObstacleAvoidanceBehaviour(Agent agent, Spatial spatial, List<Agent> obstacles, float minTimeToCollision) {
+    public ObstacleAvoidanceBehaviour(Agent agent, List<Agent> obstacles, float minTimeToCollision, Spatial spatial) {
         super(agent, spatial);
+        this.validateMinTimeToCollision(minTimeToCollision);
         this.minTimeToCollision = minTimeToCollision;
         this.obstacles = obstacles;
         this.minDistance = Float.POSITIVE_INFINITY;
@@ -76,10 +86,15 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
     
     /** 
      * @param minDistance Min. distance from center to center to consider an obstacle
+     * 
+     * @throws ObstacleAvoindanceWithNegativeMinDistance If minTimeToCollision is lower than 0
+     * 
      * @see ObstacleAvoidanceBehaviour#ObstacleAvoidanceBehaviour(com.jme3.ai.agents.Agent, java.util.List, float)  
      */
     public ObstacleAvoidanceBehaviour(Agent agent, List<Agent> obstacles, float minTimeToCollision, float minDistance) {
         super(agent);
+        this.validateMinTimeToCollision(minTimeToCollision);
+        this.validateMinDistance(minDistance);
         this.minTimeToCollision = minTimeToCollision;
         this.obstacles = obstacles;
         this.minDistance = minDistance;
@@ -89,16 +104,38 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
      * @see ObstacleAvoidanceBehaviour#ObstacleAvoidanceBehaviour(com.jme3.ai.agents.Agent, com.jme3.scene.Spatial, java.util.List, float) 
      * @see AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent, com.jme3.scene.Spatial)   
      */
-    public ObstacleAvoidanceBehaviour(Agent agent, Spatial spatial, List<Agent> obstacles, float minTimeToCollision, float minDistance) {
+    public ObstacleAvoidanceBehaviour(Agent agent, List<Agent> obstacles, float minTimeToCollision, float minDistance, Spatial spatial) {
         super(agent, spatial);
+        this.validateMinTimeToCollision(minTimeToCollision);
+        this.validateMinDistance(minDistance);
         this.minTimeToCollision = minTimeToCollision;
         this.obstacles = obstacles;
         this.minDistance = minDistance;
     }
 
+     /** @see IllegalBehaviour */
+     public static class ObstacleAvoindanceWithNegativeMinDistance extends IllegalBehaviour {
+        private ObstacleAvoindanceWithNegativeMinDistance(String msg) { super(msg); }
+     }
+     
+     private void validateMinDistance(float minDistance) {
+         if(minDistance < 0)
+             throw new ObstacleAvoindanceWithNegativeMinDistance("The min distance from an obstacle can not be negative. Current value is " + minDistance);
+     }
+     
+     /** @see IllegalBehaviour */
+     public static class ObstacleAvoindanceWithNoMinTimeToCollision extends IllegalBehaviour {
+        private ObstacleAvoindanceWithNoMinTimeToCollision(String msg) { super(msg); }
+     }
+     
+     private void validateMinTimeToCollision(float minTimeToCollision) {
+         if(minTimeToCollision <= 0)
+             throw new ObstacleAvoindanceWithNegativeMinDistance("The min time to collision must be postitive. Current value is " + minTimeToCollision);
+     }
+    
     /** @see AbstractSteeringBehaviour#calculateSteering() */
     @Override
-    Vector3f calculateFullSteering() 
+    protected Vector3f calculateFullSteering() 
     {
         Vector3f nearestObstacleSteerForce = new Vector3f();
                    

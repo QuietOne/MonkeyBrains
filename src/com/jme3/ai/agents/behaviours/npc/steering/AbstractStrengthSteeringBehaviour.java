@@ -3,12 +3,14 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+
 import com.jme3.math.Plane;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 
 /**
- * With this class it will be able to increase or decrease the steering behaviour force.
+ * With this class it will be possible to increase or decrease the steering behaviour force.
  * <br> <br>
  * 
  * It can be changed the length of this vector itself, multiplying it by a scalar
@@ -23,10 +25,9 @@ import com.jme3.scene.Spatial;
  * @see AbstractSteeringBehaviour
  * 
  * @author Jesús Martín Berlanga
- * @version 2.0
+ * @version 2.1.0
  */
 public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteeringBehaviour {
-
 
     // Defines how the "strength" will be applied to a steer force.
     private static enum SteerStrengthType 
@@ -38,7 +39,7 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
     }
     
     private SteerStrengthType type = SteerStrengthType.NO_STRENGTH;
-    private Float escalar, x, y, z;
+    private Float scalar, x, y, z;
     private Plane plane;
 
     /** @see  AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent)  */
@@ -51,10 +52,13 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
      * If you call this function you will be able to increase or decrease the steering
      * behaviour force multiplying it by a scalar.
      * 
-     * @param escalar Escalar that will multiply the full steer force.
+     * @param scalar Escalar that will multiply the full steer force.
+     * 
+     * @throws negativeScalarMultiplier If scalar is lower than 0
      */
-    public void setupStrengthControl(float escalar) {
-        this.escalar = escalar;
+    public void setupStrengthControl(float scalar) {
+        this.validateScalar(scalar);
+        this.scalar = scalar;
         this.type = SteerStrengthType.ESCALAR;
     }
     
@@ -65,55 +69,48 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
      * @param x X axis multiplier
      * @param y Y axis multiplier
      * @param z Z axis multiplier
+     * 
+     * @throws negativeScalarMultiplier If any axis multiplier is lower than 0
      */
     public void setupStrengthControl(float x, float y, float z) {
+        this.validateScalar(x);
+        this.validateScalar(y);
+        this.validateScalar(z);
         this.x = x;
         this.y = y;
         this.z = z;
         this.type = SteerStrengthType.AXIS;
     }
-    
+     
     /**
      * Forces the steer to stay inside a plane.
      * 
-     * @param normal Vector normal to the plane
-     */
-    public void setupStrengthControl(Vector3f normal) {
-        this.escalar = 1.0f;
-        this.plane = new Plane(normal, 0);
-        this.type = SteerStrengthType.PLANE;
-    }
-    
-    /**
-     * @see AbstractStrengthSteeringBehaviour#setupStrengthControl(com.jme3.math.Vector3f) 
      * @param Plane plane where the steer will be
      */
     public void setupStrengthControl(Plane plane) {
-       this.escalar = 1.0f;
+        this.scalar = 1.0f;
         this.plane = plane;
         this.type = SteerStrengthType.PLANE;
     }
     
     /**
-     * The force will also be multiplied by an escalar.
-     * 
-     * @see AbstractStrengthSteeringBehaviour#setupStrengthControl(com.jme3.math.Vector3f) 
-     * @param escalar Escalar that will multiply the full steer force.
+     * @see AbstractStrengthSteeringBehaviour#setupStrengthControl(float) 
+     * @see AbstractStrengthSteeringBehaviour#setupStrengthControl(com.jme3.math.Plane) 
      */
-    public void setupStrengthControl(Vector3f normal, float escalar) {
-        this.escalar = escalar;
-        this.plane = new Plane(normal, 0);
+    public void setupStrengthControl(Plane plane, float scalar) {
+        this.validateScalar(scalar);
+        this.scalar = scalar;
+        this.plane = plane;
         this.type = SteerStrengthType.PLANE;
     }
     
-    /**
-     * @see AbstractStrengthSteeringBehaviour#setupStrengthControl(com.jme3.math.Vector3f, float) 
-     * @see AbstractStrengthSteeringBehaviour#setupStrengthControl(com.jme3.math.Vector3f) 
-     */
-    public void setupStrengthControl(Plane plane, float escalar) {
-        this.escalar = escalar;
-        this.plane = plane;
-        this.type = SteerStrengthType.PLANE;
+    /** @see IllegalBehaviour */
+    public static class negativeScalarMultiplier extends IllegalBehaviour {
+        private negativeScalarMultiplier(String msg) { super(msg); }
+    }
+    
+    private void validateScalar(float scalar) {
+        if(scalar < 0) throw new negativeScalarMultiplier("All the scalar multipliers must be positives.");
     }
     
     /**
@@ -126,7 +123,7 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
     }
   
     /**
-     * Calculates the steering force with the especified strength.
+     * Calculates the steering force with the especified strength. <br><br>
      * 
      * If the strength was not setted up it the return calculateSteering(),
      * the unmodified force.
@@ -141,7 +138,7 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
         switch(this.type)
         {
             case ESCALAR:
-                strengthSteeringForce = strengthSteeringForce.mult(this.escalar);
+                strengthSteeringForce = strengthSteeringForce.mult(this.scalar);
                 break;
                 
             case AXIS:
@@ -151,7 +148,7 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
                 break;
                 
             case PLANE:
-                strengthSteeringForce = this.plane.getClosestPoint(strengthSteeringForce).mult(this.escalar);
+                strengthSteeringForce = this.plane.getClosestPoint(strengthSteeringForce).mult(this.scalar);
                 break;
         }
         
@@ -165,5 +162,5 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
      * 
      * @see AbstractSteeringBehaviour#calculateSteering() 
      */ 
-    abstract Vector3f calculateFullSteering();
+    protected abstract Vector3f calculateFullSteering();
 }

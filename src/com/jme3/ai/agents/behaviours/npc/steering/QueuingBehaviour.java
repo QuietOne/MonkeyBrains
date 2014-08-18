@@ -3,10 +3,13 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,26 +24,25 @@ import java.util.List;
  *  the 'doorway' by seek behavior, avoid walls, and maintain separation from each other."
  * 
  *  @author Jesús Martín Berlanga
- *  @version 1.0
+ *  @version 1.0.1
  */
 public class QueuingBehaviour extends AbstractStrengthSteeringBehaviour {
 
     private List<Agent> neighbours = new ArrayList<Agent>();
-    public List<Agent> getNeighbours(){return this.neighbours; }
+    public void setNeighbours(List<Agent> neighbours){ this.neighbours = neighbours; }
     private float minDistance;
     
-    private AbstractSteeringBehaviour container;
-    private boolean containerSettedUp = false;
-    
-    public void setContainerSettedUp(boolean containerSettedUp) { this.containerSettedUp = containerSettedUp; }
-   
     /** 
      * @param neighbours Queue of agents
      * @param minDistance Min. distance from center to center to consider a neighbour as an obstacle
+     * 
+     * @throws QueuingWithNegativeMinDistance If minDistance is lower than 0
+     * 
      * @see AbstractStrengthSteeringBehaviour#AbstractStrengthSteeringBehaviour(com.jme3.ai.agents.Agent)   
      */
     public QueuingBehaviour(Agent agent, List<Agent> neighbours, float minDistance) {
          super(agent);
+         this.validateMinDistance(minDistance);
          this.neighbours = neighbours;
          this.minDistance = minDistance;
     }
@@ -51,19 +53,20 @@ public class QueuingBehaviour extends AbstractStrengthSteeringBehaviour {
       */
     public QueuingBehaviour(Agent agent, List<Agent> neighbours, float minDistance, Spatial spatial) {
         super(agent, spatial);
+        this.validateMinDistance(minDistance);
         this.neighbours = neighbours;
         this.minDistance = minDistance;
     }
-    
-    private void setUpContainer()
-    {
-        if(this.getIsAPartialSteer())
-            this.container = this.getContainer();
-        else
-            this.container = this;
-        
-        this.containerSettedUp = true;
-    }
+
+     /** @see IllegalBehaviour */
+     public static class QueuingWithNegativeMinDistance extends IllegalBehaviour {
+        private QueuingWithNegativeMinDistance(String msg) { super(msg); }
+     }
+     
+     private void validateMinDistance(float minDistance) {
+         if(minDistance < 0)
+             throw new QueuingWithNegativeMinDistance("The min distance from an obstacle can not be negative. Current value is " + minDistance);
+     }
     
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) { }
@@ -72,12 +75,9 @@ public class QueuingBehaviour extends AbstractStrengthSteeringBehaviour {
     @Override
     protected Vector3f calculateFullSteering() 
     { 
-        if(!this.containerSettedUp)
-          this.setUpContainer();
-              
         Vector3f agentVelocity = this.agent.getVelocity();
         
-        int numberObstacles = 1;
+        int numberObstaclesFactor = 1;
         float distanceFactor = 1;
         float velocityFactor = 1;
         
@@ -100,11 +100,11 @@ public class QueuingBehaviour extends AbstractStrengthSteeringBehaviour {
             {
                 distanceFactor *= distance / this.minDistance;
                 velocityFactor *= -velDiff  / this.agent.getMoveSpeed();
-                numberObstacles++;
+                numberObstaclesFactor++;
             }
         }
         
-        this.container.setVelocityStrength((distanceFactor + velocityFactor + (1/numberObstacles)) /3);
+        this.setBrakingFactor((distanceFactor + velocityFactor + (1/numberObstaclesFactor)) /3);
         
         return new Vector3f();
     }

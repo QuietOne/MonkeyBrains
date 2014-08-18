@@ -3,18 +3,17 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
+
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 
 /**
- * Simple move behaviour for NPC. Agent should move  to moveDirection. 
- *
- * @see Agent#moveSpeed
+ * Simple move behaviour: Agent moves in the "moveDirection" direction. 
  *
  * @autor Jesús Martín Berlanga
- * @version 1.1
+ * @version 1.1.1
  */
 public class MoveBehaviour extends AbstractStrengthSteeringBehaviour {
 
@@ -23,11 +22,12 @@ public class MoveBehaviour extends AbstractStrengthSteeringBehaviour {
      */
     protected Vector3f moveDirection;
 
-
+    /** @see  AbstractStrengthSteeringBehaviour#AbstractStrengthSteeringBehaviour(com.jme3.ai.agents.Agent)  */
     public MoveBehaviour(Agent agent) {
         super(agent);
     }
 
+    /** @see  AbstractStrengthSteeringBehaviour#AbstractStrengthSteeringBehaviour(com.jme3.ai.agents.Agent, com.jme3.scene.Spatial)   */
     public MoveBehaviour(Agent agent, Spatial spatial) {
         super(agent, spatial);
     }
@@ -46,13 +46,13 @@ public class MoveBehaviour extends AbstractStrengthSteeringBehaviour {
 
     /** @see AbstractStrengthSteeringBehaviour#calculateFullSteering()  */
     @Override
-    Vector3f calculateFullSteering() {
-        
-        Vector3f moveDirection = new Vector3f();
+    protected Vector3f calculateFullSteering() 
+    {
+        Vector3f steer = new Vector3f();
 
         if(this.moveDirection != null)
-            moveDirection = this.moveDirection;
+            steer = this.moveDirection;
 
-        return moveDirection;
+        return steer;
     }
 }

@@ -3,6 +3,8 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
@@ -15,7 +17,7 @@ import com.jme3.scene.Spatial;
  * @see PursuitBehaviour
  * 
  * @author Jesús Martín Berlanga
- * @version 1.3
+ * @version 1.4
  */
 public class LeaderFollowing extends SeekBehaviour {
        
@@ -24,9 +26,6 @@ public class LeaderFollowing extends SeekBehaviour {
     private float minimumAngle;
     private ArriveBehaviour arriveBehaviour;
     private EvadeBehaviour evadeBehaviour;
-    private boolean containerSettedUp = false;
-    
-    public void setContainerSettedUp(boolean containerSettedUp) { this.containerSettedUp = containerSettedUp; }
        
     /** @see SeekBehaviour#SeekBehaviour(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent)  */
     public LeaderFollowing(Agent agent, Agent target)
@@ -55,14 +54,27 @@ public class LeaderFollowing extends SeekBehaviour {
     }
     
     /** 
-     * @param distanceToChangeFocus Distance to change the focus.
+     * @param distanceToChangeFocus Distance to change the focus: After the agent distance
+     *                              to the target is lower than this distance, the agent
+     *                              will progressively stop seeking the future position
+     *                              and instead, directly seek the target.
+     * @param distanceToEvade If the agent is in front of the target and the distance
+     *                        to him is lower than distanceToEvade, the agent will evade
+     *                        him in order to stay out of his way.
      * @param minimunAngle  Minimum angle betwen the target velocity and the vehicle location.
+     * 
+     * @throws LeaderFollowWithoutLeader If target is null
+     * @throws negativeDistanceToEvade If distanceToEvade is lower than 0
+     * @throws negativeDistanceToChangeFocus If distanceToEvade is lower than 0
      * 
      * @see LeaderFollowing#LeaderFollowing(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent) 
      */
-    public LeaderFollowing(Agent agent, Agent target, float distanceToEvade,float distanceToChangeFocus, float minimunAngle) 
+    public LeaderFollowing(Agent agent, Agent target, float distanceToEvade, float distanceToChangeFocus, float minimunAngle) 
     {
         super(agent, target);
+        this.validateTarget(target);
+        this.validateDistanceToEvade(distanceToEvade);
+        this.validateDistanceToChangeFocus(distanceToChangeFocus);
         this.distanceToEvade = distanceToEvade;
         this.evadeBehaviour = new EvadeBehaviour(agent, target);
         this.arriveBehaviour = new ArriveBehaviour(agent, target);
@@ -74,9 +86,12 @@ public class LeaderFollowing extends SeekBehaviour {
      *  @see LeaderFollowing#LeaderFollowing(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent, com.jme3.scene.Spatial) 
      *  @see LeaderFollowing#LeaderFollowing(com.jme3.ai.agents.Agent, com.jme3.ai.agents.Agent, float, float, float) 
      */
-    public LeaderFollowing(Agent agent, Agent target, Spatial spatial, float distanceToEvade, float distanceToChangeFocus, float minimunAngle) 
+    public LeaderFollowing(Agent agent, Agent target, float distanceToEvade, float distanceToChangeFocus, float minimunAngle, Spatial spatial) 
     {
         super(agent, target, spatial);
+        this.validateTarget(target);
+        this.validateDistanceToEvade(distanceToEvade);
+        this.validateDistanceToChangeFocus(distanceToChangeFocus);
         this.distanceToEvade = distanceToEvade;
         this.evadeBehaviour = new EvadeBehaviour(agent, target, spatial);
         this.arriveBehaviour = new ArriveBehaviour(agent, target);
@@ -84,27 +99,41 @@ public class LeaderFollowing extends SeekBehaviour {
         this.minimumAngle = minimunAngle;
     }
     
-    private void setupArriveContainer()
-    {
-        if(this.getIsAPartialSteer())
-        {
-            this.arriveBehaviour.setContainer(this.getContainer());
-            this.arriveBehaviour.setIsAPartialSteer(true);
-        }
-        else
-            this.arriveBehaviour.setContainer(this);
-    }
+     /** @see IllegalBehaviour */
+     public static class negativeDistanceToEvade extends IllegalBehaviour {
+        private negativeDistanceToEvade(String msg) { super(msg); }
+     }
+     
+     private void validateDistanceToEvade(float distanceToEvade) {
+         if(distanceToEvade < 0)
+             throw new negativeDistanceToEvade("The distance to evade can not be negative. Current value is " + distanceToEvade);
+     }
+     
+     /** @see IllegalBehaviour */
+     public static class LeaderFollowWithoutLeader extends IllegalBehaviour {
+         private LeaderFollowWithoutLeader(String msg) { super(msg); }
+     }
+
+     private void validateTarget(Agent target) {
+         if(target == null) throw new LeaderFollowWithoutLeader("The target can not be null.");
+     }
+     
+     /** @see IllegalBehaviour */
+     public static class negativeDistanceToChangeFocus extends IllegalBehaviour {
+        private negativeDistanceToChangeFocus(String msg) { super(msg); }
+     }
+     
+     private void validateDistanceToChangeFocus(float distanceToChangeFocus) {
+         if(distanceToChangeFocus < 0)
+             throw new negativeDistanceToChangeFocus("The distance to change focus can not be negative. Current value is " + distanceToChangeFocus);
+     }
     
     /** @see AbstractStrengthSteeringBehaviour#calculateFullSteering()  */
     @Override
     protected Vector3f calculateFullSteering() 
-    {
-         if(!this.containerSettedUp)
-             this.setupArriveContainer();
-        
+    {   
          Vector3f steer;
          float distanceBetwen = this.agent.distanceRelativeToAgent(this.getTarget());
-
 
          //See how far ahead we need to leed
          Vector3f fullProjectedLocation = this.getTarget().getPredictedPosition();

@@ -3,25 +3,28 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 import com.jme3.math.Plane;
+
 import java.util.List;
 
 /**
  * This behaviour is similar to ObstacleAvoidanceBehaviour wich the difference
  * that the obstacles can be other agents in movement. <br> <br>
  * 
- *  "Unaligned collision avoidance behavior: avoid colliding with other
- *   nearby vehicles moving in unconstrained directions.  Determine which
- *   if any) other other vehicle we would collide with first, then steers
- *   to avoid the site of that potential collision.  Returns a steering
- *   force vector, which is zero length if there is no impending collision."
+ * "Unaligned collision avoidance behavior: avoid colliding with other
+ *  nearby vehicles moving in unconstrained directions.  Determine which
+ *  if any) other other vehicle we would collide with first, then steers
+ *  to avoid the site of that potential collision.  Returns a steering
+ *  force vector, which is zero length if there is no impending collision."
  * 
  * @see ObstacleAvoidanceBehaviour
- * @see Agent#setRadius(float) 
+ * 
  * @author Jesús Martín Berlangas
- * @version 1.1
+ * @version 1.1.1
  */
 public class UnalignedCollisionAvoidanceBehaviour extends ObstacleAvoidanceBehaviour
 {
@@ -34,8 +37,8 @@ public class UnalignedCollisionAvoidanceBehaviour extends ObstacleAvoidanceBehav
     }
 
     /** @see ObstacleAvoidanceBehaviour#ObstacleAvoidanceBehaviour(com.jme3.ai.agents.Agent, com.jme3.scene.Spatial, java.util.List, float)  */
-    public UnalignedCollisionAvoidanceBehaviour(Agent agent, Spatial spatial, List<Agent> obstacles, float minTimeToCollision) {
-        super(agent, spatial, obstacles, minTimeToCollision);
+    public UnalignedCollisionAvoidanceBehaviour(Agent agent, List<Agent> obstacles, float minTimeToCollision, Spatial spatial) {
+        super(agent, obstacles, minTimeToCollision, spatial);
     }
     
     /** @see ObstacleAvoidanceBehaviour#ObstacleAvoidanceBehaviour(com.jme3.ai.agents.Agent, java.util.List, float, float)  */
@@ -44,31 +47,43 @@ public class UnalignedCollisionAvoidanceBehaviour extends ObstacleAvoidanceBehav
     }
 
     /** @see ObstacleAvoidanceBehaviour#ObstacleAvoidanceBehaviour(com.jme3.ai.agents.Agent, com.jme3.scene.Spatial, java.util.List, float, float) */
-    public UnalignedCollisionAvoidanceBehaviour(Agent agent, Spatial spatial, List<Agent> obstacles, float minTimeToCollision, float minDistance) {
-        super(agent, spatial, obstacles, minTimeToCollision, minDistance);
+    public UnalignedCollisionAvoidanceBehaviour(Agent agent, List<Agent> obstacles, float minTimeToCollision, float minDistance, Spatial spatial) {
+        super(agent, obstacles, minTimeToCollision, minDistance, spatial);
     }
     
     /** 
-     * @param distanceMultiplier Mutiplies the distance requiered to evade an obstacle
+     * @param distanceMultiplier Multiplies the distance required to evade an obstacle, A higher value means that will evade far obstacles
      * @see ObstacleAvoidanceBehaviour#ObstacleAvoidanceBehaviour(com.jme3.ai.agents.Agent, java.util.List, float, float)  
      */
     public UnalignedCollisionAvoidanceBehaviour(Agent agent, List<Agent> obstacles, float minTimeToCollision, float minDistance, float distanceMultiplier) {
         super(agent, obstacles, minTimeToCollision, minDistance);
+        this.validateDistanceMultiplier(distanceMultiplier);
         this.distanceMultiplier = distanceMultiplier;
     }
 
     /** 
-     * @param distanceMultiplier Mutiplies the distance requiered to evade an obstacle
+     * @param distanceMultiplier Multiplies the distance required to evade an obstacle, A higher value means that will evade far obstacles
      * @see ObstacleAvoidanceBehaviour#ObstacleAvoidanceBehaviour(com.jme3.ai.agents.Agent, com.jme3.scene.Spatial, java.util.List, float, float) 
      */
-    public UnalignedCollisionAvoidanceBehaviour(Agent agent, Spatial spatial, List<Agent> obstacles, float minTimeToCollision, float minDistance, float distanceMultiplier) {
-        super(agent, spatial, obstacles, minTimeToCollision, minDistance);
+    public UnalignedCollisionAvoidanceBehaviour(Agent agent, List<Agent> obstacles, float minTimeToCollision, float minDistance, float distanceMultiplier, Spatial spatial) {
+        super(agent, obstacles, minTimeToCollision, minDistance, spatial);
+        this.validateDistanceMultiplier(distanceMultiplier);
         this.distanceMultiplier = distanceMultiplier;
     }
    
+     /** @see IllegalBehaviour */
+     public static class UnalignedObstacleAvoindanceWithNegativeDistanceMultiplier extends IllegalBehaviour {
+        private UnalignedObstacleAvoindanceWithNegativeDistanceMultiplier(String msg) { super(msg); }
+     }
+     
+     private void validateDistanceMultiplier(float distanceMultiplier) {
+         if(distanceMultiplier < 0)
+             throw new UnalignedObstacleAvoindanceWithNegativeDistanceMultiplier("The min distance from an obstacle can not be negative. Current value is " + distanceMultiplier);
+     }
+    
     /** @see ObstacleAvoidanceBehaviour#calculateFullSteering()  */
     @Override
-    Vector3f calculateFullSteering() 
+    protected Vector3f calculateFullSteering() 
     {
         Vector3f steer = null;
         
@@ -118,11 +133,9 @@ public class UnalignedCollisionAvoidanceBehaviour extends ObstacleAvoidanceBehav
         // "if a potential collision was found, compute steering to avoid"
         if(threat != null)
         {   
-            float steerMult = 0;
-            
-                Vector3f agentVelocity = this.agent.getVelocity();
-                Vector3f otherVelocity = threat.getVelocity();
-                boolean forceTreatAsParallel = false;
+            Vector3f agentVelocity = this.agent.getVelocity();
+            Vector3f otherVelocity = threat.getVelocity();
+            boolean forceTreatAsParallel = false;
                 
                 //If agent velocity is zero compute the behaviour as the velocities are parallel
                 if(agentVelocity == null || agentVelocity.equals(Vector3f.ZERO))
@@ -170,7 +183,7 @@ public class UnalignedCollisionAvoidanceBehaviour extends ObstacleAvoidanceBehav
                     if(sideVector.negate().equals(Vector3f.ZERO)) //Move in a random direction
                         sideVector = randomVectInPlane(this.agent.getVelocity(), this.agent.getLocalTranslation()).normalize();
                     
-                    steer = sideVector;                   
+                    steer = sideVector.mult(this.agent.getMoveSpeed());                   
                 }
                 
                 // "perpendicular paths:"  Steer away and slow/increase the speed knowing future positions

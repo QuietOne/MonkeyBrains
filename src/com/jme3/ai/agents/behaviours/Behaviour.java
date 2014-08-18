@@ -3,6 +3,7 @@
 package com.jme3.ai.agents.behaviours;
 
 import com.jme3.ai.agents.Agent;
+
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 
@@ -11,13 +12,15 @@ import com.jme3.scene.control.AbstractControl;
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
- * @version 1.1
+ * @version 1.2.0
  */
 public abstract class Behaviour extends AbstractControl {
 
-    //author: Jesús Martín Berlanga
-    private static class behaviourNullAgentException extends IllegalBehaviour
-    {
+    /** 
+     *  @see IllegalBehaviour 
+     *  @author Jesús Martín Berlanga 
+     */
+    public static class behaviourNullAgentException extends IllegalBehaviour {
         private  behaviourNullAgentException(String msg) { super(msg); }
     }
 
@@ -48,9 +51,13 @@ public abstract class Behaviour extends AbstractControl {
      * @param agent to whom behaviour belongs
      * @param spatial which is active during execution
      * 
+     * @author Tihomir Radosavljević
+     * @author Jesús Martín Berlanga
+     * 
      * @see Behaviour#Behaviour(com.jme3.ai.agents.Agent) 
      */
     public Behaviour(Agent agent, Spatial spatial) {
+        if(agent == null) throw new behaviourNullAgentException("You can not instantiate a behaviour without an agent.");
         this.agent = agent;
         this.spatial = spatial;
     }

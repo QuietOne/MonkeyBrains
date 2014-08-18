@@ -4,15 +4,16 @@ package com.jme3.ai.agents;
 
 import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.ai.agents.behaviours.npc.SimpleMainBehaviour;
-import com.jme3.scene.Spatial;
 import com.jme3.ai.agents.util.AbstractWeapon;
 import com.jme3.ai.agents.util.GameObject;
+
+import com.jme3.scene.Spatial;
+import com.jme3.scene.Node;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
-import com.jme3.scene.Node;
 
 /**
  * Class that represents Agent. Note: Not recommended for extending. Use
@@ -20,7 +21,7 @@ import com.jme3.scene.Node;
  *
  * @author Jesús Martín Berlanga
  * @author Tihomir Radosavljević
- * @version 1.4.1
+ * @version 1.5.1
  */
 public class Agent<T> extends GameObject {
     
@@ -52,32 +53,23 @@ public class Agent<T> extends GameObject {
      * Camera that is attached to agent.
      */
     private Camera camera;
-    /**
-     * Size of bounding sphere, for steer behaviours
-     *
-     * @author Jesús Martín Berlanga
-     */
-    float radius = 0;
+    
+    /**  @author Jesús Martín Berlanga */
+    private float radius = 0;
 
-    /**
-     * @author Jesús Martín Berlanga
-     */
-    public void setRadius(float radius) {
-        this.radius = radius;
-    }
-
-    /**
-     * @author Jesús Martín Berlanga
-     */
+   /**
+    * @author Jesús Martín Berlanga
+    */
     public float getRadius() {
         return this.radius;
     }
-
+    
     /**
      * @param name unique name/id of agent
      */
     public Agent(String name) {
         this.name = name;
+        this.radius = 0;
     }
 
     /**
@@ -87,6 +79,46 @@ public class Agent<T> extends GameObject {
     public Agent(String name, Spatial spatial) {
         this.name = name;
         this.spatial = spatial;
+        this.radius = 0;
+    }
+    
+    /** 
+     *  @see IllegalBehaviour 
+     *  @author Jesús Martín Berlanga 
+     */
+    public static class AgentWithNegativeRadius extends IllegalActor {
+        private AgentWithNegativeRadius(String msg) { super(msg); }
+    }
+    
+    /** @author Jesús Martín Berlanga */
+    private void validateRadius(float radius) {
+        if(radius < 0) throw new AgentWithNegativeRadius("An agent can't have a negative radius. You tried to construct the agent with a " + radius + " radius.");
+    }
+    
+    /**
+     * @param radius Size of bounding sphere, for steer behaviours
+     * @param name unique name/id of agent
+     * 
+     * @throws AgentWithNegativeRadius If the radius is lower than 0
+     * 
+     * @author Jesús Martín Berlanga
+     */
+    public Agent(String name, float radius) {
+        this.name = name;
+        this.validateRadius(radius);
+        this.radius = radius;
+    }
+
+    /**
+     * @see Agent#Agent(java.lang.String, float) 
+     * @see Agent#Agent(java.lang.String, com.jme3.scene.Spatial) 
+     * @author Jesús Martín Berlanga
+     */
+    public Agent(String name, Spatial spatial, float radius) {
+        this.name = name;
+        this.spatial = spatial;
+        this.validateRadius(radius);
+        this.radius = radius;
     }
 
     /**
@@ -222,7 +254,7 @@ public class Agent<T> extends GameObject {
     }
 
     /**
-     * Gets the predicted position for this 'frame', taking into account current
+     * @return The predicted position for this 'frame', taking into account current
      * position and velocity.
      *
      * @author Jesús Martín Berlanga
@@ -284,6 +316,14 @@ public class Agent<T> extends GameObject {
         this.camera = camera;
     }
 
+    /** 
+     *  @see IllegalBehaviour 
+     *  @author Jesús Martín Berlanga 
+     */
+    public static class inNeighborhoodInvalidDistances extends IllegalActorFunctionParams {
+        private inNeighborhoodInvalidDistances(String msg) { super(msg); }
+    }
+    
     /**
      * Check if this agent is considered in the same "neighborhood" in relation
      * with another agent. <br> <br>
@@ -295,21 +335,31 @@ public class Agent<T> extends GameObject {
      * considered in the same neighborhood. <br> <br>
      *
      * If the distance is inside [minDistance. maxDistance] It is considered in
-     * teh same neighborhood if the forwardness is higher than the 1 -
-     * sinMaxAngle.
+     * the same neighborhood if the forwardness is higher than "1 -
+     * sinMaxAngle".
      *
      * @param Agent The other agent
      * @param minDistance Min. distance to be in the same "neighborhood"
      * @param maxDistance Max. distance to be in the same "neighborhood"
      * @param MaxAngle Max angle in radians
      *
+     * @throws inNeighborhoodInvalidDistances If minDistance or maxDistance is lower than 0
+     * 
+     * @return If this agent is in the same "neighborhood" in relation with another agent.
+     * 
      * @author Jesús Martín Berlanga
      */
     public boolean inBoidNeighborhood(
             Agent neighbour,
             float minDistance,
             float maxDistance,
-            float MaxAngle) {
+            float MaxAngle) 
+    {
+        if(minDistance < 0)
+            throw new inNeighborhoodInvalidDistances("The min distance can not be negative. Current value is " + minDistance);
+        else if( maxDistance < 0)
+            throw new inNeighborhoodInvalidDistances("The max distance can not be negative. Current value is " + maxDistance);
+        
         boolean isInBoidNeighborhood;
         
         if (this == neighbour) {
@@ -359,15 +409,17 @@ public class Agent<T> extends GameObject {
         return (float) FastMath.cos(radiansAngleBetwen); 
     }
     
+    /**
+     * @return The agent forward direction
+     * @author Jesús Martín Berlanga
+     */
     public Vector3f fordwardVector() {
         return this.getLocalRotation().mult(new Vector3f(0,0,1)).normalize();
     }
 
     /**
-     * Calculates the forwardness in relation with a position vector
-     *
      * @param positionVector Offset vector.
-     * @see Agent#forwardness(com.jme3.ai.agents.Agent)
+     * @return The forwardness in relation with a position vector
      *
      * @author Jesús Martín Berlanga
      */
@@ -389,12 +441,32 @@ public class Agent<T> extends GameObject {
 
     /**
      * @param agent Other agent
-     * @return Distance squared relative to another Agent
+     * @return Distance from a position
      *
      * @author Jesús Martín Berlanga
      */
     public float distanceSquaredRelativeToAgent(Agent agent) {
         return this.offset(agent).lengthSquared();
+    }
+
+    /**
+     * @param pos Position
+     * @return Distance from a position
+     *
+     * @author Jesús Martín Berlanga
+     */
+    public float distanceFromPos(Vector3f pos) {
+        return this.offset(pos).length();
+    }
+
+    /**
+     * @param pos Position
+     * @return Distance squared Distance from a position
+     *
+     * @author Jesús Martín Berlanga
+     */
+    public float distanceSquaredFromPos(Vector3f pos) {
+        return this.offset(pos).lengthSquared();
     }
 
     /**
@@ -496,9 +568,10 @@ public class Agent<T> extends GameObject {
      * 
      * @param agent Other agent
      * @param time The time until nearest approach
-     * @return The time until nearest approach
      * @param ourPositionAtNearestApproach Pointer to a vector, This bector will be changed to our position at nearest approach
      * @param hisPositionAtNearestApproach Pointer to a vector, This bector will be changed to other position at nearest approach
+     * 
+     * @return The time until nearest approach
      * 
      * @see Agent#predictNearestApproachTime(com.jme3.ai.agents.Agent) 
      * @author Jesús Martín Berlanga

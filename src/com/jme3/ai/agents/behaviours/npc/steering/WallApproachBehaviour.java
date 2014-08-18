@@ -4,6 +4,7 @@ package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.math.Ray;
@@ -14,13 +15,16 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 
 /**
- * "Approach a 'wall' (or other surface or path) and then to maintain a
- *  certain offset from it"
+ * "Approach a 'wall' (or other surface or path) and then maintain a
+ *  certain offset from it" <br><br>
+ * 
+ * Keep in mind that this relates to wall approach not necessarily to 
+ * collision detection.
  * 
  * @author Jesús Martín Berlanga
- * @version  1.0
+ * @version  1.1
  */
-public class WallApproach extends AbstractStrengthSteeringBehaviour {
+public class WallApproachBehaviour extends AbstractStrengthSteeringBehaviour {
     
     //14 tests in total
     private static enum RayTests
@@ -46,13 +50,14 @@ public class WallApproach extends AbstractStrengthSteeringBehaviour {
         private RayTests(Vector3f direction) { this.direction = direction; }
         private Vector3f getDirection() { return this.direction; }
     }
-        
-    private static class WallApproachWithoutWall extends IllegalBehaviour
+    
+    /** @see IllegalBehaviour */
+    public static class WallApproachWithoutWall extends IllegalBehaviour
     {
         private WallApproachWithoutWall(String msg) { super(msg); }
     }
     
-    private static class WallApproachNegativeOffset extends IllegalBehaviour
+    public static class WallApproachNegativeOffset extends IllegalBehaviour
     {
         private WallApproachNegativeOffset(String msg) { super(msg); }
     }
@@ -66,47 +71,47 @@ public class WallApproach extends AbstractStrengthSteeringBehaviour {
     /** @throws WallApproachNegativeOffset If offsetToMaintain is negative */
     public void setOffsetToMaintain(float offsetToMaintain) 
     { 
-        WallApproach.validateOffsetToMaintain(offsetToMaintain);
+        WallApproachBehaviour.validateOffsetToMaintain(offsetToMaintain);
         this.offsetToMaintain = offsetToMaintain; 
     }
     
     /** 
      * @param wall Surface or path where the agent will maintain a certain offset
-     * @paaram offsetToMaintain Offset that the agent will have to maintain
+     * @paaram offsetToMaintain Offset from the surface that the agent will have to maintain
      * 
      * @throws WallApproachWithoutWall If the wall is a null pointer
      * @throws WallApproachNegativeOffset If offsetToMaintain is negative
      * 
      * @see AbstractStrengthSteeringBehaviour#AbstractStrengthSteeringBehaviour(com.jme3.ai.agents.Agent) 
      */
-    public WallApproach(Agent agent, Node wall, float offsetToMaintain)
+    public WallApproachBehaviour(Agent agent, Node wall, float offsetToMaintain)
     {        
          super(agent);
-         WallApproach.validateConstruction(wall, offsetToMaintain);
+         WallApproachBehaviour.validateConstruction(wall, offsetToMaintain);
          this.wall = wall;
          this.offsetToMaintain = offsetToMaintain;
      
          if(offsetToMaintain != 0)
             this.rayTestOffset = (offsetToMaintain + agent.getRadius()) * 4;
          else
-            this.rayTestOffset = WallApproach.MIN_RAY_TEST_OFFSET;
+            this.rayTestOffset = WallApproachBehaviour.MIN_RAY_TEST_OFFSET;
     }
 
     /** 
      * @see WallApproach#WallApproach(com.jme3.ai.agents.Agent, com.jme3.scene.Node, float) 
      * @see AbstractStrengthSteeringBehaviour#AbstractStrengthSteeringBehaviour(com.jme3.ai.agents.Agent, com.jme3.scene.Spatial) 
      */
-    public WallApproach(Agent agent, Node wall, float offsetToMaintain, Spatial spatial)     
+    public WallApproachBehaviour(Agent agent, Node wall, float offsetToMaintain, Spatial spatial)     
     {      
         super(agent, spatial);
-        WallApproach.validateConstruction(wall, offsetToMaintain);
+        WallApproachBehaviour.validateConstruction(wall, offsetToMaintain);
         this.wall = wall;
         this.offsetToMaintain = offsetToMaintain;
         
          if(offsetToMaintain != 0)
             this.rayTestOffset = (offsetToMaintain + agent.getRadius()) * 4;
          else
-            this.rayTestOffset = WallApproach.MIN_RAY_TEST_OFFSET;
+            this.rayTestOffset = WallApproachBehaviour.MIN_RAY_TEST_OFFSET;
     }
     
     private static void validateConstruction(Node wall, float offsetToMaintain) 
@@ -117,7 +122,7 @@ public class WallApproach extends AbstractStrengthSteeringBehaviour {
                     );
         
         else 
-            WallApproach.validateOffsetToMaintain(offsetToMaintain);
+            WallApproachBehaviour.validateOffsetToMaintain(offsetToMaintain);
     }
     
     private static void validateOffsetToMaintain(float offsetToMaintain)
@@ -146,8 +151,10 @@ public class WallApproach extends AbstractStrengthSteeringBehaviour {
             
             if(surfaceLocation != null)
             {
-                Vector3f offsetToSurface = this.agent.offset(surfaceLocation);
-                steer = offsetToSurface.subtract(offsetToSurface.normalize().mult(this.offsetToMaintain));
+                Vector3f extraOffset = this.agent.offset(surfaceLocation).negate().normalize().mult(this.offsetToMaintain);
+                
+                SeekBehaviour seek = new SeekBehaviour(this.agent, surfaceLocation.add(extraOffset));
+                steer = seek.calculateFullSteering();
             }
         }
         
@@ -210,7 +217,7 @@ public class WallApproach extends AbstractStrengthSteeringBehaviour {
         
         LowerDistances distances = new LowerDistances();
         
-        for(RayTests rayTest : WallApproach.RayTests.values() )
+        for(RayTests rayTest : WallApproachBehaviour.RayTests.values() )
         {
             Vector3f rayTestSurfaceLocation = this.surfaceLocation(rayTest.getDirection());
             

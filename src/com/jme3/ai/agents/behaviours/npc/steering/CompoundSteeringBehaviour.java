@@ -21,15 +21,12 @@ import com.jme3.scene.Spatial;
  * AbstractSteeringBehaviour. <br><br>
  * 
  * If you have issues related with components cancelling each other out, that 
- * "can be addressed by assigning a priority to components. (For example: first 
- * priority is obstacle avoidance, second is evasion ...) The steering controller 
- * first checks to see if obstacle avoidance returns a non-zero value (indicating 
- * a potential collision), if so it uses that. Otherwise, it moves on to the second 
- * priority behavior, and so on." <br><br>
+ * "can be addressed by assigning a priority to components (For example: first 
+ * priority is obstacle avoidance, second is evasion ...)."  <br><br>
  * 
- * You can assign the same priority to more than one behaviour, If you do that, the 
- * controller only will move to the next priorities if all the behaviours return
- * zero or a value considered as zero.
+ * The steering controller first checks the higher layer to see if all the 
+ * behaviours returns a value higher than 'minLengthToInvalidSteer', if so 
+ * it uses that layer. Otherwise, it moves on to the second layer, and so on. <br><br>
  * 
  * @author Jesús Martín Berlanga
  * @version 2.1

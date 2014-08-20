@@ -17,7 +17,7 @@
  * If you find any bug please contact with me (Jesús) and I will be glad to fix it.
  * You will find my email at the website mentioned before.
  * 
- * @version 3.0, 17/8/2014
+ * @version 3.0.1, 20/8/2014
  * <br><br><br>
  * 
  * 
@@ -26,6 +26,9 @@
  * ////////Changelog///////// <br>
  * ////////////////////////// <br> 
  * <br>
+ * 
+ * - 3.0.1, 20/8/2014: <br>
+ * Small javadoc fixes <br><br>
  * 
  * - 3.0, 17/8/2014: <br>
  * First official release <br><br>

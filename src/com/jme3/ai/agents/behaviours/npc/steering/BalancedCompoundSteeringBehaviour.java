@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Each force added to this container is reduced in relation with a
+ * Each force generated inside this container is reduced in relation with a
  * proportion factor. <br> <br>
  *
  * "Proportion factor" = "Partial Force" / "Total container force" <br><br>

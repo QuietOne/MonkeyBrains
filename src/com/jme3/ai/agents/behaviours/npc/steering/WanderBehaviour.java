@@ -1,22 +1,33 @@
+//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
+
 import java.util.Random;
 
 /**
+ * This behaviour is based on a easy implementation that "generates random steering 
+ * force each frame, but this produces rather uninteresting motion. It is 'twitchy'
+ * and produces no sustained turns. <br><br>
+ * 
  * Wander behaviour is steering behaviour where agent moves randomly on terrain.
  * This is done by same calculation as seek behaviour, but difference is that
  * target for this behaviour are random positions that changes durring time.
  *
  * @author Tihomir Radosavljević
- * @version 1.0
+ * @author Jesús Martín Berlanga
+ * 
+ * @version 1.4.1
  */
-public class WanderBehaviour extends AbstractSteeringBehaviour {
+public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
 
     /**
      * Position of target
@@ -46,7 +57,7 @@ public class WanderBehaviour extends AbstractSteeringBehaviour {
         velocity = new Vector3f();
         timeInterval = 2f;
         time = timeInterval;
-        area = new Vector3f[2];
+        this.area = new Vector3f[] {Vector3f.NEGATIVE_INFINITY, Vector3f.POSITIVE_INFINITY };
     }
 
     /**
@@ -54,6 +65,9 @@ public class WanderBehaviour extends AbstractSteeringBehaviour {
      *
      * @param agent to whom behaviour belongs
      * @param spatial active spatial during excecution of behaviour
+     * 
+     * @author Tihomir Radosavljević
+     * @author Jesús Martín Berlanga
      */
     public WanderBehaviour(Agent agent, Spatial spatial) {
         super(agent, spatial);
@@ -61,14 +75,27 @@ public class WanderBehaviour extends AbstractSteeringBehaviour {
         velocity = new Vector3f();
         timeInterval = 2f;
         time = timeInterval;
+        this.area = new Vector3f[] {Vector3f.NEGATIVE_INFINITY, Vector3f.POSITIVE_INFINITY };
     }
 
-    @Override
-    protected void controlUpdate(float tpf) {
-        changeTargetPosition(tpf);
-        super.controlUpdate(tpf);
-    }
-
+     /** 
+      * @author Jesús Martín Berlanga
+      * @see IllegalBehaviour 
+      */
+     public static class WanderWithoutWanderArea extends IllegalBehaviour {
+        private WanderWithoutWanderArea(String msg) { super(msg); }
+     }
+     
+     /** @author Jesús Martín Berlanga */
+     private void validateWanderArea(Vector3f[] area) {
+         if(
+                 area[0].x == area[1].x ||
+                 area[0].y == area[1].y ||
+                 area[0].z == area[1].z 
+           )
+             throw new WanderWithoutWanderArea("Components from area vectors must be different.");
+     }
+    
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
     }
@@ -77,40 +104,31 @@ public class WanderBehaviour extends AbstractSteeringBehaviour {
      * Calculate steering vector.
      *
      * @return steering vector
+     * 
+     * @author Tihomir Radosavljević
+     * @author Jesús Martín Berlanga
      */
-    protected Vector3f calculateSteering() {
+    @Override
+    protected Vector3f calculateFullSteering() {
+        changeTargetPosition(this.getTPF());
         Vector3f desiredVelocity = targetPosition.subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
-        return desiredVelocity.subtract(velocity);
-    }
-
-    /**
-     * Calculate new velocity for agent based on calculated steering behaviour.
-     *
-     * @return velocity vector
-     */
-    protected Vector3f calculateNewVelocity() {
-        Vector3f steering = calculateSteering();
-        if (steering.length() > agent.getMaxForce()) {
-            steering = steering.normalize().mult(agent.getMaxForce());
-        }
-        agent.setAcceleration(steering.mult(1 / agentTotalMass()));
-        velocity = velocity.add(agent.getAcceleration());
-        if (velocity.length() > agent.getMaxMoveSpeed()) {
-            velocity = velocity.normalize().mult(agent.getMaxMoveSpeed());
-        }
-        return velocity;
+        desiredVelocity.subtract(velocity);     
+        return desiredVelocity;
     }
 
     /**
      * Metod for changing target position.
      *
      * @param tpf time per frame
+     * 
+     * @author Tihomir Radosavljević
+     * @author Jesús Martín Berlanga
      */
     protected void changeTargetPosition(float tpf) {
         time -= tpf;
         if (time <= 0) {
             Random random = new Random();
-            float x, z;
+            float x, up, z;
             int distance = (int) FastMath.abs(area[1].x - area[0].x);
             x = random.nextInt(distance / 2);
             if (random.nextBoolean()) {
@@ -121,7 +139,12 @@ public class WanderBehaviour extends AbstractSteeringBehaviour {
             if (random.nextBoolean()) {
                 z *= -1;
             }
-            targetPosition = new Vector3f(x, agent.getLocalTranslation().getY(), z);
+            distance = (int) FastMath.abs(area[1].y - area[0].y);
+            up = random.nextInt(distance / 2);
+            if (random.nextBoolean()) {
+                up *= -1;
+            }
+            targetPosition = new Vector3f(x, up, z);
             time = timeInterval;
         }
     }
@@ -149,9 +172,12 @@ public class WanderBehaviour extends AbstractSteeringBehaviour {
      *
      * @param from
      * @param to
+     * 
+     * @throws WanderWithoutWanderArea If any component from the area vectors match
      */
     public void setArea(Vector3f from, Vector3f to) {
         area[0] = from;
         area[1] = to;
+        this.validateWanderArea(area);
     }
 }

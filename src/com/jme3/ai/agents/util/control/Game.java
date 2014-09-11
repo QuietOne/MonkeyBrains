@@ -16,7 +16,7 @@ import java.util.List;
  * updates. Contains agents and gameObjects and provides generic game control.
  *
  * @author Tihomir Radosavljević
- * @version 1.2
+ * @version 1.2.0
  */
 public class Game extends AbstractAppState{
 

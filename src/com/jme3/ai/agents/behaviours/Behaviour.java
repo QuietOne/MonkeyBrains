@@ -1,5 +1,5 @@
-//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
-
+//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved.
+//Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
 package com.jme3.ai.agents.behaviours;
 
 import com.jme3.ai.agents.Agent;
@@ -16,14 +16,6 @@ import com.jme3.scene.control.AbstractControl;
  */
 public abstract class Behaviour extends AbstractControl {
 
-    /** 
-     *  @see IllegalBehaviour 
-     *  @author Jesús Martín Berlanga 
-     */
-    public static class behaviourNullAgentException extends IllegalBehaviour {
-        private  behaviourNullAgentException(String msg) { super(msg); }
-    }
-
     /**
      * Agent to whom behaviour belongs.
      */
@@ -32,15 +24,14 @@ public abstract class Behaviour extends AbstractControl {
     /**
      * Constructor for behaviour that doesn't have any special spatial during
      * execution.
-     * 
+     *
      * @param agent to whom behaviour belongs
-     * @throws behaviourNullAgentException If agent is null
-     * 
-     * @author Tihomir Radosavljević
-     * @author Jesús Martín Berlanga
+     * @throws BehaviourNullAgentException if agent is null
      */
     public Behaviour(Agent agent) {
-        if(agent == null) throw new behaviourNullAgentException("You can not instantiate a behaviour without an agent.");
+        if (agent == null) {
+            throw new BehaviourNullAgentException();
+        }
         this.agent = agent;
         this.spatial = agent.getSpatial();
     }
@@ -50,15 +41,25 @@ public abstract class Behaviour extends AbstractControl {
      *
      * @param agent to whom behaviour belongs
      * @param spatial which is active during execution
-     * 
-     * @author Tihomir Radosavljević
-     * @author Jesús Martín Berlanga
-     * 
-     * @see Behaviour#Behaviour(com.jme3.ai.agents.Agent) 
+     * @see Behaviour#Behaviour(com.jme3.ai.agents.Agent)
+     * @throws BehaviourNullAgentException if agent is null
      */
     public Behaviour(Agent agent, Spatial spatial) {
-        if(agent == null) throw new behaviourNullAgentException("You can not instantiate a behaviour without an agent.");
+        if (agent == null) {
+            throw new BehaviourNullAgentException();
+        }
         this.agent = agent;
         this.spatial = spatial;
+    }
+
+    /**
+     * @see IllegalBehaviourException
+     * @author Jesús Martín Berlanga
+     */
+    public static class BehaviourNullAgentException extends IllegalBehaviourException {
+
+        private BehaviourNullAgentException() {
+            super("You can not instantiate a behaviour without an agent.");
+        }
     }
 }

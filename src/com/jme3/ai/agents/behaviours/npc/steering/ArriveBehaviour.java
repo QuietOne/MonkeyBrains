@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
 
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
@@ -31,7 +31,7 @@ public class ArriveBehaviour extends SeekBehaviour {
      */
     public ArriveBehaviour(Agent agent, Agent target) { 
         super(agent, target);
-        this.slowingDistance = agent.distanceRelativeToAgent(target) * 0.25f;
+        this.slowingDistance = agent.distanceRelativeToGameObject(target) * 0.25f;
     }
     
     /**
@@ -41,7 +41,7 @@ public class ArriveBehaviour extends SeekBehaviour {
      */
     public ArriveBehaviour(Agent agent, Agent target, Spatial spatial) {  
         super(agent, target, spatial); 
-        this.slowingDistance = agent.distanceRelativeToAgent(target) * 0.25f;
+        this.slowingDistance = agent.distanceRelativeToGameObject(target) * 0.25f;
     }
     
     /** 
@@ -105,8 +105,8 @@ public class ArriveBehaviour extends SeekBehaviour {
         this.slowingDistance = slowingDistance;
     }
     
-     /** @see IllegalBehaviour */
-     public static class negativeSlowingDistance extends IllegalBehaviour {
+     /** @see IllegalBehaviourException */
+     public static class negativeSlowingDistance extends IllegalBehaviourException {
         private negativeSlowingDistance(String msg) { super(msg); }
      }
      
@@ -133,7 +133,7 @@ public class ArriveBehaviour extends SeekBehaviour {
       
       if(this.getTarget() != null)
       {
-           distanceToTarget = this.agent.distanceRelativeToAgent(this.getTarget());
+           distanceToTarget = this.agent.distanceRelativeToGameObject(this.getTarget());
            radious = this.getTarget().getRadius();
       }
       else if(this.getSeekingPos() != null)

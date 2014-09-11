@@ -1,5 +1,5 @@
-//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
-
+//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. 
+//Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
 package com.jme3.ai.agents;
 
 import com.jme3.ai.agents.behaviours.Behaviour;
@@ -21,10 +21,10 @@ import com.jme3.renderer.ViewPort;
  *
  * @author Jesús Martín Berlanga
  * @author Tihomir Radosavljević
- * @version 1.5.1
+ * @version 1.6.0
  */
-public class Agent<T> extends GameObject {
-    
+public final class Agent<T> extends GameObject {
+
     /**
      * Class that enables you to add all variable you need for your agent.
      */
@@ -53,23 +53,12 @@ public class Agent<T> extends GameObject {
      * Camera that is attached to agent.
      */
     private Camera camera;
-    
-    /**  @author Jesús Martín Berlanga */
-    private float radius = 0;
 
-   /**
-    * @author Jesús Martín Berlanga
-    */
-    public float getRadius() {
-        return this.radius;
-    }
-    
     /**
      * @param name unique name/id of agent
      */
     public Agent(String name) {
         this.name = name;
-        this.radius = 0;
     }
 
     /**
@@ -79,46 +68,6 @@ public class Agent<T> extends GameObject {
     public Agent(String name, Spatial spatial) {
         this.name = name;
         this.spatial = spatial;
-        this.radius = 0;
-    }
-    
-    /** 
-     *  @see IllegalBehaviour 
-     *  @author Jesús Martín Berlanga 
-     */
-    public static class AgentWithNegativeRadius extends IllegalActor {
-        private AgentWithNegativeRadius(String msg) { super(msg); }
-    }
-    
-    /** @author Jesús Martín Berlanga */
-    private void validateRadius(float radius) {
-        if(radius < 0) throw new AgentWithNegativeRadius("An agent can't have a negative radius. You tried to construct the agent with a " + radius + " radius.");
-    }
-    
-    /**
-     * @param radius Size of bounding sphere, for steer behaviours
-     * @param name unique name/id of agent
-     * 
-     * @throws AgentWithNegativeRadius If the radius is lower than 0
-     * 
-     * @author Jesús Martín Berlanga
-     */
-    public Agent(String name, float radius) {
-        this.name = name;
-        this.validateRadius(radius);
-        this.radius = radius;
-    }
-
-    /**
-     * @see Agent#Agent(java.lang.String, float) 
-     * @see Agent#Agent(java.lang.String, com.jme3.scene.Spatial) 
-     * @author Jesús Martín Berlanga
-     */
-    public Agent(String name, Spatial spatial, float radius) {
-        this.name = name;
-        this.spatial = spatial;
-        this.validateRadius(radius);
-        this.radius = radius;
     }
 
     /**
@@ -184,6 +133,17 @@ public class Agent<T> extends GameObject {
     }
 
     /**
+     * Method for stoping agent. Note: It will not remove spatial, it will just
+     * stop agent from acting.
+     *
+     * @see Agent#enabled
+     */
+    public void stop() {
+        enabled = false;
+        mainBehaviour.setEnabled(false);
+    }
+
+    /**
      * @return visibility range of agent
      */
     public float getVisibilityRange() {
@@ -210,7 +170,7 @@ public class Agent<T> extends GameObject {
     public void setModel(T model) {
         this.model = model;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 7;
@@ -218,7 +178,7 @@ public class Agent<T> extends GameObject {
         hash = 47 * hash + (this.team != null ? this.team.hashCode() : 0);
         return hash;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -237,13 +197,9 @@ public class Agent<T> extends GameObject {
         return true;
     }
 
-    /**
-     * @author Tihomir Radosavljević
-     * @author Jesús Martín Berlanga
-     */
     @Override
     protected void controlUpdate(float tpf) {
-               
+
         if (mainBehaviour != null) {
             mainBehaviour.update(tpf);
         }
@@ -251,27 +207,12 @@ public class Agent<T> extends GameObject {
         if (weapon != null) {
             weapon.update(tpf);
         }
+        //updateable
     }
 
-    /**
-     * @return The predicted position for this 'frame', taking into account current
-     * position and velocity.
-     *
-     * @author Jesús Martín Berlanga
-     */
-    public Vector3f getPredictedPosition()
-    {
-        Vector3f predictedPos = new Vector3f();
-        Vector3f vel = this.getVelocity();
-          
-        if (vel != null) 
-            predictedPos = this.getLocalTranslation().add(vel);
-        
-        return predictedPos;
-    }
-    
     @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) { }
+    protected void controlRender(RenderManager rm, ViewPort vp) {
+    }
 
     /**
      * @return team in which agent belongs
@@ -316,14 +257,6 @@ public class Agent<T> extends GameObject {
         this.camera = camera;
     }
 
-    /** 
-     *  @see IllegalBehaviour 
-     *  @author Jesús Martín Berlanga 
-     */
-    public static class inNeighborhoodInvalidDistances extends IllegalActorFunctionParams {
-        private inNeighborhoodInvalidDistances(String msg) { super(msg); }
-    }
-    
     /**
      * Check if this agent is considered in the same "neighborhood" in relation
      * with another agent. <br> <br>
@@ -343,29 +276,25 @@ public class Agent<T> extends GameObject {
      * @param maxDistance Max. distance to be in the same "neighborhood"
      * @param MaxAngle Max angle in radians
      *
-     * @throws inNeighborhoodInvalidDistances If minDistance or maxDistance is lower than 0
-     * 
-     * @return If this agent is in the same "neighborhood" in relation with another agent.
-     * 
-     * @author Jesús Martín Berlanga
+     * @throws InvalidNeighborhoodIDistanceException If minDistance or
+     * maxDistance is lower than 0
+     *
+     * @return If this agent is in the same "neighborhood" in relation with
+     * another agent.
      */
-    public boolean inBoidNeighborhood(
-            Agent neighbour,
-            float minDistance,
-            float maxDistance,
-            float MaxAngle) 
-    {
-        if(minDistance < 0)
-            throw new inNeighborhoodInvalidDistances("The min distance can not be negative. Current value is " + minDistance);
-        else if( maxDistance < 0)
-            throw new inNeighborhoodInvalidDistances("The max distance can not be negative. Current value is " + maxDistance);
-        
+    public boolean inBoidNeighborhood(Agent neighbour, float minDistance, float maxDistance, float MaxAngle) {
+        if (minDistance < 0) {
+            throw new InvalidNeighborhoodIDistanceException("The min distance can not be negative. Current value is " + minDistance);
+        } else if (maxDistance < 0) {
+            throw new InvalidNeighborhoodIDistanceException("The max distance can not be negative. Current value is " + maxDistance);
+        }
+
         boolean isInBoidNeighborhood;
-        
+
         if (this == neighbour) {
             isInBoidNeighborhood = false;
         } else {
-            float distanceSquared = this.distanceSquaredRelativeToAgent(neighbour);
+            float distanceSquared = distanceSquaredRelativeToGameObject(neighbour);
 
             // definitely in neighborhood if inside minDistance sphere
             if (distanceSquared < (minDistance * minDistance)) {
@@ -375,225 +304,138 @@ public class Agent<T> extends GameObject {
                 isInBoidNeighborhood = false;
             } // otherwise, test angular offset from forward axis.
             else {
-                
-                if(this.getAcceleration() != null)
-                {
+
+                if (this.getAcceleration() != null) {
                     Vector3f unitOffset = this.offset(neighbour).divide(distanceSquared);
                     float forwardness = this.forwardness(unitOffset);
                     isInBoidNeighborhood = forwardness > FastMath.cos(MaxAngle);
-                }
-                else
-                {
+                } else {
                     isInBoidNeighborhood = false;
                 }
             }
         }
-        
+
         return isInBoidNeighborhood;
     }
 
     /**
-     * Calculates the forwardness in relation with another agent. That is how
-     * "forward" is the direction to the quarry (1 means dead ahead, 0 is
-     * directly to the side, -1 is straight back)
-     *
-     * @param agent Other agent
-     * @return The forwardness in relation with another agent
-     *
-     * @author Jesús Martín Berlanga
-     */
-    public float forwardness(Agent agent) 
-    {
-        Vector3f agentLooks = this.fordwardVector();
-        float radiansAngleBetwen = agentLooks.angleBetween(this.offset(agent).normalize()); 
-        return (float) FastMath.cos(radiansAngleBetwen); 
-    }
-    
-    /**
-     * @return The agent forward direction
-     * @author Jesús Martín Berlanga
-     */
-    public Vector3f fordwardVector() {
-        return this.getLocalRotation().mult(new Vector3f(0,0,1)).normalize();
-    }
-
-    /**
-     * @param positionVector Offset vector.
-     * @return The forwardness in relation with a position vector
-     *
-     * @author Jesús Martín Berlanga
-     */
-    public float forwardness(Vector3f offsetVector) {
-        Vector3f agentLooks = this.getLocalRotation().mult(new Vector3f(0,0,1)).normalize();
-        float radiansAngleBetwen = agentLooks.angleBetween(offsetVector.normalize());
-        return FastMath.cos(radiansAngleBetwen); 
-    }
-
-    /**
-     * @param agent Other agent
-     * @return Distance relative to another Agent
-     *
-     * @author Jesús Martín Berlanga
-     */
-    public float distanceRelativeToAgent(Agent agent) {
-        return this.offset(agent).length();
-    }
-
-    /**
-     * @param agent Other agent
-     * @return Distance from a position
-     *
-     * @author Jesús Martín Berlanga
-     */
-    public float distanceSquaredRelativeToAgent(Agent agent) {
-        return this.offset(agent).lengthSquared();
-    }
-
-    /**
-     * @param pos Position
-     * @return Distance from a position
-     *
-     * @author Jesús Martín Berlanga
-     */
-    public float distanceFromPos(Vector3f pos) {
-        return this.offset(pos).length();
-    }
-
-    /**
-     * @param pos Position
-     * @return Distance squared Distance from a position
-     *
-     * @author Jesús Martín Berlanga
-     */
-    public float distanceSquaredFromPos(Vector3f pos) {
-        return this.offset(pos).lengthSquared();
-    }
-
-    /**
-     * @param agent Other agent
-     * @return The offset relative to another Agent
-     *
-     * @author Jesús Martín Berlanga
-     */
-    public Vector3f offset(Agent agent) {
-        return agent.getLocalTranslation().subtract(this.getLocalTranslation());
-    }
-    
-    /**
-     * @param agent Other agent
-     * @return The offset relative to an position vector
-     *
-     * @author Jesús Martín Berlanga
-     */
-    public Vector3f offset(Vector3f positionVector) {
-        return positionVector.subtract(this.getLocalTranslation());
-    }
-    
-    /**
      * "Given two vehicles, based on their current positions and velocities,
-     *  determine the time until nearest approach."
-     * 
-     * @param agent Other agent
-     * @return The time until nearest approach
+     * determine the time until nearest approach."
      *
-     * @author Jesús Martín Berlanga
+     * @param gameObject Other gameObject
+     * @return The time until nearest approach
      */
-    public float predictNearestApproachTime(Agent other)
-    {
-        Vector3f agentVelocity = this.getVelocity();
-        Vector3f otherVelocity = other.getVelocity();
-        
-        if(agentVelocity == null)
+    public float predictNearestApproachTime(GameObject gameObject) {
+        Vector3f agentVelocity = velocity;
+        Vector3f otherVelocity = gameObject.getVelocity();
+
+        if (agentVelocity == null) {
             agentVelocity = new Vector3f();
-        
-        if(otherVelocity == null)
+        }
+
+        if (otherVelocity == null) {
             otherVelocity = new Vector3f();
-        
+        }
+
         /* "imagine we are at the origin with no velocity,
          compute the relative velocity of the other vehicle" */
         Vector3f relVel = otherVelocity.subtract(agentVelocity);
         float relSpeed = relVel.length();
-        
+
         /* "Now consider the path of the other vehicle in this relative
-        space, a line defined by the relative position and velocity.
-        The distance from the origin (our vehicle) to that line is
-        the nearest approach." */
-        
+         space, a line defined by the relative position and velocity.
+         The distance from the origin (our vehicle) to that line is
+         the nearest approach." */
+
         // "Take the unit tangent along the other vehicle's path"
         Vector3f relTangent = relVel.divide(relSpeed);
-        
+
         /* "find distance from its path to origin (compute offset from
-        other to us, find length of projection onto path)" */
-        Vector3f offset = other.offset(this);
+         other to us, find length of projection onto path)" */
+        Vector3f offset = gameObject.offset(this);
         float projection = relTangent.dot(offset);
-        
+
         return projection / relSpeed;
     }
-    
+
     /**
      * "Given the time until nearest approach (predictNearestApproachTime)
-     *  determine position of each vehicle at that time, and the distance
-     *  between them"
-     * 
-     * @param agent Other agent
+     * determine position of each vehicle at that time, and the distance between
+     * them"
+     *
+     * @param gameObject Other gameObject
      * @param time The time until nearest approach
      * @return The time until nearest approach
      *
-     * @see Agent#predictNearestApproachTime(com.jme3.ai.agents.Agent) 
-     * @author Jesús Martín Berlanga
+     * @see Agent#predictNearestApproachTime(com.jme3.ai.agents.Agent)
      */
-    public float computeNearestApproachPositions(Agent other, float time)
-    {
-        Vector3f agentVelocity = this.getVelocity();
-        Vector3f otherVelocity = other.getVelocity();
-        
-        if(agentVelocity == null)
+    public float computeNearestApproachPositions(Agent gameObject, float time) {
+        Vector3f agentVelocity = velocity;
+        Vector3f otherVelocity = gameObject.getVelocity();
+
+        if (agentVelocity == null) {
             agentVelocity = new Vector3f();
-        
-        if(otherVelocity == null)
+        }
+
+        if (otherVelocity == null) {
             otherVelocity = new Vector3f();
-        
+        }
+
         Vector3f myTravel = agentVelocity.mult(time);
         Vector3f otherTravel = otherVelocity.mult(time);
-        
+
         return myTravel.distance(otherTravel);
     }
-    
+
     /**
      * "Given the time until nearest approach (predictNearestApproachTime)
-     *  determine position of each vehicle at that time, and the distance
-     *  between them" <br> <br>
-     * 
-     *  Anotates the positions at nearest approach in the given vectors.
-     * 
-     * @param agent Other agent
+     * determine position of each vehicle at that time, and the distance between
+     * them" <br> <br>
+     *
+     * Anotates the positions at nearest approach in the given vectors.
+     *
+     * @param gameObject Other gameObject
      * @param time The time until nearest approach
-     * @param ourPositionAtNearestApproach Pointer to a vector, This bector will be changed to our position at nearest approach
-     * @param hisPositionAtNearestApproach Pointer to a vector, This bector will be changed to other position at nearest approach
-     * 
+     * @param ourPositionAtNearestApproach Pointer to a vector, This bector will
+     * be changed to our position at nearest approach
+     * @param hisPositionAtNearestApproach Pointer to a vector, This bector will
+     * be changed to other position at nearest approach
+     *
      * @return The time until nearest approach
-     * 
-     * @see Agent#predictNearestApproachTime(com.jme3.ai.agents.Agent) 
-     * @author Jesús Martín Berlanga
+     *
+     * @see Agent#predictNearestApproachTime(com.jme3.ai.agents.Agent)
      */
-    public float computeNearestApproachPositions(Agent other, float time, Vector3f ourPositionAtNearestApproach, Vector3f hisPositionAtNearestApproach)
-    {
+    public float computeNearestApproachPositions(GameObject gameObject, float time, Vector3f ourPositionAtNearestApproach, Vector3f hisPositionAtNearestApproach) {
         Vector3f agentVelocity = this.getVelocity();
-        Vector3f otherVelocity = other.getVelocity();
-        
-        if(agentVelocity == null)
+        Vector3f otherVelocity = gameObject.getVelocity();
+
+        if (agentVelocity == null) {
             agentVelocity = new Vector3f();
-        
-        if(otherVelocity == null)
+        }
+
+        if (otherVelocity == null) {
             otherVelocity = new Vector3f();
-        
+        }
+
         Vector3f myTravel = agentVelocity.mult(time);
         Vector3f otherTravel = otherVelocity.mult(time);
-        
+
         //annotation
         ourPositionAtNearestApproach.set(myTravel);
         hisPositionAtNearestApproach.set(otherTravel);
-        
+
         return myTravel.distance(otherTravel);
+    }
+
+    /**
+     *
+     * @see IllegalArgumentException
+     * @author Jesús Martín Berlanga
+     */
+    public static class InvalidNeighborhoodIDistanceException extends IllegalArgumentException {
+
+        private InvalidNeighborhoodIDistanceException(String msg) {
+            super(msg);
+        }
     }
 }

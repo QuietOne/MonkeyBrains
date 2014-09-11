@@ -1,7 +1,11 @@
-//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
-
+//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. 
+//Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
 package com.jme3.ai.agents.util;
 
+import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.npc.steering.ObstacleAvoidanceBehaviour;
+import com.jme3.ai.agents.util.control.Game;
+import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.control.AbstractControl;
@@ -20,22 +24,14 @@ import com.jme3.scene.control.AbstractControl;
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
- * @version 1.1
+ * @version 1.2.0
  */
 public abstract class GameObject extends AbstractControl {
-     
+
     /**
-     * Container for the velocity of the game object
-     * @author Jesús Martín Berlanga 
+     * Container for the velocity of the game object.
      */
     protected Vector3f velocity;
-    
-    /** @author Jesús Martín Berlanga */
-    public void setVelocity(Vector3f velocity){ this.velocity = velocity; }
-    
-    /** @author Jesús Martín Berlanga */
-    public Vector3f getVelocity() { return this.velocity; }
-    
     /**
      * Mass of GameObject.
      */
@@ -44,10 +40,6 @@ public abstract class GameObject extends AbstractControl {
      * GameObject acceleration speed.
      */
     protected Vector3f acceleration;
-    /**
-     * Current move speed of GameObject.
-     */
-    protected float moveSpeed;
     /**
      * Maximum move speed of GameObject
      */
@@ -68,6 +60,13 @@ public abstract class GameObject extends AbstractControl {
      * Rotation speed of GameObject.
      */
     protected float rotationSpeed;
+    /**
+     * Radius of GameObject. It is needed for object that will be added in list
+     * of objects that agent should avoid durring game, like mines etc.
+     *
+     * @see ObstacleAvoidanceBehaviour
+     */
+    protected float radius = 0;
 
     /**
      * Method for increasing agents hitPoint for fixed amount. If adding
@@ -100,6 +99,97 @@ public abstract class GameObject extends AbstractControl {
         }
     }
 
+    /**
+     * @return The predicted position for this 'frame', taking into account
+     * current position and velocity.
+     */
+    public Vector3f getPredictedPosition() {
+        Vector3f predictedPos = new Vector3f();
+        if (velocity != null) {
+            predictedPos = getLocalTranslation().add(velocity);
+        }
+        return predictedPos;
+    }
+
+    /**
+     * @param gameObject Other game object
+     * @return The offset relative to another game object
+     */
+    public Vector3f offset(GameObject gameObject) {
+        return gameObject.getLocalTranslation().subtract(getLocalTranslation());
+    }
+
+    /**
+     * @param positionVector
+     * @return The offset relative to an position vector
+     */
+    public Vector3f offset(Vector3f positionVector) {
+        return positionVector.subtract(getLocalTranslation());
+    }
+
+    /**
+     * @return The agent forward direction
+     */
+    public Vector3f fordwardVector() {
+        return getLocalRotation().mult(new Vector3f(0, 0, 1)).normalize();
+    }
+
+    /**
+     * Calculates the forwardness in relation with another game object. That is
+     * how "forward" is the direction to the quarry (1 means dead ahead, 0 is
+     * directly to the side, -1 is straight back)
+     *
+     * @param gameObject Other game object
+     * @return The forwardness in relation with another agent
+     */
+    public float forwardness(GameObject gameObject) {
+        Vector3f agentLooks = fordwardVector();
+        float radiansAngleBetwen = agentLooks.angleBetween(offset(gameObject).normalize());
+        return FastMath.cos(radiansAngleBetwen);
+    }
+
+    /**
+     * @param positionVector Offset vector.
+     * @return The forwardness in relation with a position vector
+     */
+    public float forwardness(Vector3f offsetVector) {
+        Vector3f agentLooks = getLocalRotation().mult(new Vector3f(0, 0, 1)).normalize();
+        float radiansAngleBetwen = agentLooks.angleBetween(offsetVector.normalize());
+        return FastMath.cos(radiansAngleBetwen);
+    }
+
+    /**
+     * @param gameObject Other agent
+     * @return Distance relative to another game object
+     */
+    public float distanceRelativeToGameObject(GameObject gameObject) {
+        return offset(gameObject).length();
+    }
+
+    /**
+     * @param gameObject Other agent
+     * @return Distance from a position
+     */
+    public float distanceSquaredRelativeToGameObject(GameObject gameObject) {
+        return offset(gameObject).lengthSquared();
+    }
+
+    /**
+     * @param pos Position
+     * @return Distance from a position
+     */
+    public float distanceFromPosition(Vector3f pos) {
+        return offset(pos).length();
+    }
+
+    /**
+     * @param pos Position
+     * @return Distance squared Distance from a position
+     */
+    public float distanceSquaredFromPosition(Vector3f pos) {
+        return offset(pos).lengthSquared();
+    }
+
     public float getMass() {
         return mass;
     }
@@ -117,14 +207,14 @@ public abstract class GameObject extends AbstractControl {
     }
 
     public float getMoveSpeed() {
-        return moveSpeed;
+        return velocity.length();
     }
 
     public void setMoveSpeed(float moveSpeed) {
         if (maxMoveSpeed < moveSpeed) {
             this.maxMoveSpeed = moveSpeed;
         }
-        this.moveSpeed = moveSpeed;
+        velocity.normalizeLocal().multLocal(moveSpeed);
     }
 
     public float getMaxForce() {
@@ -203,5 +293,39 @@ public abstract class GameObject extends AbstractControl {
 
     public void setMaxMoveSpeed(float maxMoveSpeed) {
         this.maxMoveSpeed = maxMoveSpeed;
+    }
+
+    public void setVelocity(Vector3f velocity) {
+        this.velocity = velocity;
+    }
+
+    public Vector3f getVelocity() {
+        return this.velocity;
+    }
+
+    public void setRadius(float radius) {
+        validateRadius(radius);
+        this.radius = radius;
+    }
+
+    public float getRadius() {
+        return this.radius;
+    }
+
+    /**
+     * @see IllegalArgumentException
+     * @author Jesús Martín Berlanga
+     */
+    public static class NegativeRadiusException extends IllegalArgumentException {
+
+        private NegativeRadiusException(String msg) {
+            super(msg);
+        }
+    }
+
+    protected void validateRadius(float radius) {
+        if (radius < 0) {
+            throw new NegativeRadiusException("A GameObject can't have a negative radius. You tried to construct the agent with a " + radius + " radius.");
+        }
     }
 }

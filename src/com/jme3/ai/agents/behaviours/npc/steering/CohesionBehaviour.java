@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
 
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
@@ -77,8 +77,8 @@ public class CohesionBehaviour extends AbstractStrengthSteeringBehaviour {
         this.maxAngle = maxAngle;
      }
      
-     /** @see IllegalBehaviour */
-     public static class negativeMaxDistance extends IllegalBehaviour {
+     /** @see IllegalBehaviourException */
+     public static class negativeMaxDistance extends IllegalBehaviourException {
         private negativeMaxDistance(String msg) { super(msg); }
      }
      

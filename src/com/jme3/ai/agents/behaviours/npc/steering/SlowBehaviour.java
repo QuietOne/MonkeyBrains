@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
 
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -102,8 +102,8 @@ public class SlowBehaviour extends AbstractStrengthSteeringBehaviour {
         this.construct(timeInterval, percentajeSlow);
     }
     
-    /** @see IllegalBehaviour */
-    public static class ObstacleAvoindanceWithoutTimeInterval extends IllegalBehaviour {
+    /** @see IllegalBehaviourException */
+    public static class ObstacleAvoindanceWithoutTimeInterval extends IllegalBehaviourException {
         private ObstacleAvoindanceWithoutTimeInterval(String msg) { super(msg); }
     }
     

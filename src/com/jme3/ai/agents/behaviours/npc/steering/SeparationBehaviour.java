@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
 
 import com.jme3.math.Vector3f;
 import com.jme3.math.FastMath;
@@ -85,8 +85,8 @@ public class SeparationBehaviour extends AbstractStrengthSteeringBehaviour {
         this.minDistance = minDistance;
     }
     
-     /** @see IllegalBehaviour */
-     public static class ObstacleAvoindanceWithNegativeMinDistance extends IllegalBehaviour {
+     /** @see IllegalBehaviourException */
+     public static class ObstacleAvoindanceWithNegativeMinDistance extends IllegalBehaviourException {
         private ObstacleAvoindanceWithNegativeMinDistance(String msg) { super(msg); }
      }
      
@@ -116,7 +116,7 @@ public class SeparationBehaviour extends AbstractStrengthSteeringBehaviour {
         Vector3f steering = new Vector3f();
         
         for (Agent oAgent : this.obstacles) {
-            if(oAgent != this.agent && oAgent.distanceRelativeToAgent(this.agent) < this.minDistance) //If the obstacle is not himself
+            if(oAgent != this.agent && oAgent.distanceRelativeToGameObject(this.agent) < this.minDistance) //If the obstacle is not himself
             {
                 Vector3f loc = oAgent.getLocalTranslation().subtract(agentLocation);
                 float len2 = loc.lengthSquared();

@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
 
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
@@ -57,13 +57,13 @@ public class ContainmentBehaviour extends AbstractStrengthSteeringBehaviour {
         this.containmentArea = containmentArea;
     }
    
-    /** @see IllegalBehaviour */
-    public static class ContainmentWithInvalidContainmenetArea extends IllegalBehaviour {
+    /** @see IllegalBehaviourException */
+    public static class ContainmentWithInvalidContainmenetArea extends IllegalBehaviourException {
         private ContainmentWithInvalidContainmenetArea(String msg) { super(msg); }
     }
     
-   /** @see IllegalBehaviour */
-    public static class ContainmentWithoutContainmentArea extends IllegalBehaviour {
+   /** @see IllegalBehaviourException */
+    public static class ContainmentWithoutContainmentArea extends IllegalBehaviourException {
         private ContainmentWithoutContainmentArea(String msg) { super(msg); }
     }
     

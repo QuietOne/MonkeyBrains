@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
 
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
@@ -80,9 +80,9 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
 
      /** 
       * @author Jesús Martín Berlanga
-      * @see IllegalBehaviour 
+      * @see IllegalBehaviourException 
       */
-     public static class WanderWithoutWanderArea extends IllegalBehaviour {
+     public static class WanderWithoutWanderArea extends IllegalBehaviourException {
         private WanderWithoutWanderArea(String msg) { super(msg); }
      }
      

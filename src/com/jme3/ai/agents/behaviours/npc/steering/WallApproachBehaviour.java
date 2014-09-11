@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
 
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
@@ -51,13 +51,13 @@ public class WallApproachBehaviour extends AbstractStrengthSteeringBehaviour {
         private Vector3f getDirection() { return this.direction; }
     }
     
-    /** @see IllegalBehaviour */
-    public static class WallApproachWithoutWall extends IllegalBehaviour
+    /** @see IllegalBehaviourException */
+    public static class WallApproachWithoutWall extends IllegalBehaviourException
     {
         private WallApproachWithoutWall(String msg) { super(msg); }
     }
     
-    public static class WallApproachNegativeOffset extends IllegalBehaviour
+    public static class WallApproachNegativeOffset extends IllegalBehaviourException
     {
         private WallApproachNegativeOffset(String msg) { super(msg); }
     }

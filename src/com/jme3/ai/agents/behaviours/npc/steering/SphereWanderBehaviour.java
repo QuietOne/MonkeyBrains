@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
 
 import com.jme3.bounding.BoundingSphere;
 import com.jme3.collision.CollisionResult;
@@ -95,23 +95,23 @@ public class SphereWanderBehaviour extends AbstractStrengthSteeringBehaviour {
         this.construct(timeInterval, randomFactor, rotationFactor);
     }
     
-    /** @see IllegalBehaviour */
-    public static class SphereWanderInvalidRandomFactor extends IllegalBehaviour {
+    /** @see IllegalBehaviourException */
+    public static class SphereWanderInvalidRandomFactor extends IllegalBehaviourException {
        private SphereWanderInvalidRandomFactor(String msg) { super(msg); }
     }
      
-    /** @see IllegalBehaviour */
-    public static class SphereWanderInvalidRotationFactor extends IllegalBehaviour {
+    /** @see IllegalBehaviourException */
+    public static class SphereWanderInvalidRotationFactor extends IllegalBehaviourException {
        private SphereWanderInvalidRotationFactor(String msg) { super(msg); }
     }
      
-    /** @see IllegalBehaviour */
-    public static class SphereWanderWithoutTimeInterval extends IllegalBehaviour {
+    /** @see IllegalBehaviourException */
+    public static class SphereWanderWithoutTimeInterval extends IllegalBehaviourException {
         private SphereWanderWithoutTimeInterval(String msg) { super(msg); }
     }
     
-    /** @see IllegalBehaviour */
-    public static class SphereWanderWithoutRadius extends IllegalBehaviour {
+    /** @see IllegalBehaviourException */
+    public static class SphereWanderWithoutRadius extends IllegalBehaviourException {
         private SphereWanderWithoutRadius(String msg) { super(msg); }
     }
      

@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
 
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
@@ -71,8 +71,8 @@ public class UnalignedCollisionAvoidanceBehaviour extends ObstacleAvoidanceBehav
         this.distanceMultiplier = distanceMultiplier;
     }
    
-     /** @see IllegalBehaviour */
-     public static class UnalignedObstacleAvoindanceWithNegativeDistanceMultiplier extends IllegalBehaviour {
+     /** @see IllegalBehaviourException */
+     public static class UnalignedObstacleAvoindanceWithNegativeDistanceMultiplier extends IllegalBehaviourException {
         private UnalignedObstacleAvoindanceWithNegativeDistanceMultiplier(String msg) { super(msg); }
      }
      
@@ -101,7 +101,7 @@ public class UnalignedCollisionAvoidanceBehaviour extends ObstacleAvoidanceBehav
     
         /* "For each of the other vehicles, determine which (if any)
            pose the most immediate threat of collision." */
-        for(Agent obstacle : this.getObstacles()) { if(obstacle != this.agent && obstacle.distanceRelativeToAgent(this.agent) < super.getMinDistance())
+        for(Agent obstacle : this.getObstacles()) { if(obstacle != this.agent && obstacle.distanceRelativeToGameObject(this.agent) < super.getMinDistance())
         {
            // "avoid when future positions are this close (or less)"
             // "At OpenSeer" => float collisionDangerThreshold = this.agent.getRadius() * 2;

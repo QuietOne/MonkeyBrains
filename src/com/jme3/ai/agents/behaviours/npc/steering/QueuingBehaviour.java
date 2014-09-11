@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
 
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -58,8 +58,8 @@ public class QueuingBehaviour extends AbstractStrengthSteeringBehaviour {
         this.minDistance = minDistance;
     }
 
-     /** @see IllegalBehaviour */
-     public static class QueuingWithNegativeMinDistance extends IllegalBehaviour {
+     /** @see IllegalBehaviourException */
+     public static class QueuingWithNegativeMinDistance extends IllegalBehaviourException {
         private QueuingWithNegativeMinDistance(String msg) { super(msg); }
      }
      
@@ -92,7 +92,7 @@ public class QueuingBehaviour extends AbstractStrengthSteeringBehaviour {
             if
             (
               neighbour != this.agent &&
-              (distance = this.agent.distanceRelativeToAgent(neighbour)) < this.minDistance &&
+              (distance = this.agent.distanceRelativeToGameObject(neighbour)) < this.minDistance &&
               fordwardness > 0 && 
               neighVel != null &&
               (velDiff = neighVel.length() - agentVelocity.length()) < 0

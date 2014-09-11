@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
 
 import com.jme3.math.Plane;
 import com.jme3.math.Plane.Side;
@@ -44,17 +44,17 @@ import java.util.ArrayList;
  */
 public class PathFollowBehaviour extends AbstractStrengthSteeringBehaviour {
 
-    public static class PathFollowIstinsufficientPoints extends IllegalBehaviour
+    public static class PathFollowIstinsufficientPoints extends IllegalBehaviourException
     {
         private PathFollowIstinsufficientPoints(String msg) { super(msg); }
     }
     
-    public static class PathFollowNegativeRadius extends IllegalBehaviour
+    public static class PathFollowNegativeRadius extends IllegalBehaviourException
     {
         private PathFollowNegativeRadius(String msg) { super(msg); }
     }
     
-    public static class PathFollowNegativeCohesionStrength extends IllegalBehaviour
+    public static class PathFollowNegativeCohesionStrength extends IllegalBehaviourException
     {
         private PathFollowNegativeCohesionStrength(String msg) { super(msg); }
     }

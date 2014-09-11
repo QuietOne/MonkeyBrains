@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
 
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -70,13 +70,13 @@ public class BoxExploreBehaviour extends AbstractStrengthSteeringBehaviour {
         this.construct(boxCenter, boxWidthX, boxWidthZ, boxHeight, subdivisionDistance);
     }  
     
-    /** @see IllegalBehaviour */
-    public static class BoxExploreWithNegativeSubdivisionDistance extends IllegalBehaviour {
+    /** @see IllegalBehaviourException */
+    public static class BoxExploreWithNegativeSubdivisionDistance extends IllegalBehaviourException {
        private BoxExploreWithNegativeSubdivisionDistance(String msg) { super(msg); }
     }
     
-    /** @see IllegalBehaviour */
-    public static class BoxExploreWithNegativeBoxDimensions extends IllegalBehaviour {
+    /** @see IllegalBehaviourException */
+    public static class BoxExploreWithNegativeBoxDimensions extends IllegalBehaviourException {
        private BoxExploreWithNegativeBoxDimensions(String msg) { super(msg); }
     }
     

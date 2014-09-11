@@ -10,7 +10,7 @@ import com.jme3.renderer.Camera;
  * Base interface for game controls used in game.
  *
  * @author Tihomir Radosavljević
- * @version 0.4
+ * @version 1.0.0
  */
 public interface GameControl {
 

@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
 
 import com.jme3.math.Plane;
 import com.jme3.math.Vector3f;
@@ -104,8 +104,8 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
         this.type = SteerStrengthType.PLANE;
     }
     
-    /** @see IllegalBehaviour */
-    public static class negativeScalarMultiplier extends IllegalBehaviour {
+    /** @see IllegalBehaviourException */
+    public static class negativeScalarMultiplier extends IllegalBehaviourException {
         private negativeScalarMultiplier(String msg) { super(msg); }
     }
     

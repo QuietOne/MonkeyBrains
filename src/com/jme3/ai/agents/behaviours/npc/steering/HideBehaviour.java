@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviour;
+import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
 
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -62,8 +62,8 @@ public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
         this.separationFromObstacle = separationFromObstacle;
     }
     
-     /** @see IllegalBehaviour */
-     public static class HideWithoutTarget extends IllegalBehaviour {
+     /** @see IllegalBehaviourException */
+     public static class HideWithoutTarget extends IllegalBehaviourException {
          private HideWithoutTarget(String msg) { super(msg); }
      }
 
@@ -71,8 +71,8 @@ public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
          if(target == null) throw new HideWithoutTarget("The target can not be null.");
      }
     
-     /** @see IllegalBehaviour */
-     public static class negativeSeparationFromObstacle extends IllegalBehaviour {
+     /** @see IllegalBehaviourException */
+     public static class negativeSeparationFromObstacle extends IllegalBehaviourException {
         private negativeSeparationFromObstacle(String msg) { super(msg); }
      }
      
@@ -92,7 +92,7 @@ public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
         
         for(Agent obstacle : this.obstacles) if(obstacle != this.agent)
         {
-            float distanceFromAgent = this.agent.distanceRelativeToAgent(obstacle);
+            float distanceFromAgent = this.agent.distanceRelativeToGameObject(obstacle);
             
             if(distanceFromAgent < closestDistanceFromAgent && obstacle.getRadius() >= this.agent.getRadius())
             {
@@ -101,7 +101,7 @@ public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
             }
         }
         
-        if(closestObstacle != null && this.agent.distanceRelativeToAgent(closestObstacle) > closestObstacle.getRadius())
+        if(closestObstacle != null && this.agent.distanceRelativeToGameObject(closestObstacle) > closestObstacle.getRadius())
         {
             Vector3f targetToObstacleOffset = this.target.offset(closestObstacle);
             Vector3f seekPos = this.target.getLocalTranslation().add(targetToObstacleOffset).add (

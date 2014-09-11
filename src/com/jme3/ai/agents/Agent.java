@@ -1,7 +1,6 @@
 package com.jme3.ai.agents;
 
 import com.jme3.ai.agents.behaviours.Behaviour;
-import com.jme3.ai.agents.behaviours.npc.SimpleMainBehaviour;
 import com.jme3.scene.Spatial;
 import com.jme3.ai.agents.util.AbstractWeapon;
 import com.jme3.ai.agents.util.GameObject;

@@ -23,52 +23,11 @@ import com.jme3.scene.Spatial;
 public abstract class AbstractSteeringBehaviour extends Behaviour {
 
     private float brakingFactor = 1;
-
-    /**
-     * @see IllegalBehaviour
-     */
-    public static final class IllegalBrakingFactor extends IllegalArgumentException {
-
-        private IllegalBrakingFactor(String msg) {
-            super(msg);
-        }
-    }
-
-    /**
-     * Note that 0 means the maximum braking force and 1 No braking force
-     *
-     * @throws IllegalBrakingFactor If the braking factor is not contained in
-     * the [0,1] interval
-     */
-    protected final void setBrakingFactor(float brakingFactor) {
-        if (brakingFactor < 0 || brakingFactor > 1) {
-            throw new IllegalBrakingFactor("The braking factor value must be contained in the [0,1] interval. The current value is " + brakingFactor);
-        }
-
-        this.brakingFactor = brakingFactor;
-    }
-
-    public final float getBrakingFactor() {
-        return this.brakingFactor;
-    }
-    private float tpf;
-
-    protected float getTPF() {
-        return this.tpf;
-    }
-
-    /**
-     * Manually update the tpf
-     *
-     * @param tpf tpf
-     */
-    protected void setTPF(float tpf) {
-        this.tpf = tpf;
-    }
     /**
      * Velocity of our agent.
      */
     protected Vector3f velocity;
+    private float tpf;
 
     /**
      * @see Behaviour#Behaviour(com.jme3.ai.agents.Agent)
@@ -155,6 +114,47 @@ public abstract class AbstractSteeringBehaviour extends Behaviour {
      */
     public void setVelocity(Vector3f velocity) {
         this.velocity = velocity;
+    }
+
+    /**
+     * @see IllegalBehaviour
+     */
+    public static final class IllegalBrakingFactorException extends IllegalArgumentException {
+
+        private IllegalBrakingFactorException(String msg) {
+            super(msg);
+        }
+    }
+
+    /**
+     * Note that 0 means the maximum braking force and 1 No braking force
+     *
+     * @throws IllegalBrakingFactorException If the braking factor is not
+     * contained in the [0,1] interval
+     */
+    protected final void setBrakingFactor(float brakingFactor) {
+        if (brakingFactor < 0 || brakingFactor > 1) {
+            throw new IllegalBrakingFactorException("The braking factor value must be contained in the [0,1] interval. The current value is " + brakingFactor);
+        }
+
+        this.brakingFactor = brakingFactor;
+    }
+
+    public final float getBrakingFactor() {
+        return this.brakingFactor;
+    }
+
+    protected float getTPF() {
+        return this.tpf;
+    }
+
+    /**
+     * Manually update the tpf
+     *
+     * @param tpf tpf
+     */
+    protected void setTPF(float tpf) {
+        this.tpf = tpf;
     }
 
     /**

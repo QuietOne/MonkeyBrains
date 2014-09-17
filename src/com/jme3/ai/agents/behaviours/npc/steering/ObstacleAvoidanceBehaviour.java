@@ -1,8 +1,10 @@
-//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+//Copyright (c) 2014, Jesús Martín Berlanga.
+//All rights reserved. Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
+import com.jme3.ai.agents.util.GameObject;
 
 import com.jme3.math.Vector3f;
 import com.jme3.math.FastMath;
@@ -10,7 +12,6 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -47,31 +48,15 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
 
     private float minDistance;
     private float minTimeToCollision;
-    private List<Agent> obstacles = new ArrayList<Agent>();
-
-    protected List<Agent> getObstacles() {
-        return this.obstacles;
-    }
-
-    public void setObstacles(List<Agent> obstacles) {
-        this.obstacles = obstacles;
-    }
-
-    protected float getMinTimeToCollision() {
-        return this.minTimeToCollision;
-    }
-
-    protected float getMinDistance() {
-        return this.minDistance;
-    }
+    private List<Agent> obstacles;
 
     /**
      * @param obstacles A list with the obstacles (Agents)
      * @param minTimeToCollision When the time to collision is lower than this
      * value the steer force will appear. Time is measured in seconds.
      *
-     * @throws ObstacleAvoindanceWithNoMinTimeToCollision If minTimeToCollision
-     * is lower or equals to 0
+     * @throws ObstacleAvoindanceWithNoMinTimeToCollisionException If
+     * minTimeToCollision is lower or equals to 0
      *
      * @see
      * AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent)
@@ -104,8 +89,8 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
      * @param minDistance Min. distance from center to center to consider an
      * obstacle
      *
-     * @throws ObstacleAvoindanceWithNegativeMinDistance If minTimeToCollision
-     * is lower than 0
+     * @throws ObstacleAvoindanceWithNegativeMinDistanceException If
+     * minTimeToCollision is lower than 0
      *
      * @see
      * ObstacleAvoidanceBehaviour#ObstacleAvoidanceBehaviour(com.jme3.ai.agents.Agent,
@@ -140,32 +125,32 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
     /**
      * @see IllegalBehaviourException
      */
-    public static class ObstacleAvoindanceWithNegativeMinDistance extends IllegalBehaviourException {
+    public static class ObstacleAvoindanceWithNegativeMinDistanceException extends IllegalBehaviourException {
 
-        private ObstacleAvoindanceWithNegativeMinDistance(String msg) {
+        private ObstacleAvoindanceWithNegativeMinDistanceException(String msg) {
             super(msg);
         }
     }
 
     private void validateMinDistance(float minDistance) {
         if (minDistance < 0) {
-            throw new ObstacleAvoindanceWithNegativeMinDistance("The min distance from an obstacle can not be negative. Current value is " + minDistance);
+            throw new ObstacleAvoindanceWithNegativeMinDistanceException("The min distance from an obstacle can not be negative. Current value is " + minDistance);
         }
     }
 
     /**
      * @see IllegalBehaviourException
      */
-    public static class ObstacleAvoindanceWithNoMinTimeToCollision extends IllegalBehaviourException {
+    public static class ObstacleAvoindanceWithNoMinTimeToCollisionException extends IllegalBehaviourException {
 
-        private ObstacleAvoindanceWithNoMinTimeToCollision(String msg) {
+        private ObstacleAvoindanceWithNoMinTimeToCollisionException(String msg) {
             super(msg);
         }
     }
 
     private void validateMinTimeToCollision(float minTimeToCollision) {
         if (minTimeToCollision <= 0) {
-            throw new ObstacleAvoindanceWithNegativeMinDistance("The min time to collision must be postitive. Current value is " + minTimeToCollision);
+            throw new ObstacleAvoindanceWithNegativeMinDistanceException("The min time to collision must be postitive. Current value is " + minTimeToCollision);
         }
     }
 
@@ -278,5 +263,21 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
         Vector3f randPoint = new Vector3f(x, y, z);
 
         return randPoint.subtract(planePoint);
+    }
+
+    protected List<Agent> getObstacles() {
+        return this.obstacles;
+    }
+
+    public void setObstacles(List<Agent> obstacles) {
+        this.obstacles = obstacles;
+    }
+
+    protected float getMinTimeToCollision() {
+        return this.minTimeToCollision;
+    }
+
+    protected float getMinDistance() {
+        return this.minDistance;
     }
 }

@@ -1,5 +1,5 @@
-//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
-
+//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved.
+//Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
@@ -14,9 +14,9 @@ import com.jme3.scene.Spatial;
  * velocity is radially aligned away from the target. The desired velocity
  * points in the opposite direction.
  *
- * Jesús Martín Berlanga: "You can flee another agent or a specific 
- * space location".
- * 
+ * Jesús Martín Berlanga: "You can flee another agent or a specific space
+ * location".
+ *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
  * @version 1.2
@@ -27,10 +27,8 @@ public class FleeBehaviour extends AbstractStrengthSteeringBehaviour {
      * Agent from whom we flee.
      */
     private Agent target;
-
-    /** @author Jesús Martín Berlanga */
     private Vector3f fleePos;
-    
+
     /**
      * Constructor for flee behaviour.
      *
@@ -41,7 +39,7 @@ public class FleeBehaviour extends AbstractStrengthSteeringBehaviour {
         super(agent);
         this.target = target;
     }
-    
+
     /**
      * Constructor for flee behaviour.
      *
@@ -53,34 +51,30 @@ public class FleeBehaviour extends AbstractStrengthSteeringBehaviour {
         super(agent, spatial);
         this.target = target;
     }
-    
+
     /**
      * Constructor for flee behaviour.
      *
      * @param agent to whom behaviour belongs
      * @param fleePos position from that we flee
-     * 
-     * @author Jesús Martín Berlanga
      */
     public FleeBehaviour(Agent agent, Vector3f fleePos) {
         super(agent);
         this.fleePos = fleePos;
     }
-    
+
     /**
      * Constructor for flee behaviour.
      *
      * @param agent to whom behaviour belongs
      * @param fleePos position from that we flee
      * @param spatial active spatial during excecution of behaviour
-     * 
-     * @author Jesús Martín Berlanga
      */
     public FleeBehaviour(Agent agent, Vector3f fleePos, Spatial spatial) {
         super(agent, spatial);
         this.fleePos = fleePos;
     }
-    
+
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
     }
@@ -89,27 +83,26 @@ public class FleeBehaviour extends AbstractStrengthSteeringBehaviour {
      * Calculate steering vector.
      *
      * @return steering vector
-     * 
-     * @see AbstractStrengthSteeringBehaviour#calculateFullSteering() 
-     * 
-     * @author Jesús Martín Berlanga
+     *
+     * @see AbstractStrengthSteeringBehaviour#calculateFullSteering()
      */
     @Override
     protected Vector3f calculateFullSteering() {
         Vector3f desiredVelocity;
-        
-        if(this.target != null)
+
+        if (this.target != null) {
             desiredVelocity = target.getLocalTranslation().subtract(agent.getLocalTranslation());
-        else if(this.fleePos != null)
+        } else if (this.fleePos != null) {
             desiredVelocity = this.fleePos.subtract(agent.getLocalTranslation());
-        else
+        } else {
             return new Vector3f(); //We do not have any target or flee position
-        
+        }
         Vector3f aVelocity = this.agent.getVelocity();
-        
-        if(aVelocity == null)
+
+        if (aVelocity == null) {
             aVelocity = new Vector3f();
-        
+        }
+
         return desiredVelocity.subtract(aVelocity).negate();
     }
 
@@ -126,21 +119,18 @@ public class FleeBehaviour extends AbstractStrengthSteeringBehaviour {
      * Setting agent from whom we flee.
      *
      * @param target
-     * 
-     * @author Tihomir Radosavljević
-     * @author Jesús Martín Berlanga
      */
     public void setTarget(Agent target) {
         this.target = target;
         this.fleePos = null;
     }
-    
-    /** @author Jesús Martín Berlanga */
-    public Vector3f getFleePos() { return this.fleePos; }
-    
-    /** @author Jesús Martín Berlanga */
+
+    public Vector3f getFleePos() {
+        return this.fleePos;
+    }
+
     public void setFleePos(Vector3f fleePos) {
-        this.fleePos = fleePos; 
+        this.fleePos = fleePos;
         this.target = null;
     }
 }

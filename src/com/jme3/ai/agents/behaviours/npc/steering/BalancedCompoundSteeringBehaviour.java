@@ -1,5 +1,5 @@
-//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
-
+//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved.
+//Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
@@ -24,96 +24,108 @@ import java.util.List;
  * @version 2.0.1
  */
 public class BalancedCompoundSteeringBehaviour extends CompoundSteeringBehaviour {
-    
+
     private boolean strengthIsBalanced;
-    
     private Vector3f totalForce;
-    private List<Vector3f> partialForces = new ArrayList<Vector3f>();
+    private List<Vector3f> partialForces;
     private int numberOfPartialForcesAlreadyCalculated = 0;
     private int numberOfBehaviours;
-    
+
     /**
-     * Turn on or off the balance. The balance is activated by default.
+     * @see
+     * AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent)
      */
-    public void setStrengthIsBalanced(boolean strengthIsBalanced) { this.strengthIsBalanced = strengthIsBalanced; }
-    
-    /** @see  AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent)  */
     public BalancedCompoundSteeringBehaviour(Agent agent) {
         super(agent);
         this.strengthIsBalanced = true;
+        partialForces = new ArrayList<Vector3f>();
     }
-    
-    /** @see AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent, com.jme3.scene.Spatial)  */
+
+    /**
+     * @see
+     * AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent,
+     * com.jme3.scene.Spatial)
+     */
     public BalancedCompoundSteeringBehaviour(Agent agent, Spatial spatial) {
         super(agent, spatial);
         this.strengthIsBalanced = true;
+        partialForces = new ArrayList<Vector3f>();
     }
-       
-    /** @see BalancedCompoundSteeringBehaviour#addSteerBehaviour(com.jme3.ai.agents.behaviours.npc.steering.AbstractSteeringBehaviour)   */
+
+    /**
+     * @see
+     * BalancedCompoundSteeringBehaviour#addSteerBehaviour(com.jme3.ai.agents.behaviours.npc.steering.AbstractSteeringBehaviour)
+     */
     @Override
-    public void addSteerBehaviour (AbstractSteeringBehaviour behaviour) {
+    public void addSteerBehaviour(AbstractSteeringBehaviour behaviour) {
         super.addSteerBehaviour(behaviour);
         this.numberOfBehaviours++;
     }
-    
-    
-    /** @see CompoundSteeringBehaviour#calculatePartialForce(com.jme3.ai.agents.behaviours.npc.steering.AbstractSteeringBehaviour)  */
+
+    /**
+     * Turn on or off the balance. The balance is activated by default.
+     */
+    public void setStrengthIsBalanced(boolean strengthIsBalanced) {
+        this.strengthIsBalanced = strengthIsBalanced;
+    }
+
+    /**
+     * @see
+     * CompoundSteeringBehaviour#calculatePartialForce(com.jme3.ai.agents.behaviours.npc.steering.AbstractSteeringBehaviour)
+     */
     @Override
-    protected Vector3f calculatePartialForce(AbstractSteeringBehaviour behaviour) 
-    {
+    protected Vector3f calculatePartialForce(AbstractSteeringBehaviour behaviour) {
         this.calculateTotalForce();
         Vector3f partialForce = this.partialForces.get(this.numberOfPartialForcesAlreadyCalculated);
-        
-        if(this.strengthIsBalanced && this.totalForce.length() > 0)
-        {
+
+        if (this.strengthIsBalanced && this.totalForce.length() > 0) {
             partialForce.mult(partialForce.length()
                     / this.totalForce.length());
         }
-        
-        
+
+
         this.partialForceCalculated();
-             
+
         return partialForce;
     }
-    
-    //Calculates the total force if it is not calculated
-    protected void calculateTotalForce() 
-    {    
-        if(this.numberOfPartialForcesAlreadyCalculated == 0)
-        {
+
+    /**
+     * Calculates the total force if it is not calculated
+     */
+    protected void calculateTotalForce() {
+        if (this.numberOfPartialForcesAlreadyCalculated == 0) {
             Vector3f totalForceAux = new Vector3f();
-            
+
             steerBehavioursLayerList.steerBehavioursLayerNode currentPointer = this.behaviours.getPointer(); //We do not want to modify the current pointer
-            
+
             this.behaviours.moveAtBeginning();
 
-            while(!this.behaviours.nullPointer())
-            {
+            while (!this.behaviours.nullPointer()) {
                 Vector3f partial = this.behaviours.getBehaviour().calculateSteering();
                 this.partialForces.add(partial);
                 totalForceAux = totalForceAux.add(partial);
-                
+
                 this.behaviours.moveNext();
             }
-            
+
             this.behaviours.setPointer(currentPointer); //Restore the previous pointer
-               
+
             this.totalForce = totalForceAux;
         }
-        
+
     }
-    
-    //Reset the forces if we have finished with all the forces
+
+    /**
+     * Reset the forces if we have finished with all the forces
+     */
     protected void partialForceCalculated() {
-        
+
         this.numberOfPartialForcesAlreadyCalculated++;
-        
-        if(this.numberOfPartialForcesAlreadyCalculated >= this.numberOfBehaviours)
-        {
+
+        if (this.numberOfPartialForcesAlreadyCalculated >= this.numberOfBehaviours) {
             this.numberOfPartialForcesAlreadyCalculated = 0;
             this.partialForces.clear();
         }
-        
+
     }
-    
 }

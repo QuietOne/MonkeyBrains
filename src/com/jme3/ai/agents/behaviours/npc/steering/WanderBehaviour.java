@@ -1,5 +1,5 @@
-//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
-
+//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved.
+//Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
@@ -14,17 +14,17 @@ import com.jme3.scene.Spatial;
 import java.util.Random;
 
 /**
- * This behaviour is based on a easy implementation that "generates random steering 
- * force each frame, but this produces rather uninteresting motion. It is 'twitchy'
- * and produces no sustained turns. <br><br>
- * 
+ * This behaviour is based on a easy implementation that "generates random
+ * steering force each frame, but this produces rather uninteresting motion. It
+ * is 'twitchy' and produces no sustained turns. <br><br>
+ *
  * Wander behaviour is steering behaviour where agent moves randomly on terrain.
  * This is done by same calculation as seek behaviour, but difference is that
  * target for this behaviour are random positions that changes durring time.
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
- * 
+ *
  * @version 1.4.1
  */
 public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
@@ -57,7 +57,7 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
         velocity = new Vector3f();
         timeInterval = 2f;
         time = timeInterval;
-        this.area = new Vector3f[] {Vector3f.NEGATIVE_INFINITY, Vector3f.POSITIVE_INFINITY };
+        this.area = new Vector3f[]{Vector3f.NEGATIVE_INFINITY, Vector3f.POSITIVE_INFINITY};
     }
 
     /**
@@ -65,9 +65,6 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
      *
      * @param agent to whom behaviour belongs
      * @param spatial active spatial during excecution of behaviour
-     * 
-     * @author Tihomir Radosavljević
-     * @author Jesús Martín Berlanga
      */
     public WanderBehaviour(Agent agent, Spatial spatial) {
         super(agent, spatial);
@@ -75,27 +72,27 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
         velocity = new Vector3f();
         timeInterval = 2f;
         time = timeInterval;
-        this.area = new Vector3f[] {Vector3f.NEGATIVE_INFINITY, Vector3f.POSITIVE_INFINITY };
+        this.area = new Vector3f[]{Vector3f.NEGATIVE_INFINITY, Vector3f.POSITIVE_INFINITY};
     }
 
-     /** 
-      * @author Jesús Martín Berlanga
-      * @see IllegalBehaviourException 
-      */
-     public static class WanderWithoutWanderArea extends IllegalBehaviourException {
-        private WanderWithoutWanderArea(String msg) { super(msg); }
-     }
-     
-     /** @author Jesús Martín Berlanga */
-     private void validateWanderArea(Vector3f[] area) {
-         if(
-                 area[0].x == area[1].x ||
-                 area[0].y == area[1].y ||
-                 area[0].z == area[1].z 
-           )
-             throw new WanderWithoutWanderArea("Components from area vectors must be different.");
-     }
-    
+    /**
+     * @see IllegalBehaviourException
+     */
+    public static class WanderWithoutWanderAreaException extends IllegalBehaviourException {
+
+        private WanderWithoutWanderAreaException(String msg) {
+            super(msg);
+        }
+    }
+
+    private void validateWanderArea(Vector3f[] area) {
+        if (area[0].x == area[1].x
+                || area[0].y == area[1].y
+                || area[0].z == area[1].z) {
+            throw new WanderWithoutWanderAreaException("Components from area vectors must be different.");
+        }
+    }
+
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
     }
@@ -104,15 +101,12 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
      * Calculate steering vector.
      *
      * @return steering vector
-     * 
-     * @author Tihomir Radosavljević
-     * @author Jesús Martín Berlanga
      */
     @Override
     protected Vector3f calculateFullSteering() {
         changeTargetPosition(this.getTPF());
         Vector3f desiredVelocity = targetPosition.subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
-        desiredVelocity.subtract(velocity);     
+        desiredVelocity.subtract(velocity);
         return desiredVelocity;
     }
 
@@ -120,9 +114,6 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
      * Metod for changing target position.
      *
      * @param tpf time per frame
-     * 
-     * @author Tihomir Radosavljević
-     * @author Jesús Martín Berlanga
      */
     protected void changeTargetPosition(float tpf) {
         time -= tpf;
@@ -172,8 +163,9 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
      *
      * @param from
      * @param to
-     * 
-     * @throws WanderWithoutWanderArea If any component from the area vectors match
+     *
+     * @throws WanderWithoutWanderAreaException If any component from the area vectors
+     * match
      */
     public void setArea(Vector3f from, Vector3f to) {
         area[0] = from;

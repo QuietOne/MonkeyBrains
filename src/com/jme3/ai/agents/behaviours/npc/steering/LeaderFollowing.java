@@ -1,4 +1,5 @@
-//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved.
+//Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
@@ -68,9 +69,9 @@ public class LeaderFollowing extends SeekBehaviour {
      * @param minimunAngle Minimum angle betwen the target velocity and the
      * vehicle location.
      *
-     * @throws LeaderFollowWithoutLeader If target is null
-     * @throws negativeDistanceToEvade If distanceToEvade is lower than 0
-     * @throws negativeDistanceToChangeFocus If distanceToEvade is lower than 0
+     * @throws LeaderFollowWithoutLeaderException If target is null
+     * @throws NegativeDistanceToEvadeException If distanceToEvade is lower than 0
+     * @throws NegativeDistanceToChangeFocusException If distanceToEvade is lower than 0
      *
      * @see LeaderFollowing#LeaderFollowing(com.jme3.ai.agents.Agent,
      * com.jme3.ai.agents.Agent)
@@ -108,48 +109,48 @@ public class LeaderFollowing extends SeekBehaviour {
     /**
      * @see IllegalBehaviourException
      */
-    public static class negativeDistanceToEvade extends IllegalBehaviourException {
+    public static class NegativeDistanceToEvadeException extends IllegalBehaviourException {
 
-        private negativeDistanceToEvade(String msg) {
+        private NegativeDistanceToEvadeException(String msg) {
             super(msg);
         }
     }
 
     private void validateDistanceToEvade(float distanceToEvade) {
         if (distanceToEvade < 0) {
-            throw new negativeDistanceToEvade("The distance to evade can not be negative. Current value is " + distanceToEvade);
+            throw new NegativeDistanceToEvadeException("The distance to evade can not be negative. Current value is " + distanceToEvade);
         }
     }
 
     /**
      * @see IllegalBehaviourException
      */
-    public static class LeaderFollowWithoutLeader extends IllegalBehaviourException {
+    public static class LeaderFollowWithoutLeaderException extends IllegalBehaviourException {
 
-        private LeaderFollowWithoutLeader(String msg) {
+        private LeaderFollowWithoutLeaderException(String msg) {
             super(msg);
         }
     }
 
     private void validateTarget(Agent target) {
         if (target == null) {
-            throw new LeaderFollowWithoutLeader("The target can not be null.");
+            throw new LeaderFollowWithoutLeaderException("The target can not be null.");
         }
     }
 
     /**
      * @see IllegalBehaviourException
      */
-    public static class negativeDistanceToChangeFocus extends IllegalBehaviourException {
+    public static class NegativeDistanceToChangeFocusException extends IllegalBehaviourException {
 
-        private negativeDistanceToChangeFocus(String msg) {
+        private NegativeDistanceToChangeFocusException(String msg) {
             super(msg);
         }
     }
 
     private void validateDistanceToChangeFocus(float distanceToChangeFocus) {
         if (distanceToChangeFocus < 0) {
-            throw new negativeDistanceToChangeFocus("The distance to change focus can not be negative. Current value is " + distanceToChangeFocus);
+            throw new NegativeDistanceToChangeFocusException("The distance to change focus can not be negative. Current value is " + distanceToChangeFocus);
         }
     }
 

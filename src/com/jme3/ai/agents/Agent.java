@@ -16,8 +16,7 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 
 /**
- * Class that represents Agent. Note: Not recommended for extending. Use
- * generics.
+ * Class that represents Agent.
  *
  * @author Jesús Martín Berlanga
  * @author Tihomir Radosavljević

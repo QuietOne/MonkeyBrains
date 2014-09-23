@@ -108,13 +108,13 @@ public class AlignmentBehaviour extends AbstractStrengthSteeringBehaviour {
      * @see AbstractSteeringBehaviour#calculateSteering()
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
         // steering accumulator and count of neighbors, both initially zero
         Vector3f steering = new Vector3f();
         int realNeighbors = 0;
 
         // for each of the other vehicles...
-        for (Agent agentO : this.neighbours) {
+        for (Agent agentO : neighbours) {
             if (this.agent.inBoidNeighborhood(agentO, this.agent.getRadius() * 3, this.maxDistance, this.maxAngle)) {
                 // accumulate sum of neighbor's positions
                 steering = steering.add(agentO.fordwardVector());

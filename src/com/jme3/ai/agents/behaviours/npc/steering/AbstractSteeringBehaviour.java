@@ -61,7 +61,7 @@ public abstract class AbstractSteeringBehaviour extends Behaviour {
      * @return The new velocity for this agent based on steering vector
      */
     protected Vector3f calculateNewVelocity() {
-        agent.setAcceleration(this.calculateSteering().mult(1 / agentTotalMass()));
+        agent.setAcceleration(calculateSteering().mult(1 / agentTotalMass()));
         velocity = velocity.add(agent.getAcceleration());
         agent.setVelocity(velocity);
 

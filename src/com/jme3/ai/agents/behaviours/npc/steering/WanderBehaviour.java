@@ -103,7 +103,7 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
      * @return steering vector
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
         changeTargetPosition(this.getTPF());
         Vector3f desiredVelocity = targetPosition.subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
         desiredVelocity.subtract(velocity);

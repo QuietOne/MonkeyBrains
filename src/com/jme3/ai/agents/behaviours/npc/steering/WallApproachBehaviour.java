@@ -150,10 +150,10 @@ public class WallApproachBehaviour extends AbstractStrengthSteeringBehaviour {
     }
 
     /**
-     * @see AbstractStrengthSteeringBehaviour#calculateFullSteering()
+     * @see AbstractStrengthSteeringBehaviour#calculateRawSteering()
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
         Vector3f steer = new Vector3f();
 
         Vector3f aproximatedSurfaceLocationDir = this.approximateSurfaceLocation();
@@ -165,7 +165,7 @@ public class WallApproachBehaviour extends AbstractStrengthSteeringBehaviour {
                 Vector3f extraOffset = this.agent.offset(surfaceLocation).negate().normalize().mult(this.offsetToMaintain);
 
                 SeekBehaviour seek = new SeekBehaviour(this.agent, surfaceLocation.add(extraOffset));
-                steer = seek.calculateFullSteering();
+                steer = seek.calculateRawSteering();
             }
         }
 

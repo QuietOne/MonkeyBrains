@@ -55,10 +55,10 @@ public class PursuitBehaviour extends SeekBehaviour {
     }
 
     /**
-     * @see AbstractStrengthSteeringBehaviour#calculateFullSteering()
+     * @see AbstractStrengthSteeringBehaviour#calculateRawSteering()
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
         //See how far ahead we need to leed
         Vector3f projectedLocation = this.getTarget().getPredictedPosition();
 

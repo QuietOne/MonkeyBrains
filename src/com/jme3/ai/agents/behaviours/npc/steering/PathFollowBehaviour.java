@@ -149,10 +149,10 @@ public class PathFollowBehaviour extends AbstractStrengthSteeringBehaviour {
     }
 
     /**
-     * @see AbstractStrengthSteeringBehaviour#calculateFullSteering()
+     * @see AbstractStrengthSteeringBehaviour#calculateRawSteering()
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
         Vector3f steer = new Vector3f();
 
         if (active) {

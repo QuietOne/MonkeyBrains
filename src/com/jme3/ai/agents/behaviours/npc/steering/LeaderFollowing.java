@@ -155,10 +155,10 @@ public class LeaderFollowing extends SeekBehaviour {
     }
 
     /**
-     * @see AbstractStrengthSteeringBehaviour#calculateFullSteering()
+     * @see AbstractStrengthSteeringBehaviour#calculateRawSteering()
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
         Vector3f steer;
         float distanceBetwen = this.agent.distanceRelativeToGameObject(this.getTarget());
 
@@ -170,12 +170,12 @@ public class LeaderFollowing extends SeekBehaviour {
 
         this.arriveBehaviour.setSeekingPos(projectedLocation);
 
-        steer = this.arriveBehaviour.calculateFullSteering();
+        steer = this.arriveBehaviour.calculateRawSteering();
 
         if (!(distanceBetwen > this.distanceToEvade) && !(this.getTarget().forwardness(this.agent) < FastMath.cos(this.minimumAngle))) { //Incorrect angle and Is in the proper distance to evade -> Evade the leader
 
             Vector3f arriveSteer = steer.mult(distanceBetwen / this.distanceToEvade);
-            Vector3f evadeSteer = this.evadeBehaviour.calculateFullSteering();
+            Vector3f evadeSteer = this.evadeBehaviour.calculateRawSteering();
             evadeSteer.mult(this.distanceToEvade / (1 + distanceBetwen));
             steer = (new Vector3f()).add(arriveSteer).add(evadeSteer);
         }

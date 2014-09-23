@@ -159,7 +159,7 @@ public class SphereWanderBehaviour extends AbstractStrengthSteeringBehaviour {
      * @return steering vector
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
         changeTargetPosition(this.getTPF());
         return this.agent.offset(this.targetPosition).mult((0.5f / this.sphereRadius) * this.agent.getMoveSpeed());
     }

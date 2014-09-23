@@ -224,7 +224,7 @@ public class CompoundSteeringBehaviour extends AbstractStrengthSteeringBehaviour
      * @return The composed steering force.
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
 
         Vector3f totalForce = new Vector3f();
         float totalBraking = 1;

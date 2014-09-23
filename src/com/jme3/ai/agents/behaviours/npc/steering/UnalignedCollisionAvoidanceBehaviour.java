@@ -110,10 +110,10 @@ public class UnalignedCollisionAvoidanceBehaviour extends ObstacleAvoidanceBehav
     }
 
     /**
-     * @see ObstacleAvoidanceBehaviour#calculateFullSteering()
+     * @see ObstacleAvoidanceBehaviour#calculateRawSteering()
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
         Vector3f steer = null;
 
         //"go on to consider potential future collisions"

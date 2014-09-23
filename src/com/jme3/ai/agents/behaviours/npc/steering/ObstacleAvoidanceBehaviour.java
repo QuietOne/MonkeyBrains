@@ -158,7 +158,7 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
      * @see AbstractSteeringBehaviour#calculateSteering()
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
         Vector3f nearestObstacleSteerForce = new Vector3f();
 
         if (this.agent.getVelocity() != null) {

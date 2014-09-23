@@ -93,19 +93,19 @@ public class BalancedCompoundSteeringBehaviour extends CompoundSteeringBehaviour
      * Calculates the total force if it is not calculated
      */
     protected void calculateTotalForce() {
-        if (this.numberOfPartialForcesAlreadyCalculated == 0) {
+        if (numberOfPartialForcesAlreadyCalculated == 0) {
             Vector3f totalForceAux = new Vector3f();
 
             steerBehavioursLayerList.steerBehavioursLayerNode currentPointer = this.behaviours.getPointer(); //We do not want to modify the current pointer
 
-            this.behaviours.moveAtBeginning();
+            behaviours.moveAtBeginning();
 
-            while (!this.behaviours.nullPointer()) {
-                Vector3f partial = this.behaviours.getBehaviour().calculateSteering();
-                this.partialForces.add(partial);
+            while (!behaviours.nullPointer()) {
+                Vector3f partial = behaviours.getBehaviour().calculateSteering();
+                partialForces.add(partial);
                 totalForceAux = totalForceAux.add(partial);
 
-                this.behaviours.moveNext();
+                behaviours.moveNext();
             }
 
             this.behaviours.setPointer(currentPointer); //Restore the previous pointer
@@ -120,11 +120,11 @@ public class BalancedCompoundSteeringBehaviour extends CompoundSteeringBehaviour
      */
     protected void partialForceCalculated() {
 
-        this.numberOfPartialForcesAlreadyCalculated++;
+        numberOfPartialForcesAlreadyCalculated++;
 
-        if (this.numberOfPartialForcesAlreadyCalculated >= this.numberOfBehaviours) {
-            this.numberOfPartialForcesAlreadyCalculated = 0;
-            this.partialForces.clear();
+        if (numberOfPartialForcesAlreadyCalculated >= this.numberOfBehaviours) {
+            numberOfPartialForcesAlreadyCalculated = 0;
+            partialForces.clear();
         }
 
     }

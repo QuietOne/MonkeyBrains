@@ -107,7 +107,7 @@ public class SeparationBehaviour extends AbstractStrengthSteeringBehaviour {
      * @see AbstractSteeringBehaviour#calculateSteering()
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
 
         //Propities whom behaviour belongs.
         Vector3f agentLocation = super.agent.getLocalTranslation();

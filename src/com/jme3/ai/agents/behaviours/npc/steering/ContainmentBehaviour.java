@@ -101,10 +101,10 @@ public class ContainmentBehaviour extends AbstractStrengthSteeringBehaviour {
     }
 
     /**
-     * @see AbstractStrengthSteeringBehaviour#calculateFullSteering()
+     * @see AbstractStrengthSteeringBehaviour#calculateRawSteering()
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
         Vector3f steer = new Vector3f();
         Vector3f predictedPos = this.agent.getPredictedPosition();
 

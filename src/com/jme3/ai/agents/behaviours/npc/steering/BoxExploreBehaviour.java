@@ -118,7 +118,7 @@ public class BoxExploreBehaviour extends AbstractStrengthSteeringBehaviour {
      * @see AbstractSteeringBehaviour#calculateSteering()
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
         Vector3f steer = Vector3f.ZERO;
 
         if (!isFinished) {
@@ -139,7 +139,7 @@ public class BoxExploreBehaviour extends AbstractStrengthSteeringBehaviour {
 
             if (closest != null) {
                 SeekBehaviour seek = new SeekBehaviour(this.agent, closest);
-                steer = seek.calculateFullSteering();
+                steer = seek.calculateRawSteering();
             } else {
                 isFinished = true;
             }

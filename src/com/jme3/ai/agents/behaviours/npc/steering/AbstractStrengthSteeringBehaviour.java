@@ -37,7 +37,7 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
     private static enum SteerStrengthType {
 
         NO_STRENGTH,
-        ESCALAR,
+        SCALAR,
         AXIS,
         PLANE
     }
@@ -68,12 +68,12 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
      *
      * @param scalar Escalar that will multiply the full steer force.
      *
-     * @throws negativeScalarMultiplier If scalar is lower than 0
+     * @throws NegativeScalarMultiplierException If scalar is lower than 0
      */
     public void setupStrengthControl(float scalar) {
         this.validateScalar(scalar);
         this.scalar = scalar;
-        this.type = SteerStrengthType.ESCALAR;
+        this.type = SteerStrengthType.SCALAR;
     }
 
     /**
@@ -84,7 +84,8 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
      * @param y Y axis multiplier
      * @param z Z axis multiplier
      *
-     * @throws negativeScalarMultiplier If any axis multiplier is lower than 0
+     * @throws NegativeScalarMultiplierException If any axis multiplier is lower
+     * than 0
      */
     public void setupStrengthControl(float x, float y, float z) {
         this.validateScalar(x);
@@ -122,16 +123,16 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
     /**
      * @see IllegalBehaviourException
      */
-    public static class negativeScalarMultiplier extends IllegalBehaviourException {
+    public static class NegativeScalarMultiplierException extends IllegalBehaviourException {
 
-        private negativeScalarMultiplier(String msg) {
+        private NegativeScalarMultiplierException(String msg) {
             super(msg);
         }
     }
 
     private void validateScalar(float scalar) {
         if (scalar < 0) {
-            throw new negativeScalarMultiplier("All the scalar multipliers must be positives.");
+            throw new NegativeScalarMultiplierException("All the scalar multipliers must be positives.");
         }
     }
 
@@ -155,10 +156,10 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
     @Override
     protected Vector3f calculateSteering() {
 
-        Vector3f strengthSteeringForce = this.calculateFullSteering();
+        Vector3f strengthSteeringForce = calculateRawSteering();
 
         switch (this.type) {
-            case ESCALAR:
+            case SCALAR:
                 strengthSteeringForce = strengthSteeringForce.mult(this.scalar);
                 break;
 
@@ -177,11 +178,11 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
     }
 
     /**
-     * If a bheaviour class extend from CompoundSteeringBehaviour instead of
-     * AbstractSteeringBehaviout, It must implement this method instead of
+     * If a behaviour class extend from CompoundSteeringBehaviour instead of
+     * AbstractSteeringBehaviour, it must implement this method instead of
      * calculateSteering().
      *
      * @see AbstractSteeringBehaviour#calculateSteering()
      */
-    protected abstract Vector3f calculateFullSteering();
+    protected abstract Vector3f calculateRawSteering();
 }

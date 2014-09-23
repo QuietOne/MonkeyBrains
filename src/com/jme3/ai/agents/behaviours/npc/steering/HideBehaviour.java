@@ -100,10 +100,10 @@ public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
     }
 
     /**
-     * @see AbstractStrengthSteeringBehaviour#calculateFullSteering()
+     * @see AbstractStrengthSteeringBehaviour#calculateRawSteering()
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
         Vector3f steer = Vector3f.ZERO;
 
         Agent closestObstacle = null;
@@ -126,7 +126,7 @@ public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
                     targetToObstacleOffset.normalize().mult(this.separationFromObstacle));
 
             SeekBehaviour seek = new SeekBehaviour(this.agent, seekPos);
-            return seek.calculateFullSteering();
+            return seek.calculateRawSteering();
         }
 
         return steer;

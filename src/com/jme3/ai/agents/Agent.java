@@ -58,6 +58,7 @@ public final class Agent<T> extends GameObject {
      */
     public Agent(String name) {
         this.name = name;
+        velocity = Vector3f.UNIT_XYZ.clone();
     }
 
     /**
@@ -67,6 +68,7 @@ public final class Agent<T> extends GameObject {
     public Agent(String name, Spatial spatial) {
         this.name = name;
         this.spatial = spatial;
+        velocity = Vector3f.UNIT_XYZ.clone();
     }
 
     /**

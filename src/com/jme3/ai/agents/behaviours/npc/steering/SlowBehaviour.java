@@ -141,7 +141,7 @@ public class SlowBehaviour extends AbstractStrengthSteeringBehaviour {
     }
 
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
         return Vector3f.ZERO;
     }
 

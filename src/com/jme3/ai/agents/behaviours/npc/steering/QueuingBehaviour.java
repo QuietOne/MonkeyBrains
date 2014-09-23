@@ -84,10 +84,10 @@ public class QueuingBehaviour extends AbstractStrengthSteeringBehaviour {
     }
 
     /**
-     * @see AbstractStrengthSteeringBehaviour#calculateFullSteering()
+     * @see AbstractStrengthSteeringBehaviour#calculateRawSteering()
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
         Vector3f agentVelocity = this.agent.getVelocity();
 
         int numberObstaclesFactor = 1;

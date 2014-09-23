@@ -56,7 +56,7 @@ public class RelativeWanderBehaviour extends WanderBehaviour {
      * @return steering vector
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
         changeTargetPosition(this.getTPF());
         return targetPosition;
     }

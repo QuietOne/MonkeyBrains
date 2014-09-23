@@ -101,7 +101,7 @@ public class CohesionBehaviour extends AbstractStrengthSteeringBehaviour {
      * @see AbstractSteeringBehaviour#calculateSteering()
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
 
         // steering accumulator and count of neighbors, both initially zero
         Vector3f steering = new Vector3f();

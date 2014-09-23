@@ -83,10 +83,10 @@ public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
      *
      * @return steering vector
      *
-     * @see AbstractStrengthSteeringBehaviour#calculateFullSteering()
+     * @see AbstractStrengthSteeringBehaviour#calculateRawSteering()
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
         Vector3f desiredVelocity;
 
         if (this.target != null) {

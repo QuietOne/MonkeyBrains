@@ -138,13 +138,11 @@ public class ArriveBehaviour extends SeekBehaviour {
      *
      * @return steering vector
      *
-     * @see AbstractStrengthSteeringBehaviour#calculateFullSteering()
-     * @see SeekBehaviour#calculateFullSteering()
-     *
-     * @author Jesús Martín Berlanga
+     * @see AbstractStrengthSteeringBehaviour#calculateRawSteering()
+     * @see SeekBehaviour#calculateRawSteering()
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
         float distanceToTarget;
         float radious = 0;
 
@@ -164,6 +162,6 @@ public class ArriveBehaviour extends SeekBehaviour {
             this.setBrakingFactor(1);
         }
 
-        return super.calculateFullSteering();
+        return super.calculateRawSteering();
     }
 }

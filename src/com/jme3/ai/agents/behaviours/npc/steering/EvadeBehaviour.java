@@ -54,10 +54,10 @@ public class EvadeBehaviour extends FleeBehaviour {
     }
 
     /**
-     * @see FleeBehaviour#calculateFullSteering()
+     * @see FleeBehaviour#calculateRawSteering()
      */
     @Override
-    protected Vector3f calculateFullSteering() {
+    protected Vector3f calculateRawSteering() {
         Vector3f projectedLocation = this.getTarget().getPredictedPosition();
 
         //Return flee steering force

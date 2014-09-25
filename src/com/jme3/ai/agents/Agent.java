@@ -124,12 +124,15 @@ public final class Agent<T> extends GameObject {
     }
 
     /**
-     * Method for starting agent. Note: Agent must be alive to be started.
+     * Method for starting agent.
      *
      * @see Agent#enabled
      */
     public void start() {
         enabled = true;
+        if (mainBehaviour == null) {
+            throw new NullPointerException("Agent " + name + " does not have set main behaviour.");
+        }
         mainBehaviour.setEnabled(true);
     }
 

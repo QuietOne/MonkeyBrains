@@ -18,12 +18,12 @@ import java.util.List;
  * @author Tihomir Radosavljević
  * @version 1.2.0
  */
-public class Game extends AbstractAppState{
+public class Game extends AbstractAppState {
 
     /**
      * Status of game with agents.
      */
-    protected boolean over = false;
+    private boolean inProgress = false;
     /**
      * Indicator if the agent in same team can damage each other.
      */
@@ -61,8 +61,10 @@ public class Game extends AbstractAppState{
      * @param agent agent which is added to game
      */
     public void addAgent(Agent agent) {
-        agent.setEnabled(true);
         agents.add(agent);
+        if (inProgress) {
+            agent.start();
+        }
         rootNode.attachChild(agent.getSpatial());
     }
 
@@ -75,8 +77,10 @@ public class Game extends AbstractAppState{
      */
     public void addAgent(Agent agent, Vector3f position) {
         agent.setLocalTranslation(position);
-        agent.setEnabled(true);
         agents.add(agent);
+        if (inProgress) {
+            agent.start();
+        }
         rootNode.attachChild(agent.getSpatial());
     }
 
@@ -91,8 +95,10 @@ public class Game extends AbstractAppState{
      */
     public void addAgent(Agent agent, float x, float y, float z) {
         agent.setLocalTranslation(x, y, z);
-        agent.setEnabled(true);
         agents.add(agent);
+        if (inProgress) {
+            agent.start();
+        }
         rootNode.attachChild(agent.getSpatial());
     }
 
@@ -105,7 +111,7 @@ public class Game extends AbstractAppState{
     public void removeAgent(Agent agent) {
         for (int i = 0; i < agents.size(); i++) {
             if (agents.get(i).equals(agent)) {
-                agents.get(i).setEnabled(false);
+                agents.get(i).stop();
                 agents.get(i).getSpatial().removeFromParent();
                 agents.remove(i);
                 break;
@@ -121,7 +127,7 @@ public class Game extends AbstractAppState{
     public void disableAgent(Agent agent) {
         for (int i = 0; i < agents.size(); i++) {
             if (agents.get(i).equals(agent)) {
-                agents.get(i).setEnabled(false);
+                agents.get(i).stop();
                 break;
             }
         }
@@ -139,13 +145,12 @@ public class Game extends AbstractAppState{
             if (agents.get(i).equals(agent)) {
                 agents.get(i).decreaseHitPoints(damage);
                 if (!agents.get(i).isEnabled()) {
-                    agents.get(i).setEnabled(false);
+                    agents.get(i).stop();
                     agents.get(i).getSpatial().removeFromParent();
                 }
                 break;
             }
         }
-
     }
 
     /**
@@ -211,14 +216,6 @@ public class Game extends AbstractAppState{
         }
     }
 
-    public boolean isOver() {
-        return over;
-    }
-
-    public void setOver(boolean over) {
-        this.over = over;
-    }
-
     public Node getRootNode() {
         return rootNode;
     }
@@ -253,9 +250,10 @@ public class Game extends AbstractAppState{
         }
         decreaseHitPoints(target, attacker.getWeapon().getAttackDamage());
     }
+
     /**
      * Check friendly fire and decreaseHitPoints of target if conditions are ok.
-     * 
+     *
      * @see Game#friendlyFire
      * @see Game#decreaseHitPoints(com.jme3.ai.agents.Agent, double)
      * @param attacker agent who attacks
@@ -296,8 +294,16 @@ public class Game extends AbstractAppState{
     }
 
     public void start() {
+        inProgress = true;
         for (Agent agent : agents) {
             agent.start();
+        }
+    }
+
+    public void stop() {
+        inProgress = false;
+        for (Agent agent : agents) {
+            agent.stop();
         }
     }
 
@@ -309,5 +315,4 @@ public class Game extends AbstractAppState{
         this.app = app;
         rootNode = (Node) app.getViewPort().getScenes().get(0);
     }
-    
 }

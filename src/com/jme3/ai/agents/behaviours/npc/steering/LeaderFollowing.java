@@ -3,7 +3,9 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.LeaderFollowWithoutLeaderException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.NegativeDistanceToChangeFocusException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.NegativeDistanceToEvadeException;
 
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
@@ -106,45 +108,15 @@ public class LeaderFollowing extends SeekBehaviour {
         this.minimumAngle = minimunAngle;
     }
 
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class NegativeDistanceToEvadeException extends IllegalBehaviourException {
-
-        private NegativeDistanceToEvadeException(String msg) {
-            super(msg);
-        }
-    }
-
     private void validateDistanceToEvade(float distanceToEvade) {
         if (distanceToEvade < 0) {
             throw new NegativeDistanceToEvadeException("The distance to evade can not be negative. Current value is " + distanceToEvade);
         }
     }
 
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class LeaderFollowWithoutLeaderException extends IllegalBehaviourException {
-
-        private LeaderFollowWithoutLeaderException(String msg) {
-            super(msg);
-        }
-    }
-
     private void validateTarget(Agent target) {
         if (target == null) {
             throw new LeaderFollowWithoutLeaderException("The target can not be null.");
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class NegativeDistanceToChangeFocusException extends IllegalBehaviourException {
-
-        private NegativeDistanceToChangeFocusException(String msg) {
-            super(msg);
         }
     }
 
@@ -183,7 +155,9 @@ public class LeaderFollowing extends SeekBehaviour {
         return steer;
     }
 
-    //Calculates the factor in order to change the focus
+    /**
+     * Calculates the factor in order to change the focus
+     */
     private float calculateFocusFactor(float distanceFromFocus) {
         float factor;
 

@@ -3,15 +3,13 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.ObstacleAvoindanceWithNegativeMinDistanceException;
+import com.jme3.ai.agents.util.GameObject;
 
 import com.jme3.math.Vector3f;
 import com.jme3.math.FastMath;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,14 +36,14 @@ public class SeparationBehaviour extends AbstractStrengthSteeringBehaviour {
     /*
      * List of the obstacles that we want to be separated
      */
-    private List<Agent> obstacles;
+    private List<GameObject> obstacles;
 
     /**
      * @param agent To whom behaviour belongs.
      * @param initialObstacles Initializes a list with the obstacles from the
      * agent want to be separated
      */
-    public SeparationBehaviour(Agent agent, List<Agent> initialObstacles) {
+    public SeparationBehaviour(Agent agent, List<GameObject> initialObstacles) {
         super(agent);
         this.obstacles = initialObstacles;
         this.minDistance = Float.POSITIVE_INFINITY;
@@ -56,7 +54,7 @@ public class SeparationBehaviour extends AbstractStrengthSteeringBehaviour {
      * @see SeparationBehaviour#SeparationBehaviour(com.jme3.ai.agents.Agent,
      * java.util.List)
      */
-    public SeparationBehaviour(Agent agent, List<Agent> initialObstacles, Spatial spatial) {
+    public SeparationBehaviour(Agent agent, List<GameObject> initialObstacles, Spatial spatial) {
         super(agent, spatial);
         this.obstacles = initialObstacles;
         this.minDistance = Float.POSITIVE_INFINITY;
@@ -68,7 +66,7 @@ public class SeparationBehaviour extends AbstractStrengthSteeringBehaviour {
      * @see SeparationBehaviour#SeparationBehaviour(com.jme3.ai.agents.Agent,
      * java.util.List)
      */
-    public SeparationBehaviour(Agent agent, List<Agent> initialObstacles, float minDistance) {
+    public SeparationBehaviour(Agent agent, List<GameObject> initialObstacles, float minDistance) {
         super(agent);
         this.validateMinDistance(minDistance);
         this.obstacles = initialObstacles;
@@ -80,21 +78,11 @@ public class SeparationBehaviour extends AbstractStrengthSteeringBehaviour {
      * @see SeparationBehaviour#SeparationBehaviour(com.jme3.ai.agents.Agent,
      * java.util.List, float)
      */
-    public SeparationBehaviour(Agent agent, List<Agent> initialObstacles, float minDistance, Spatial spatial) {
+    public SeparationBehaviour(Agent agent, List<GameObject> initialObstacles, float minDistance, Spatial spatial) {
         super(agent, spatial);
         this.validateMinDistance(minDistance);
         this.obstacles = initialObstacles;
         this.minDistance = minDistance;
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class ObstacleAvoindanceWithNegativeMinDistanceException extends IllegalBehaviourException {
-
-        private ObstacleAvoindanceWithNegativeMinDistanceException(String msg) {
-            super(msg);
-        }
     }
 
     private void validateMinDistance(float minDistance) {
@@ -114,10 +102,10 @@ public class SeparationBehaviour extends AbstractStrengthSteeringBehaviour {
 
         Vector3f steering = new Vector3f();
 
-        for (Agent oAgent : this.obstacles) {
-            if (oAgent != this.agent && oAgent.distanceRelativeToGameObject(this.agent) < this.minDistance) //If the obstacle is not himself
+        for (GameObject obstacle : this.obstacles) {
+            if (obstacle != this.agent && obstacle.distanceRelativeToGameObject(this.agent) < this.minDistance) //If the obstacle is not himself
             {
-                Vector3f loc = oAgent.getLocalTranslation().subtract(agentLocation);
+                Vector3f loc = obstacle.getLocalTranslation().subtract(agentLocation);
                 float len2 = loc.lengthSquared();
                 loc.normalizeLocal();
                 steering.addLocal(loc.negate().mult(1f / ((float) FastMath.pow(len2, 2))));
@@ -131,11 +119,7 @@ public class SeparationBehaviour extends AbstractStrengthSteeringBehaviour {
         this.minDistance = minDistance;
     }
 
-    public void setObstacles(List<Agent> obstacles) {
+    public void setObstacles(List<GameObject> obstacles) {
         this.obstacles = obstacles;
-    }
-
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
     }
 }

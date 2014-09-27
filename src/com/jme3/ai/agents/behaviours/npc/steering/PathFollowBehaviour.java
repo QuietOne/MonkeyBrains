@@ -3,13 +3,13 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.PathFollowIstinsufficientPointsException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.PathFollowNegativeCohesionStrengthException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.PathFollowNegativeRadiusException;
 
 import com.jme3.math.Plane;
 import com.jme3.math.Plane.Side;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 
 import java.util.ArrayList;
@@ -144,10 +144,6 @@ public class PathFollowBehaviour extends AbstractStrengthSteeringBehaviour {
         this.active = true;
     }
 
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
-    }
-
     /**
      * @see AbstractStrengthSteeringBehaviour#calculateRawSteering()
      */
@@ -222,26 +218,5 @@ public class PathFollowBehaviour extends AbstractStrengthSteeringBehaviour {
 
     public boolean isActive() {
         return this.active;
-    }
-
-    public static class PathFollowIstinsufficientPointsException extends IllegalBehaviourException {
-
-        private PathFollowIstinsufficientPointsException(String msg) {
-            super(msg);
-        }
-    }
-
-    public static class PathFollowNegativeRadiusException extends IllegalBehaviourException {
-
-        private PathFollowNegativeRadiusException(String msg) {
-            super(msg);
-        }
-    }
-
-    public static class PathFollowNegativeCohesionStrengthException extends IllegalBehaviourException {
-
-        private PathFollowNegativeCohesionStrengthException(String msg) {
-            super(msg);
-        }
     }
 }

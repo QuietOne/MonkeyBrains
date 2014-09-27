@@ -56,8 +56,6 @@ public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
      *
      * @param agent to whom behaviour belongs
      * @param seekingPos position that we seek
-     *
-     * @author Jesús Martín Berlanga
      */
     public SeekBehaviour(Agent agent, Vector3f seekingPos) {
         super(agent);
@@ -70,8 +68,6 @@ public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
      * @param agent to whom behaviour belongs
      * @param target agent from we seek
      * @param spatial active spatial during excecution of behaviour
-     *
-     * @author Jesús Martín Berlanga
      */
     public SeekBehaviour(Agent agent, Vector3f seekingPos, Spatial spatial) {
         super(agent, spatial);
@@ -131,9 +127,5 @@ public class SeekBehaviour extends AbstractStrengthSteeringBehaviour {
     public void setSeekingPos(Vector3f seekingPos) {
         this.seekingPos = seekingPos;
         this.target = null;
-    }
-
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
     }
 }

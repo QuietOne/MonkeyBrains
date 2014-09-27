@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.WanderWithoutWanderAreaException;
 
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
@@ -75,16 +75,6 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
         this.area = new Vector3f[]{Vector3f.NEGATIVE_INFINITY, Vector3f.POSITIVE_INFINITY};
     }
 
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class WanderWithoutWanderAreaException extends IllegalBehaviourException {
-
-        private WanderWithoutWanderAreaException(String msg) {
-            super(msg);
-        }
-    }
-
     private void validateWanderArea(Vector3f[] area) {
         if (area[0].x == area[1].x
                 || area[0].y == area[1].y
@@ -104,7 +94,7 @@ public class WanderBehaviour extends AbstractStrengthSteeringBehaviour {
      */
     @Override
     protected Vector3f calculateRawSteering() {
-        changeTargetPosition(this.getTPF());
+        changeTargetPosition(timePerFrame);
         Vector3f desiredVelocity = targetPosition.subtract(agent.getLocalTranslation()).normalize().mult(agent.getMoveSpeed());
         desiredVelocity.subtract(velocity);
         return desiredVelocity;

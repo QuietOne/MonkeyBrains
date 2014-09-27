@@ -5,16 +5,14 @@ package com.jme3.ai.agents.behaviours.npc.steering;
 import com.jme3.ai.agents.Agent;
 
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 
 /**
  * A steer compound behaviour contains one or more steer behaviours. This class
- * should be used to avoid bugs when adding several steer behaviours to
+ * should be used to avoid bugs when adding several steer behaviours directly to
  * SimpleMainBehaviour. <br> <br>
  *
- * Fist add several behaviours to make an CompoundBehaviour and then add this
+ * First add several behaviours to make an CompoundBehaviour and then add this
  * compoundBehaviour to an SimpleMainBehaviour. <br><br>
  *
  * All the steer behaviours added to this class must extend from
@@ -277,9 +275,6 @@ public class CompoundSteeringBehaviour extends AbstractStrengthSteeringBehaviour
         return behaviour.calculateSteering();
     }
 
-    protected void controlRender(RenderManager rm, ViewPort vp) {
-    }
-
     /**
      * Usual update pattern for steering behaviours.
      *
@@ -288,12 +283,10 @@ public class CompoundSteeringBehaviour extends AbstractStrengthSteeringBehaviour
     @Override
     protected void controlUpdate(float tpf) {
         this.behaviours.moveAtBeginning();
-
         while (!this.behaviours.nullPointer()) {
-            this.behaviours.getBehaviour().setTPF(tpf);
+            this.behaviours.getBehaviour().setTimePerFrame(tpf);
             this.behaviours.moveNext();
         }
-
         super.controlUpdate(tpf);
     }
 }

@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.NegativeSlowingDistanceException;
 
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
@@ -115,16 +115,6 @@ public class ArriveBehaviour extends SeekBehaviour {
         super(agent, seekingPos, spatial);
         this.validateSlowingDistance(slowingDistance);
         this.slowingDistance = slowingDistance;
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class NegativeSlowingDistanceException extends IllegalBehaviourException {
-
-        private NegativeSlowingDistanceException(String msg) {
-            super(msg);
-        }
     }
 
     private void validateSlowingDistance(float slowingDistance) {

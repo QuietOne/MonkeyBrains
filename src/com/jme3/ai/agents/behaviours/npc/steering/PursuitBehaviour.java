@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
+import com.jme3.ai.agents.behaviours.BehaviourExceptions;
 
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
@@ -38,19 +38,9 @@ public class PursuitBehaviour extends SeekBehaviour {
         this.validateTarget(target);
     }
 
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class PursuitWithoutTarget extends IllegalBehaviourException {
-
-        private PursuitWithoutTarget(String msg) {
-            super(msg);
-        }
-    }
-
     private void validateTarget(Agent target) {
         if (target == null) {
-            throw new PursuitWithoutTarget("The target can not be null.");
+            throw new BehaviourExceptions.TargetNotFound();
         }
     }
 

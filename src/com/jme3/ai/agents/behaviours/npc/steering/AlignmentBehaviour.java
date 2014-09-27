@@ -3,12 +3,11 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
+import com.jme3.ai.agents.AgentExceptions;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.NegativeMaxDistanceException;
 
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 
 import java.util.List;
@@ -24,13 +23,76 @@ import java.util.List;
  * aligned with its neighbors."
  *
  * @author Jesús Martín Berlanga
- * @version 1.2
+ * @version 1.2.1
  */
 public class AlignmentBehaviour extends AbstractStrengthSteeringBehaviour {
 
+    /**
+     * List of agents that should align.
+     */
     private List<Agent> neighbours;
+    /**
+     * Maximum distance between tow agents.
+     */
     private float maxDistance = Float.POSITIVE_INFINITY;
     private float maxAngle = FastMath.PI / 2;
+
+    /**
+     * maxAngle is setted to PI / 2 by default and maxDistance to infinite.
+     * Neighbours of agent will be his team members.
+     *
+     * @param agent
+     */
+    public AlignmentBehaviour(Agent agent) {
+        super(agent);
+        try {
+            neighbours = agent.getTeam().getMembers();
+        } catch (NullPointerException npe) {
+            throw new AgentExceptions.TeamNotFoundExecption(agent);
+        }
+    }
+
+    /**
+     * Neighbours of agent will be his team members.
+     *
+     * @param maxDistance In order to consider a neihbour inside the
+     * neighbourhood
+     * @param maxAngle In order to consider a neihbour inside the neighbourhood
+     * @param agent
+     */
+    public AlignmentBehaviour(Agent agent, float maxDistance, float maxAngle) {
+        super(agent);
+        try {
+            this.validateMaxDistance(maxDistance);
+            this.maxDistance = maxDistance;
+            this.maxAngle = maxAngle;
+            neighbours = agent.getTeam().getMembers();
+        } catch (NullPointerException npe) {
+            throw new AgentExceptions.TeamNotFoundExecption(agent);
+        }
+    }
+
+    /**
+     * Neighbours of agent will be his team members.
+     *
+     * @param maxDistance In order to consider a neihbour inside the
+     * neighbourhood
+     * @param maxAngle In order to consider a neihbour inside the neighbourhood
+     * Neighbours of agent will be his team members.
+     * @param spatial active spatial during excecution of behaviour
+     * @param agent
+     */
+    public AlignmentBehaviour(Agent agent, float maxDistance, float maxAngle, Spatial spatial) {
+        super(agent, spatial);
+        try {
+            this.validateMaxDistance(maxDistance);
+            this.maxDistance = maxDistance;
+            this.maxAngle = maxAngle;
+            neighbours = agent.getTeam().getMembers();
+        } catch (NullPointerException npe) {
+            throw new AgentExceptions.TeamNotFoundExecption(agent);
+        }
+    }
 
     /**
      * maxAngle is setted to PI / 2 by default and maxDistance to infinite.
@@ -88,19 +150,9 @@ public class AlignmentBehaviour extends AbstractStrengthSteeringBehaviour {
         this.maxAngle = maxAngle;
     }
 
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class NegativeMaxDistanceException extends IllegalBehaviourException {
-
-        private NegativeMaxDistanceException(String msg) {
-            super(msg);
-        }
-    }
-
     private void validateMaxDistance(float maxDistance) {
         if (maxDistance < 0) {
-            throw new NegativeMaxDistanceException("The max distance value can not be negative. Current value is " + maxDistance);
+            throw new NegativeMaxDistanceException(maxDistance);
         }
     }
 
@@ -112,7 +164,6 @@ public class AlignmentBehaviour extends AbstractStrengthSteeringBehaviour {
         // steering accumulator and count of neighbors, both initially zero
         Vector3f steering = new Vector3f();
         int realNeighbors = 0;
-
         // for each of the other vehicles...
         for (Agent agentO : neighbours) {
             if (this.agent.inBoidNeighborhood(agentO, this.agent.getRadius() * 3, this.maxDistance, this.maxAngle)) {
@@ -121,18 +172,12 @@ public class AlignmentBehaviour extends AbstractStrengthSteeringBehaviour {
                 realNeighbors++;
             }
         }
-
         // divide by neighbors, subtract off current position to get error-correcting direction
         if (realNeighbors > 0) {
             steering = steering.divide(realNeighbors);
             steering = this.agent.offset(steering);
         }
-
         return steering;
-    }
-
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
     }
 
     public void setNeighbours(List<Agent> neighbours) {

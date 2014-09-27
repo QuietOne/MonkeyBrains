@@ -3,14 +3,11 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.QueuingWithNegativeMinDistanceException;
 
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -62,25 +59,11 @@ public class QueuingBehaviour extends AbstractStrengthSteeringBehaviour {
         this.neighbours = neighbours;
         this.minDistance = minDistance;
     }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class QueuingWithNegativeMinDistanceException extends IllegalBehaviourException {
-
-        private QueuingWithNegativeMinDistanceException(String msg) {
-            super(msg);
-        }
-    }
-
+    
     private void validateMinDistance(float minDistance) {
         if (minDistance < 0) {
             throw new QueuingWithNegativeMinDistanceException("The min distance from an obstacle can not be negative. Current value is " + minDistance);
         }
-    }
-
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
     }
 
     /**

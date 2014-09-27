@@ -39,10 +39,6 @@ public class MoveBehaviour extends AbstractStrengthSteeringBehaviour {
         super(agent, spatial);
     }
 
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
-    }
-
     public Vector3f getMoveDirection() {
         return moveDirection;
     }

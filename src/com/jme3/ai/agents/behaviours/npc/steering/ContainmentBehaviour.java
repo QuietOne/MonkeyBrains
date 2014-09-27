@@ -3,7 +3,8 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.ContainmentWithInvalidContainmenetAreaException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.ContainmentWithoutContainmentAreaException;
 
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
@@ -32,7 +33,10 @@ import com.jme3.scene.Spatial;
 public class ContainmentBehaviour extends AbstractStrengthSteeringBehaviour {
 
     private Node containmentArea;
-    private Vector3f lastExitSurfaceNormal; //Remember the last normal vector from the containment surface
+    /**
+     * Remember the last normal vector from the containment surface
+     */
+    private Vector3f lastExitSurfaceNormal;
     /*
      * Saves the Normal vector from the triangle where the agent will exit at "surfaceNormal".
      * 
@@ -68,36 +72,12 @@ public class ContainmentBehaviour extends AbstractStrengthSteeringBehaviour {
         this.containmentArea = containmentArea;
     }
 
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class ContainmentWithInvalidContainmenetAreaException extends IllegalBehaviourException {
-
-        private ContainmentWithInvalidContainmenetAreaException(String msg) {
-            super(msg);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class ContainmentWithoutContainmentAreaException extends IllegalBehaviourException {
-
-        private ContainmentWithoutContainmentAreaException(String msg) {
-            super(msg);
-        }
-    }
-
     private void validateContainmentArea(Node containmentArea) {
         if (containmentArea == null) {
             throw new ContainmentWithoutContainmentAreaException("The containment area can not be null.");
         } else if (containmentArea.getWorldBound() == null) {
             throw new ContainmentWithInvalidContainmenetAreaException("The containment area must be bounded.");
         }
-    }
-
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
     }
 
     /**
@@ -116,21 +96,22 @@ public class ContainmentBehaviour extends AbstractStrengthSteeringBehaviour {
             } else {
                 steer = this.containmentArea.getWorldBound().getCenter().subtract(this.agent.getLocalTranslation());
             }
-        } //Check if correction is necessary
-        else if (!this.containmentArea.getWorldBound().contains(predictedPos)) {
-            this.processExitSurface();
+        } else {
+            //Check if correction is necessary
+            if (!this.containmentArea.getWorldBound().contains(predictedPos)) {
+                this.processExitSurface();
 
-            if (exitPoint != null && surfaceNormal != null) {
-                /* Check If the normal vector will mantain the agent inside the area, 
-                 if not flip it */
-                if (this.surfaceNormal.angleBetween(this.agent.getVelocity()) < FastMath.PI / 2) {
-                    this.surfaceNormal = this.surfaceNormal.negate();
+                if (exitPoint != null && surfaceNormal != null) {
+                    /* Check If the normal vector will mantain the agent inside the area, 
+                     if not flip it */
+                    if (this.surfaceNormal.angleBetween(this.agent.getVelocity()) < FastMath.PI / 2) {
+                        this.surfaceNormal = this.surfaceNormal.negate();
+                    }
+
+                    steer = this.surfaceNormal.mult(this.exitPoint.distance(predictedPos));
                 }
-
-                steer = this.surfaceNormal.mult(this.exitPoint.distance(predictedPos));
             }
         }
-
         return steer;
     }
 

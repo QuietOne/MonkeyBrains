@@ -19,7 +19,7 @@ import java.util.Random;
  * @see WanderBehaviour
  *
  * @author Jesús Martín Berlanga
- * @version 1.0
+ * @version 1.0.0
  */
 public class RelativeWanderBehaviour extends WanderBehaviour {
 
@@ -57,7 +57,7 @@ public class RelativeWanderBehaviour extends WanderBehaviour {
      */
     @Override
     protected Vector3f calculateRawSteering() {
-        changeTargetPosition(this.getTPF());
+        changeTargetPosition(timePerFrame);
         return targetPosition;
     }
 

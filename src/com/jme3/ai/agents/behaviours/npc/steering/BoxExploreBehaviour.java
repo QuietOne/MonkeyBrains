@@ -3,11 +3,10 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.BoxExploreWithNegativeBoxDimensionsException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.BoxExploreWithNegativeSubdivisionDistanceException;
 
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ import java.util.List;
  * This is the simplest implementation of explore behaviour.
  *
  * @author Jesús Martín Berlanga
- * @version 1.0
+ * @version 1.0.1
  */
 public class BoxExploreBehaviour extends AbstractStrengthSteeringBehaviour {
 
@@ -42,8 +41,8 @@ public class BoxExploreBehaviour extends AbstractStrengthSteeringBehaviour {
      *
      * @throws BoxExploreWithNegativeSubdivisionDistanceException If
      * subdivisionDistance is lower or equals to 0
-     * @throws BoxExploreWithNegativeBoxDimensionsException If boxWidthX, boxWidthZ or
-     * boxHeight is lower than 0
+     * @throws BoxExploreWithNegativeBoxDimensionsException If boxWidthX,
+     * boxWidthZ or boxHeight is lower than 0
      *
      * @see
      * AbstractStrengthSteeringBehaviour#AbstractStrengthSteeringBehaviour(com.jme3.ai.agents.Agent)
@@ -65,26 +64,6 @@ public class BoxExploreBehaviour extends AbstractStrengthSteeringBehaviour {
         this.construct(boxCenter, boxWidthX, boxWidthZ, boxHeight, subdivisionDistance);
     }
 
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class BoxExploreWithNegativeSubdivisionDistanceException extends IllegalBehaviourException {
-
-        private BoxExploreWithNegativeSubdivisionDistanceException(String msg) {
-            super(msg);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class BoxExploreWithNegativeBoxDimensionsException extends IllegalBehaviourException {
-
-        private BoxExploreWithNegativeBoxDimensionsException(String msg) {
-            super(msg);
-        }
-    }
-
     private void construct(Vector3f boxCenter, float boxWidthX, float boxWidthZ, float boxHeight, float subdivisionDistance) {
         if (boxWidthX < 0 || boxWidthZ < 0 || boxHeight < 0) {
             throw new BoxExploreWithNegativeBoxDimensionsException("Box width, depth and height must be positive.");
@@ -100,13 +79,13 @@ public class BoxExploreBehaviour extends AbstractStrengthSteeringBehaviour {
         this.addNewTargets();
     }
 
-    //Should be used after cleaning target list
+    /**
+     * Should be used after cleaning target list
+     */
     protected void addNewTargets() {
         //Vertical subdivisions
-        for (float i = 0; i < this.boxHeight; i += this.subdivisionDistance) //1st Horizontal subdivisions in each vertical subdivision
-        {
-            for (float j = 0; j < this.boxWidthX; j += this.subdivisionDistance) //2nd Horizontal subdivisions
-            {
+        for (float i = 0; i < this.boxHeight; i += this.subdivisionDistance) { //1st Horizontal subdivisions in each vertical subdivision
+            for (float j = 0; j < this.boxWidthX; j += this.subdivisionDistance) { //2nd Horizontal subdivisions
                 for (float k = 0; k < this.boxWidthZ; k += this.subdivisionDistance) {
                     this.targets.add(this.zeroCorner.add(new Vector3f(j, i, k)));
                 }
@@ -144,7 +123,6 @@ public class BoxExploreBehaviour extends AbstractStrengthSteeringBehaviour {
                 isFinished = true;
             }
         }
-
         return steer;
     }
 
@@ -160,9 +138,5 @@ public class BoxExploreBehaviour extends AbstractStrengthSteeringBehaviour {
         this.targets.clear();
         this.addNewTargets();
         this.isFinished = false;
-    }
-
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
     }
 }

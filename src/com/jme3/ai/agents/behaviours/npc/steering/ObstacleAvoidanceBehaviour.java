@@ -3,7 +3,8 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
+import com.jme3.ai.agents.behaviours.BehaviourExceptions.IllegalBehaviourException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.ObstacleAvoindanceWithNegativeMinDistanceException;
 import com.jme3.ai.agents.util.GameObject;
 
 import com.jme3.math.Vector3f;
@@ -48,7 +49,7 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
 
     private float minDistance;
     private float minTimeToCollision;
-    private List<Agent> obstacles;
+    private List<GameObject> obstacles;
 
     /**
      * @param obstacles A list with the obstacles (Agents)
@@ -61,7 +62,7 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
      * @see
      * AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent)
      */
-    public ObstacleAvoidanceBehaviour(Agent agent, List<Agent> obstacles, float minTimeToCollision) {
+    public ObstacleAvoidanceBehaviour(Agent agent, List<GameObject> obstacles, float minTimeToCollision) {
         super(agent);
         this.validateMinTimeToCollision(minTimeToCollision);
         this.minTimeToCollision = minTimeToCollision;
@@ -77,7 +78,7 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
      * AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent,
      * com.jme3.scene.Spatial)
      */
-    public ObstacleAvoidanceBehaviour(Agent agent, List<Agent> obstacles, float minTimeToCollision, Spatial spatial) {
+    public ObstacleAvoidanceBehaviour(Agent agent, List<GameObject> obstacles, float minTimeToCollision, Spatial spatial) {
         super(agent, spatial);
         this.validateMinTimeToCollision(minTimeToCollision);
         this.minTimeToCollision = minTimeToCollision;
@@ -96,7 +97,7 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
      * ObstacleAvoidanceBehaviour#ObstacleAvoidanceBehaviour(com.jme3.ai.agents.Agent,
      * java.util.List, float)
      */
-    public ObstacleAvoidanceBehaviour(Agent agent, List<Agent> obstacles, float minTimeToCollision, float minDistance) {
+    public ObstacleAvoidanceBehaviour(Agent agent, List<GameObject> obstacles, float minTimeToCollision, float minDistance) {
         super(agent);
         this.validateMinTimeToCollision(minTimeToCollision);
         this.validateMinDistance(minDistance);
@@ -113,7 +114,7 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
      * AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent,
      * com.jme3.scene.Spatial)
      */
-    public ObstacleAvoidanceBehaviour(Agent agent, List<Agent> obstacles, float minTimeToCollision, float minDistance, Spatial spatial) {
+    public ObstacleAvoidanceBehaviour(Agent agent, List<GameObject> obstacles, float minTimeToCollision, float minDistance, Spatial spatial) {
         super(agent, spatial);
         this.validateMinTimeToCollision(minTimeToCollision);
         this.validateMinDistance(minDistance);
@@ -122,29 +123,9 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
         this.minDistance = minDistance;
     }
 
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class ObstacleAvoindanceWithNegativeMinDistanceException extends IllegalBehaviourException {
-
-        private ObstacleAvoindanceWithNegativeMinDistanceException(String msg) {
-            super(msg);
-        }
-    }
-
     private void validateMinDistance(float minDistance) {
         if (minDistance < 0) {
             throw new ObstacleAvoindanceWithNegativeMinDistanceException("The min distance from an obstacle can not be negative. Current value is " + minDistance);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class ObstacleAvoindanceWithNoMinTimeToCollisionException extends IllegalBehaviourException {
-
-        private ObstacleAvoindanceWithNoMinTimeToCollisionException(String msg) {
-            super(msg);
         }
     }
 
@@ -163,11 +144,11 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
 
         if (this.agent.getVelocity() != null) {
             float agentVel = this.agent.getVelocity().length();
-            float minDistanceToCollision = agentVel * this.getTPF() * this.minTimeToCollision;
+            float minDistanceToCollision = agentVel * timePerFrame * this.minTimeToCollision;
 
             // test all obstacles for intersection with my forward axis,
             // select the one whose intersection is nearest
-            for (Agent obstacle : this.obstacles) {
+            for (GameObject obstacle : this.obstacles) {
                 float distanceFromCenterToCenter = this.agent.distanceRelativeToGameObject(obstacle);
                 if (distanceFromCenterToCenter > this.minDistance) {
                     break;
@@ -219,12 +200,10 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
 
         return nearestObstacleSteerForce;
     }
-
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
-    }
-
-    //Generates a random vector inside a plane defined by a normal vector and a point
+    
+    /**
+     * Generates a random vector inside a plane defined by a normal vector and a point
+     */
     protected Vector3f randomVectInPlane(Vector3f planeNormalV, Vector3f planePoint) {
         Random rand = FastMath.rand;
 
@@ -265,11 +244,11 @@ public class ObstacleAvoidanceBehaviour extends AbstractStrengthSteeringBehaviou
         return randPoint.subtract(planePoint);
     }
 
-    protected List<Agent> getObstacles() {
+    protected List<GameObject> getObstacles() {
         return this.obstacles;
     }
 
-    public void setObstacles(List<Agent> obstacles) {
+    public void setObstacles(List<GameObject> obstacles) {
         this.obstacles = obstacles;
     }
 

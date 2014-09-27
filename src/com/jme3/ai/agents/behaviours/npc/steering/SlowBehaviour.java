@@ -3,11 +3,9 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.ObstacleAvoindanceWithoutTimeIntervalException;
 
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 
 import java.awt.event.ActionEvent;
@@ -29,6 +27,16 @@ public class SlowBehaviour extends AbstractStrengthSteeringBehaviour {
     private int timeInterval;
     private float slowPercentage;
     private float maxBrakingFactor = 1;
+    private ActionListener slowIteration = new ActionListener() {
+        public void actionPerformed(ActionEvent event) {
+            float newStrength = getBrakingFactorWrapper() * (1 - slowPercentage);
+
+            if (newStrength < maxBrakingFactor) {
+                setBrakingFactorWrapper(newStrength);
+            }
+        }
+    };
+    private Timer iterationTimer;
 
     /**
      * Slows a steer behaviour resultant velocity.
@@ -63,8 +71,8 @@ public class SlowBehaviour extends AbstractStrengthSteeringBehaviour {
     /**
      * @param slowPercentage float in the interval [0, 1]
      */
-    public void setSlowPercentage(float slowPercentage) { //Auto adjust invalid inputs
-
+    public void setSlowPercentage(float slowPercentage) {
+        //Auto adjust invalid inputs
         if (slowPercentage > 1) {
             this.slowPercentage = 1;
         } else if (slowPercentage < 0) {
@@ -81,16 +89,6 @@ public class SlowBehaviour extends AbstractStrengthSteeringBehaviour {
     private void setBrakingFactorWrapper(float brakingFacor) {
         this.setBrakingFactor(brakingFacor);
     }
-    private ActionListener slowIteration = new ActionListener() {
-        public void actionPerformed(ActionEvent event) {
-            float newStrength = getBrakingFactorWrapper() * (1 - slowPercentage);
-
-            if (newStrength < maxBrakingFactor) {
-                setBrakingFactorWrapper(newStrength);
-            }
-        }
-    };
-    private Timer iterationTimer;
 
     /**
      * Turns on or off the slow behaviour
@@ -110,16 +108,6 @@ public class SlowBehaviour extends AbstractStrengthSteeringBehaviour {
      */
     public void reset() {
         this.setBrakingFactor(1);
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class ObstacleAvoindanceWithoutTimeIntervalException extends IllegalBehaviourException {
-
-        private ObstacleAvoindanceWithoutTimeIntervalException(String msg) {
-            super(msg);
-        }
     }
 
     private void construct(int timeInterval, float percentajeSlow) {
@@ -147,9 +135,5 @@ public class SlowBehaviour extends AbstractStrengthSteeringBehaviour {
 
     public void setMaxBrakingFactor(float maxBrakingFactor) {
         this.maxBrakingFactor = maxBrakingFactor;
-    }
-
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
     }
 }

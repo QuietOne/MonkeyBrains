@@ -3,7 +3,10 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.SphereWanderInvalidRandomFactorException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.SphereWanderInvalidRotationFactorException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.SphereWanderWithoutRadiusException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.SphereWanderWithoutTimeIntervalException;
 
 import com.jme3.bounding.BoundingSphere;
 import com.jme3.collision.CollisionResult;
@@ -90,46 +93,6 @@ public class SphereWanderBehaviour extends AbstractStrengthSteeringBehaviour {
         this.construct(timeInterval, randomFactor, rotationFactor);
     }
 
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class SphereWanderInvalidRandomFactorException extends IllegalBehaviourException {
-
-        private SphereWanderInvalidRandomFactorException(String msg) {
-            super(msg);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class SphereWanderInvalidRotationFactorException extends IllegalBehaviourException {
-
-        private SphereWanderInvalidRotationFactorException(String msg) {
-            super(msg);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class SphereWanderWithoutTimeIntervalException extends IllegalBehaviourException {
-
-        private SphereWanderWithoutTimeIntervalException(String msg) {
-            super(msg);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class SphereWanderWithoutRadiusException extends IllegalBehaviourException {
-
-        private SphereWanderWithoutRadiusException(String msg) {
-            super(msg);
-        }
-    }
-
     private void construct(float timeInterval, float randomFactor, float rotationFactor) {
         if (timeInterval <= 0) {
             throw new SphereWanderWithoutTimeIntervalException("The time interval must be possitive. The current value is: " + timeInterval);
@@ -142,11 +105,8 @@ public class SphereWanderBehaviour extends AbstractStrengthSteeringBehaviour {
         this.timeInterval = timeInterval;
         this.time = this.timeInterval;
         this.randomFactor = randomFactor;
-
         this.wanderSphere = new BoundingSphere(this.sphereRadius, Vector3f.ZERO);
-
-        targetPosition = this.wanderSphere.getCenter();
-
+        this.targetPosition = this.wanderSphere.getCenter();
         this.randomDirection = new Vector2f();
         this.maxRandom = this.sphereRadius - SphereWanderBehaviour.RANDOM_OFFSET;
         this.rotationFactor = rotationFactor;
@@ -160,7 +120,7 @@ public class SphereWanderBehaviour extends AbstractStrengthSteeringBehaviour {
      */
     @Override
     protected Vector3f calculateRawSteering() {
-        changeTargetPosition(this.getTPF());
+        changeTargetPosition(timePerFrame);
         return this.agent.offset(this.targetPosition).mult((0.5f / this.sphereRadius) * this.agent.getMoveSpeed());
     }
 
@@ -273,9 +233,5 @@ public class SphereWanderBehaviour extends AbstractStrengthSteeringBehaviour {
             throw new SphereWanderWithoutRadiusException("The sphere radius must be possitive. Current value is: " + sphereRadius);
         }
         this.sphereRadius = sphereRadius;
-    }
-
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
     }
 }

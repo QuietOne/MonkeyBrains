@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
+import com.jme3.ai.agents.behaviours.BehaviourExceptions;
 
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
@@ -13,7 +13,7 @@ import com.jme3.scene.Spatial;
  * steer away from the predicted future position of the target character."
  *
  * @author Jesús Martín Berlanga
- * @version 1.2
+ * @version 1.2.1
  */
 public class EvadeBehaviour extends FleeBehaviour {
 
@@ -37,19 +37,9 @@ public class EvadeBehaviour extends FleeBehaviour {
         this.validateTarget(target);
     }
 
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class EvadeWithoutTargetException extends IllegalBehaviourException {
-
-        private EvadeWithoutTargetException(String msg) {
-            super(msg);
-        }
-    }
-
     private void validateTarget(Agent target) {
         if (target == null) {
-            throw new EvadeWithoutTargetException("The target can not be null.");
+            throw new BehaviourExceptions.TargetNotFound();
         }
     }
 

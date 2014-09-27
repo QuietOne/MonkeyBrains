@@ -3,7 +3,8 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.WallApproachNegativeOffsetException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.WallApproachWithoutWallException;
 
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
@@ -53,30 +54,14 @@ public class WallApproachBehaviour extends AbstractStrengthSteeringBehaviour {
             return this.direction;
         }
     }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class WallApproachWithoutWallException extends IllegalBehaviourException {
-
-        private WallApproachWithoutWallException(String msg) {
-            super(msg);
-        }
-    }
-
-    public static class WallApproachNegativeOffsetException extends IllegalBehaviourException {
-
-        private WallApproachNegativeOffsetException(String msg) {
-            super(msg);
-        }
-    }
     private Node wall;
     private float offsetToMaintain;
     private float rayTestOffset;
     private static final float MIN_RAY_TEST_OFFSET = 0.001f;
 
     /**
-     * @throws WallApproachNegativeOffsetException If offsetToMaintain is negative
+     * @throws WallApproachNegativeOffsetException If offsetToMaintain is
+     * negative
      */
     public void setOffsetToMaintain(float offsetToMaintain) {
         WallApproachBehaviour.validateOffsetToMaintain(offsetToMaintain);
@@ -90,7 +75,8 @@ public class WallApproachBehaviour extends AbstractStrengthSteeringBehaviour {
      * to maintain
      *
      * @throws WallApproachWithoutWallException If the wall is a null pointer
-     * @throws WallApproachNegativeOffsetException If offsetToMaintain is negative
+     * @throws WallApproachNegativeOffsetException If offsetToMaintain is
+     * negative
      *
      * @see
      * AbstractStrengthSteeringBehaviour#AbstractStrengthSteeringBehaviour(com.jme3.ai.agents.Agent)
@@ -143,10 +129,6 @@ public class WallApproachBehaviour extends AbstractStrengthSteeringBehaviour {
                     "The superficial offset to maintain cannot be negative. You have passed  "
                     + offsetToMaintain + " as offset.");
         }
-    }
-
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
     }
 
     /**

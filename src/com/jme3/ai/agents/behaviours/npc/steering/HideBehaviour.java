@@ -3,7 +3,9 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.HideWithoutTargetException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.NegativeSeparationFromObstacleException;
+import com.jme3.ai.agents.util.GameObject;
 
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -27,7 +29,7 @@ public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
 
     private float separationFromObstacle;
     private Agent target;
-    private List<Agent> obstacles;
+    private List<GameObject> obstacles;
 
     /**
      * @param obstacles Obstacles that this agent will use to hide from the
@@ -35,14 +37,14 @@ public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
      * @param separationFromObstacle Distance from the obstacle surface that
      * this agent will maintain
      *
-     * @throws NegativeSeparationFromObstacleException If separationFromObstacle is lower
-     * than 0
+     * @throws NegativeSeparationFromObstacleException If separationFromObstacle
+     * is lower than 0
      * @throws HideWithoutTargetException If target is null
      *
      * @see
      * AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent)
      */
-    public HideBehaviour(Agent agent, Agent target, List<Agent> obstacles, float separationFromObstacle) {
+    public HideBehaviour(Agent agent, Agent target, List<GameObject> obstacles, float separationFromObstacle) {
         super(agent);
         this.validateTarget(target);
         this.validateSeparationFromObstacle(separationFromObstacle);
@@ -58,7 +60,7 @@ public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
      * AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent,
      * com.jme3.scene.Spatial)
      */
-    public HideBehaviour(Agent agent, Agent target, List<Agent> obstacles, float separationFromObstacle, Spatial spatial) {
+    public HideBehaviour(Agent agent, Agent target, List<GameObject> obstacles, float separationFromObstacle, Spatial spatial) {
         super(agent, spatial);
         this.validateTarget(target);
         this.validateSeparationFromObstacle(separationFromObstacle);
@@ -67,29 +69,9 @@ public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
         this.separationFromObstacle = separationFromObstacle;
     }
 
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class HideWithoutTargetException extends IllegalBehaviourException {
-
-        private HideWithoutTargetException(String msg) {
-            super(msg);
-        }
-    }
-
     private void validateTarget(Agent target) {
         if (target == null) {
             throw new HideWithoutTargetException("The target can not be null.");
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class NegativeSeparationFromObstacleException extends IllegalBehaviourException {
-
-        private NegativeSeparationFromObstacleException(String msg) {
-            super(msg);
         }
     }
 
@@ -106,10 +88,10 @@ public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
     protected Vector3f calculateRawSteering() {
         Vector3f steer = Vector3f.ZERO;
 
-        Agent closestObstacle = null;
+        GameObject closestObstacle = null;
         float closestDistanceFromAgent = Float.POSITIVE_INFINITY;
 
-        for (Agent obstacle : this.obstacles) {
+        for (GameObject obstacle : this.obstacles) {
             if (obstacle != this.agent) {
                 float distanceFromAgent = this.agent.distanceRelativeToGameObject(obstacle);
 
@@ -132,11 +114,7 @@ public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
         return steer;
     }
 
-    public void setObstacles(List<Agent> obstacles) {
+    public void setObstacles(List<GameObject> obstacles) {
         this.obstacles = obstacles;
-    }
-
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
     }
 }

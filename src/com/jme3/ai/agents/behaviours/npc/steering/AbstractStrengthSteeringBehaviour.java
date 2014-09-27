@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.IllegalBehaviourException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.NegativeScalarMultiplierException;
 
 import com.jme3.math.Plane;
 import com.jme3.math.Vector3f;
@@ -41,8 +41,21 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
         AXIS,
         PLANE
     }
+    /**
+     * Type of steer force that is applied to steering behaviour.
+     */
     private SteerStrengthType type = SteerStrengthType.NO_STRENGTH;
-    private Float scalar, x, y, z;
+    /**
+     * Used if the steer type is scalar.
+     */
+    private float scalar;
+    /**
+     * Used if the steer type is axis.
+     */
+    private float x, y, z;
+    /**
+     * Used if the steer type is plane.
+     */
     private Plane plane;
 
     /**
@@ -98,6 +111,27 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
     }
 
     /**
+     * If you call this function you will be able to modify the full steering
+     * force on a especific axis (x, y, z)
+     *
+     * @param x X axis multiplier
+     * @param y Y axis multiplier
+     * @param z Z axis multiplier
+     *
+     * @throws NegativeScalarMultiplierException If any axis multiplier is lower
+     * than 0
+     */
+    public void setupStrengthControl(Vector3f vector) {
+        validateScalar(vector.getX());
+        validateScalar(vector.getY());
+        validateScalar(vector.getZ());
+        x = vector.getX();
+        y = vector.getY();
+        z = vector.getZ();
+        type = SteerStrengthType.AXIS;
+    }
+
+    /**
      * Forces the steer to stay inside a plane.
      *
      * @param Plane plane where the steer will be
@@ -118,16 +152,6 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
         this.scalar = scalar;
         this.plane = plane;
         this.type = SteerStrengthType.PLANE;
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class NegativeScalarMultiplierException extends IllegalBehaviourException {
-
-        private NegativeScalarMultiplierException(String msg) {
-            super(msg);
-        }
     }
 
     private void validateScalar(float scalar) {
@@ -172,6 +196,8 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
             case PLANE:
                 strengthSteeringForce = this.plane.getClosestPoint(strengthSteeringForce).mult(this.scalar);
                 break;
+
+            default:
         }
 
         return strengthSteeringForce;
@@ -183,6 +209,7 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
      * calculateSteering().
      *
      * @see AbstractSteeringBehaviour#calculateSteering()
+     * @return
      */
     protected abstract Vector3f calculateRawSteering();
 }

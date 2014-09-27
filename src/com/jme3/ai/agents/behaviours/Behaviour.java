@@ -3,6 +3,9 @@
 package com.jme3.ai.agents.behaviours;
 
 import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviours.BehaviourExceptions.NullAgentException;
+import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.ViewPort;
 
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
@@ -12,7 +15,7 @@ import com.jme3.scene.control.AbstractControl;
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
- * @version 1.2.0
+ * @version 1.2.1
  */
 public abstract class Behaviour extends AbstractControl {
 
@@ -26,11 +29,11 @@ public abstract class Behaviour extends AbstractControl {
      * execution.
      *
      * @param agent to whom behaviour belongs
-     * @throws BehaviourNullAgentException if agent is null
+     * @throws NullAgentException if agent is null
      */
     public Behaviour(Agent agent) {
         if (agent == null) {
-            throw new BehaviourNullAgentException();
+            throw new BehaviourExceptions.NullAgentException();
         }
         this.agent = agent;
         this.spatial = agent.getSpatial();
@@ -42,24 +45,17 @@ public abstract class Behaviour extends AbstractControl {
      * @param agent to whom behaviour belongs
      * @param spatial which is active during execution
      * @see Behaviour#Behaviour(com.jme3.ai.agents.Agent)
-     * @throws BehaviourNullAgentException if agent is null
+     * @throws NullAgentException if agent is null
      */
     public Behaviour(Agent agent, Spatial spatial) {
         if (agent == null) {
-            throw new BehaviourNullAgentException();
+            throw new BehaviourExceptions.NullAgentException();
         }
         this.agent = agent;
         this.spatial = spatial;
     }
 
-    /**
-     * @see IllegalBehaviourException
-     * @author Jesús Martín Berlanga
-     */
-    public static class BehaviourNullAgentException extends IllegalBehaviourException {
-
-        private BehaviourNullAgentException() {
-            super("You can not instantiate a behaviour without an agent.");
-        }
+    @Override
+    protected void controlRender(RenderManager rm, ViewPort vp) { 
     }
 }

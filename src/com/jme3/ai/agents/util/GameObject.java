@@ -5,6 +5,7 @@ package com.jme3.ai.agents.util;
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.npc.steering.ObstacleAvoidanceBehaviour;
 import com.jme3.ai.agents.util.control.Game;
+import com.jme3.ai.agents.util.systems.HPSystem;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -24,7 +25,7 @@ import com.jme3.scene.control.AbstractControl;
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
- * @version 1.2.0
+ * @version 1.3.0
  */
 public abstract class GameObject extends AbstractControl {
 
@@ -49,13 +50,9 @@ public abstract class GameObject extends AbstractControl {
      */
     protected float maxForce;
     /**
-     * Current hitPoint status of GameObject.
+     * HitPoint System that will agent use.
      */
-    protected float hitPoint = 100f;
-    /**
-     * Maximum hitPoint that GameObject can have.
-     */
-    protected float maxHitPoint = 100f;
+    private HPSystem hpSystem;
     /**
      * Rotation speed of GameObject.
      */
@@ -67,38 +64,6 @@ public abstract class GameObject extends AbstractControl {
      * @see ObstacleAvoidanceBehaviour
      */
     protected float radius = 0;
-
-    /**
-     * Method for increasing agents hitPoint for fixed amount. If adding
-     * hitPoint will cross the maximum hitPoint of agent, then agent's hitPoint
-     * status will be set to maximum allowed hitPoint for that agent.
-     *
-     * @see Agent#maxHitPoint
-     * @param potionHitPoint amount of hitPoint that should be added
-     */
-    public void increaseHitPoint(float potionHitPoint) {
-        hitPoint += potionHitPoint;
-        if (hitPoint > maxHitPoint) {
-            hitPoint = maxHitPoint;
-        }
-    }
-
-    /**
-     * Method for decreasing agents hitPoint for fixed amount. If hitPoint drops
-     * to zero or bellow, agent's hitPoint status will be set to zero and he
-     * will be dead.
-     *
-     * @see Agent#alive
-     * @param damage amount of hitPoint that should be removed
-     */
-    public void decreaseHitPoints(double damage) {
-        hitPoint -= damage;
-        if (hitPoint <= 0) {
-            hitPoint = 0;
-            enabled = false;
-        }
-    }
-
     /**
      * @return The predicted position for this 'frame', taking into account
      * current position and velocity.
@@ -225,25 +190,6 @@ public abstract class GameObject extends AbstractControl {
         this.maxForce = maxForce;
     }
 
-    public float getHitPoint() {
-        return hitPoint;
-    }
-
-    public void setHitPoint(float hitPoint) {
-        if (maxHitPoint < hitPoint) {
-            this.hitPoint = maxHitPoint;
-        }
-        this.hitPoint = hitPoint;
-    }
-
-    public float getMaxHitPoint() {
-        return maxHitPoint;
-    }
-
-    public void setMaxHitPoint(float maxHitPoint) {
-        this.maxHitPoint = maxHitPoint;
-    }
-
     public Quaternion getLocalRotation() {
         return spatial.getLocalRotation();
     }
@@ -312,20 +258,19 @@ public abstract class GameObject extends AbstractControl {
         return this.radius;
     }
 
-    /**
-     * @see IllegalArgumentException
-     * @author Jesús Martín Berlanga
-     */
-    public static class NegativeRadiusException extends IllegalArgumentException {
+    public HPSystem getHpSystem() {
+        return hpSystem;
+    }
 
-        private NegativeRadiusException(String msg) {
-            super(msg);
-        }
+    public void setHpSystem(HPSystem hpSystem) {
+        this.hpSystem = hpSystem;
     }
 
     protected void validateRadius(float radius) {
         if (radius < 0) {
-            throw new NegativeRadiusException("A GameObject can't have a negative radius. You tried to construct the agent with a " + radius + " radius.");
+            throw new GameObjectExceptions.NegativeRadiusException("A GameObject can't have a negative radius. You tried to construct the agent with a " + radius + " radius.");
         }
     }
+    
+    
 }

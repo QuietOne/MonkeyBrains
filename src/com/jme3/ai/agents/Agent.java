@@ -2,13 +2,14 @@
 //Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
 package com.jme3.ai.agents;
 
+import com.jme3.ai.agents.AgentExceptions.InvalidNeighborhoodIDistanceException;
 import com.jme3.ai.agents.behaviours.Behaviour;
+import com.jme3.ai.agents.behaviours.BehaviourExceptions.NullBehaviourException;
 import com.jme3.ai.agents.behaviours.npc.SimpleMainBehaviour;
-import com.jme3.ai.agents.util.AbstractWeapon;
 import com.jme3.ai.agents.util.GameObject;
+import com.jme3.ai.agents.util.systems.InventorySystem;
 
 import com.jme3.scene.Spatial;
-import com.jme3.scene.Node;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
@@ -20,7 +21,7 @@ import com.jme3.renderer.ViewPort;
  *
  * @author Jesús Martín Berlanga
  * @author Tihomir Radosavljević
- * @version 1.6.0
+ * @version 1.7.0
  */
 public final class Agent<T> extends GameObject {
 
@@ -37,10 +38,6 @@ public final class Agent<T> extends GameObject {
      */
     private Team team;
     /**
-     * AbstractWeapon used by agent.
-     */
-    private AbstractWeapon weapon;
-    /**
      * Main behaviour of Agent. Behaviour that will be active while his alive.
      */
     private Behaviour mainBehaviour;
@@ -52,6 +49,10 @@ public final class Agent<T> extends GameObject {
      * Camera that is attached to agent.
      */
     private Camera camera;
+    /**
+     * Inventory that agent will use.
+     */
+    private InventorySystem inventory;
 
     /**
      * @param name unique name/id of agent
@@ -69,32 +70,6 @@ public final class Agent<T> extends GameObject {
         this.name = name;
         this.spatial = spatial;
         velocity = Vector3f.UNIT_XYZ.clone();
-    }
-
-    /**
-     * @return weapon that agent is currently using
-     */
-    public AbstractWeapon getWeapon() {
-        return weapon;
-    }
-
-    /**
-     * It will add weapon to agent and add its spatial to agent, if there
-     * already was weapon before with its own spatial, it will remove it before
-     * adding new weapon spatial.
-     *
-     * @param weapon that agent will use
-     */
-    public void setWeapon(AbstractWeapon weapon) {
-        //remove previous weapon spatial
-        if (this.weapon != null && this.weapon.getSpatial() != null) {
-            this.weapon.getSpatial().removeFromParent();
-        }
-        //add new weapon spatial if there is any
-        if (weapon.getSpatial() != null) {
-            ((Node) spatial).attachChild(weapon.getSpatial());
-        }
-        this.weapon = weapon;
     }
 
     /**
@@ -131,7 +106,7 @@ public final class Agent<T> extends GameObject {
     public void start() {
         enabled = true;
         if (mainBehaviour == null) {
-            throw new NullPointerException("Agent " + name + " does not have set main behaviour.");
+            throw new NullBehaviourException("Agent " + name + " does not have set main behaviour.");
         }
         mainBehaviour.setEnabled(true);
     }
@@ -203,15 +178,13 @@ public final class Agent<T> extends GameObject {
 
     @Override
     protected void controlUpdate(float tpf) {
-
         if (mainBehaviour != null) {
             mainBehaviour.update(tpf);
         }
-        //for updating cooldown on weapon
-        if (weapon != null) {
-            weapon.update(tpf);
+        //for updating cooldown on inventory items
+        if (inventory != null) {
+            inventory.update(tpf);
         }
-        //updateable
     }
 
     @Override
@@ -292,14 +265,11 @@ public final class Agent<T> extends GameObject {
         } else if (maxDistance < 0) {
             throw new InvalidNeighborhoodIDistanceException("The max distance can not be negative. Current value is " + maxDistance);
         }
-
         boolean isInBoidNeighborhood;
-
         if (this == neighbour) {
             isInBoidNeighborhood = false;
         } else {
             float distanceSquared = distanceSquaredRelativeToGameObject(neighbour);
-
             // definitely in neighborhood if inside minDistance sphere
             if (distanceSquared < (minDistance * minDistance)) {
                 isInBoidNeighborhood = true;
@@ -308,7 +278,6 @@ public final class Agent<T> extends GameObject {
                 isInBoidNeighborhood = false;
             } // otherwise, test angular offset from forward axis.
             else {
-
                 if (this.getAcceleration() != null) {
                     Vector3f unitOffset = this.offset(neighbour).divide(distanceSquared);
                     float forwardness = this.forwardness(unitOffset);
@@ -431,15 +400,11 @@ public final class Agent<T> extends GameObject {
         return myTravel.distance(otherTravel);
     }
 
-    /**
-     *
-     * @see IllegalArgumentException
-     * @author Jesús Martín Berlanga
-     */
-    public static class InvalidNeighborhoodIDistanceException extends IllegalArgumentException {
+    public InventorySystem getInventory() {
+        return inventory;
+    }
 
-        private InvalidNeighborhoodIDistanceException(String msg) {
-            super(msg);
-        }
+    public void setInventory(InventorySystem inventory) {
+        this.inventory = inventory;
     }
 }

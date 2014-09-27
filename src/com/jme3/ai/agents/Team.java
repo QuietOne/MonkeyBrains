@@ -6,7 +6,7 @@ import java.util.List;
  * Class for team of agents.
  *
  * @author Tihomir Radosavljević
- * @version 1.0
+ * @version 1.0.0
  */
 public class Team {
 

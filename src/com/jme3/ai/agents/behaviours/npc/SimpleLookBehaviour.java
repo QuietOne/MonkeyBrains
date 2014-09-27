@@ -3,8 +3,6 @@ package com.jme3.ai.agents.behaviours.npc;
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.math.FastMath;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.ai.agents.events.GameObjectSeenEvent;
 import com.jme3.ai.agents.events.GameObjectSeenListener;
 import java.util.ArrayList;
@@ -26,7 +24,7 @@ import com.jme3.ai.agents.util.GameObject;
  * @see Game#look(com.jme3.ai.agents.Agent, float)
  *
  * @author Tihomir Radosavljević
- * @version 1.0
+ * @version 1.0.1
  */
 public class SimpleLookBehaviour extends Behaviour {
 
@@ -95,10 +93,6 @@ public class SimpleLookBehaviour extends Behaviour {
      */
     protected List<GameObject> look(Agent agent, float viewAngle) {
         return Game.getInstance().look(agent, viewAngle);
-    }
-
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
     }
 
     /**

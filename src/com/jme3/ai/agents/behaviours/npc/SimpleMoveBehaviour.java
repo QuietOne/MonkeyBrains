@@ -2,10 +2,9 @@ package com.jme3.ai.agents.behaviours.npc;
 
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.Behaviour;
+import com.jme3.ai.agents.behaviours.npc.steering.MoveBehaviour;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 
 /**
@@ -16,9 +15,11 @@ import com.jme3.scene.Spatial;
  * too high so add appropriate distance error.
  *
  * @see Agent#moveSpeed
- *
+ * @see MoveBehaviour
+ * 
  * @author Tihomir Radosavljević
- * @version 1.0
+ * @version 1.0.1
+ * @deprecated
  */
 public class SimpleMoveBehaviour extends Behaviour {
 
@@ -62,10 +63,6 @@ public class SimpleMoveBehaviour extends Behaviour {
             agent.getSpatial().move(moveDirection.mult(agent.getMoveSpeed() * tpf));
             rotateAgent(tpf);
         }
-    }
-
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
     }
 
     /**

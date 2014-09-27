@@ -3,8 +3,6 @@ package com.jme3.ai.agents.behaviours.npc;
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.math.Quaternion;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 
 /**
@@ -12,7 +10,7 @@ import com.jme3.scene.Spatial;
  * agent spatials. If spatial is added then it will rotate only that spatial.
  *
  * @author Tihomir Radosavljević
- * @version 1.0
+ * @version 1.0.1
  */
 public class SimpleRotateBehaviour extends Behaviour {
 
@@ -71,10 +69,6 @@ public class SimpleRotateBehaviour extends Behaviour {
                 }
             }
         }
-    }
-
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
     }
 
     /**

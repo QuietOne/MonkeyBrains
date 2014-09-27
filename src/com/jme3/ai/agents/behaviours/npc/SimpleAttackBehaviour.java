@@ -5,10 +5,9 @@ import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.ai.agents.events.GameObjectSeenEvent;
 import com.jme3.ai.agents.events.GameObjectSeenListener;
 import com.jme3.ai.agents.util.GameObject;
-import com.jme3.ai.agents.util.AbstractWeapon;
+import com.jme3.ai.agents.util.weapons.AbstractFirearmWeapon;
+import com.jme3.ai.agents.util.weapons.WeaponExceptions;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 
 /**
@@ -16,12 +15,12 @@ import com.jme3.scene.Spatial;
  * targetedObject or fixed point in space. It will attack with weapon, and it
  * doesn't check if it has ammo.
  *
- * @see AbstractWeapon#hasBullets()
- * @see AbstractWeapon#isInRange(com.jme3.math.Vector3f)
- * @see AbstractWeapon#isInRange(com.jme3.ai.agents.util.GameObject)
+ * @see AbstractFirearmWeapon#hasBullets()
+ * @see AbstractFirearmWeapon#isInRange(com.jme3.math.Vector3f)
+ * @see AbstractFirearmWeapon#isInRange(com.jme3.ai.agents.util.GameObject)
  *
  * @author Tihomir Radosavljević
- * @version 1.0
+ * @version 1.0.2
  */
 public class SimpleAttackBehaviour extends Behaviour implements GameObjectSeenListener {
 
@@ -66,24 +65,24 @@ public class SimpleAttackBehaviour extends Behaviour implements GameObjectSeenLi
 
     @Override
     protected void controlUpdate(float tpf) {
-        if (agent.getWeapon() != null) {
-            if (targetPosition != null) {
-                agent.getWeapon().attack(targetPosition, tpf);
-                targetPosition = null;
-            } else if (targetedObject != null && targetedObject.isEnabled()) {
-                agent.getWeapon().attack(targetedObject, tpf);
+        if (agent.getInventory() != null) {
+            try {
+                if (targetPosition != null) {
+                    agent.getInventory().getActiveWeapon().attack(targetPosition, tpf);
+                    targetPosition = null;
+                } else if (targetedObject != null && targetedObject.isEnabled()) {
+                    agent.getInventory().getActiveWeapon().attack(targetedObject, tpf);
+                }
+            } catch (NullPointerException npe) {
+                throw new WeaponExceptions.WeaponNotFound("Agent "+ agent.getName() + " doesn't have active weapon");
             }
         }
     }
 
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
-    }
-
     /**
      * Behaviour can automaticaly update its targetedObject with
-     * GameObjectSeenEvent, if it is agent, then it check if it is in range
-     * and check if they are in same team.
+     * GameObjectSeenEvent, if it is agent, then it check if it is in range and
+     * check if they are in same team.
      *
      * @param event
      */
@@ -93,7 +92,7 @@ public class SimpleAttackBehaviour extends Behaviour implements GameObjectSeenLi
             if (agent.isSameTeam(targetAgent)) {
                 return;
             }
-            if (!agent.getWeapon().isInRange(targetAgent)) {
+            if (!agent.getInventory().getActiveWeapon().isInRange(targetAgent)) {
                 return;
             }
         }
@@ -103,6 +102,7 @@ public class SimpleAttackBehaviour extends Behaviour implements GameObjectSeenLi
 
     /**
      * Method for checking is there any target that agent should attack.
+     *
      * @return true if target is set
      */
     public boolean isTargetSet() {

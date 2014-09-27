@@ -6,8 +6,6 @@ import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.ai.agents.util.control.Game;
 
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -21,7 +19,7 @@ import java.util.List;
  * CompoundSteeringBehaviour to merge many steer behaviours."
  * 
  * @author Tihomir Radosavljević
- * @version 1.1
+ * @version 1.1.1
  */
 public class SimpleMainBehaviour extends Behaviour {
 
@@ -60,10 +58,6 @@ public class SimpleMainBehaviour extends Behaviour {
         for (Behaviour behaviour : behaviours) {
             behaviour.update(tpf);
         } 
-    }
-
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
     }
 
     /**

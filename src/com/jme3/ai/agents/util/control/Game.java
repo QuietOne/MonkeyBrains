@@ -1,8 +1,9 @@
 package com.jme3.ai.agents.util.control;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.util.AbstractWeapon;
+import com.jme3.ai.agents.util.weapons.AbstractFirearmWeapon;
 import com.jme3.ai.agents.util.GameObject;
+import com.jme3.ai.agents.util.GameObjectExceptions;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.math.Vector3f;
@@ -16,7 +17,7 @@ import java.util.List;
  * updates. Contains agents and gameObjects and provides generic game control.
  *
  * @author Tihomir Radosavljević
- * @version 1.2.0
+ * @version 1.3.0
  */
 public class Game extends AbstractAppState {
 
@@ -141,15 +142,20 @@ public class Game extends AbstractAppState {
      */
     public void decreaseHitPoints(Agent agent, double damage) {
         //finding agent and decreasing his healthbar
-        for (int i = 0; i < agents.size(); i++) {
-            if (agents.get(i).equals(agent)) {
-                agents.get(i).decreaseHitPoints(damage);
-                if (!agents.get(i).isEnabled()) {
-                    agents.get(i).stop();
-                    agents.get(i).getSpatial().removeFromParent();
+        int i = 0;
+        try {
+            for (; i < agents.size(); i++) {
+                if (agents.get(i).equals(agent)) {
+                    agents.get(i).getHpSystem().decreaseHP(damage);
+                    if (!agents.get(i).isEnabled()) {
+                        agents.get(i).stop();
+                        agents.get(i).getSpatial().removeFromParent();
+                    }
+                    break;
                 }
-                break;
             }
+        } catch (NullPointerException npe) {
+            throw new GameObjectExceptions.HPSystemNotFoundException("Agent " + agents.get(i).getName() + " doesn't have initialized HPSystem");
         }
     }
 
@@ -237,10 +243,10 @@ public class Game extends AbstractAppState {
     }
 
     /**
-     * Check friendly fire and decreaseHitPoints of target if conditions are ok.
+     * Check friendly fire and decreaseHP of target if conditions are ok.
      *
      * @see Game#friendlyFire
-     * @see Game#decreaseHitPoints(com.jme3.ai.agents.Agent, double)
+     * @see Game#decreaseHP(com.jme3.ai.agents.Agent, double)
      * @param attacker agent who attacks
      * @param target agent who is attacked
      */
@@ -248,19 +254,19 @@ public class Game extends AbstractAppState {
         if (friendlyFire && attacker.isSameTeam(target)) {
             return;
         }
-        decreaseHitPoints(target, attacker.getWeapon().getAttackDamage());
+        decreaseHitPoints(target, attacker.getInventory().getActiveWeapon().getAttackDamage());
     }
 
     /**
-     * Check friendly fire and decreaseHitPoints of target if conditions are ok.
+     * Check friendly fire and decreaseHP of target if conditions are ok.
      *
      * @see Game#friendlyFire
-     * @see Game#decreaseHitPoints(com.jme3.ai.agents.Agent, double)
+     * @see Game#decreaseHP(com.jme3.ai.agents.Agent, double)
      * @param attacker agent who attacks
      * @param target agent who is attacked
      * @param weapon weapon with which is target being attacked
      */
-    public void agentAttack(Agent attacker, Agent target, AbstractWeapon weapon) {
+    public void agentAttack(Agent attacker, Agent target, AbstractFirearmWeapon weapon) {
         if (friendlyFire && attacker.isSameTeam(target)) {
             return;
         }

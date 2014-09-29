@@ -6,7 +6,7 @@ import com.jme3.ai.agents.AgentExceptions.InvalidNeighborhoodIDistanceException;
 import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.ai.agents.behaviours.BehaviourExceptions.NullBehaviourException;
 import com.jme3.ai.agents.behaviours.npc.SimpleMainBehaviour;
-import com.jme3.ai.agents.util.GameObject;
+import com.jme3.ai.agents.util.GameEntity;
 import com.jme3.ai.agents.util.systems.InventorySystem;
 
 import com.jme3.scene.Spatial;
@@ -21,9 +21,9 @@ import com.jme3.renderer.ViewPort;
  *
  * @author Jesús Martín Berlanga
  * @author Tihomir Radosavljević
- * @version 1.7.0
+ * @version 1.7.3
  */
-public final class Agent<T> extends GameObject {
+public final class Agent<T> extends GameEntity {
 
     /**
      * Class that enables you to add all variable you need for your agent.
@@ -54,22 +54,30 @@ public final class Agent<T> extends GameObject {
      */
     private InventorySystem inventory;
 
-    /**
-     * @param name unique name/id of agent
-     */
-    public Agent(String name) {
-        this.name = name;
-        velocity = Vector3f.UNIT_XYZ.clone();
+    public Agent() {
     }
 
     /**
-     * @param name unique name/id of agent
+     * @param name name of agent
+     */
+    public Agent(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @param spatial spatial that will agent have durring game
+     */
+    public Agent(Spatial spatial) {
+        this.spatial = spatial;
+    }
+
+    /**
+     * @param name name of agent
      * @param spatial spatial that will agent have durring game
      */
     public Agent(String name, Spatial spatial) {
         this.name = name;
         this.spatial = spatial;
-        velocity = Vector3f.UNIT_XYZ.clone();
     }
 
     /**
@@ -298,7 +306,7 @@ public final class Agent<T> extends GameObject {
      * @param gameObject Other gameObject
      * @return The time until nearest approach
      */
-    public float predictNearestApproachTime(GameObject gameObject) {
+    public float predictNearestApproachTime(GameEntity gameObject) {
         Vector3f agentVelocity = velocity;
         Vector3f otherVelocity = gameObject.getVelocity();
 
@@ -378,7 +386,7 @@ public final class Agent<T> extends GameObject {
      *
      * @see Agent#predictNearestApproachTime(com.jme3.ai.agents.Agent)
      */
-    public float computeNearestApproachPositions(GameObject gameObject, float time, Vector3f ourPositionAtNearestApproach, Vector3f hisPositionAtNearestApproach) {
+    public float computeNearestApproachPositions(GameEntity gameObject, float time, Vector3f ourPositionAtNearestApproach, Vector3f hisPositionAtNearestApproach) {
         Vector3f agentVelocity = this.getVelocity();
         Vector3f otherVelocity = gameObject.getVelocity();
 
@@ -406,5 +414,10 @@ public final class Agent<T> extends GameObject {
 
     public void setInventory(InventorySystem inventory) {
         this.inventory = inventory;
+    }
+
+    @Override
+    public String toString() {
+        return "Agent{" + "name=" + name + ", id=" + id + '}';
     }
 }

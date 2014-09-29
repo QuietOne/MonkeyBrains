@@ -1,24 +1,15 @@
 package com.jme3.ai.agents;
 
+import com.jme3.ai.agents.util.GameEntityExceptions;
+
 /**
  *
- * @author Tihomir Radosavljevic
+ * Class container for exceptions related to agent.
+ *
+ * @author Tihomir Radosavljević
  * @version 1.0.0
  */
 public class AgentExceptions {
-
-    /**
-     *
-     * @see IllegalArgumentException
-     * @author Jesús Martín Berlanga
-     * @author 1.0.0
-     */
-    public static class InvalidNeighborhoodIDistanceException extends IllegalArgumentException {
-
-        public InvalidNeighborhoodIDistanceException(String message) {
-            super(message);
-        }
-    }
 
     /**
      * This exception is thrown If it has been tried to instantiate an agent
@@ -35,12 +26,45 @@ public class AgentExceptions {
             super(message);
         }
     }
-    
-    public static class TeamNotFoundExecption extends NullPointerException {
 
-        public TeamNotFoundExecption(Agent agent) {
-            super("Agent "+ agent.getName()+ " doesn't have a designated team.");
+    public static class AgentAttributeNotFound extends GameEntityExceptions.GameEntityAttributeNotFound {
+
+        public AgentAttributeNotFound(Agent agent, String message) {
+            super(agent, message);
         }
-        
+    }
+
+    public static class TeamNotFoundException extends AgentAttributeNotFound {
+
+        public TeamNotFoundException(Agent agent) {
+            super(agent, "a designated team");
+        }
+    }
+
+    public static class InventoryNotFoundException extends AgentAttributeNotFound {
+
+        public InventoryNotFoundException(Agent agent) {
+            super(agent, "an inventory");
+        }
+    }
+
+    public static class WeaponNotFoundException extends AgentAttributeNotFound {
+
+        public WeaponNotFoundException(Agent agent) {
+            super(agent, "a weapon");
+        }
+    }
+
+    /**
+     *
+     * @see IllegalArgumentException
+     * @author Jesús Martín Berlanga
+     * @author 1.0.0
+     */
+    public static class InvalidNeighborhoodIDistanceException extends IllegalArgumentException {
+
+        public InvalidNeighborhoodIDistanceException(String message) {
+            super(message);
+        }
     }
 }

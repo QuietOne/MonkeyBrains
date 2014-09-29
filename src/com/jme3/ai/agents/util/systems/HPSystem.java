@@ -19,7 +19,7 @@ public class HPSystem {
         this.maxHP = 100f;
     }
 
-    public HPSystem(float maxHP, Agent agent) {
+    public HPSystem(Agent agent, float maxHP) {
         this.maxHP = maxHP;
         this.currentHP = maxHP;
         this.agent = agent;

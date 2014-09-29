@@ -4,49 +4,51 @@ package com.jme3.ai.agents.util;
 
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.npc.steering.ObstacleAvoidanceBehaviour;
-import com.jme3.ai.agents.util.control.Game;
+import com.jme3.ai.agents.util.control.AIAppState;
 import com.jme3.ai.agents.util.systems.HPSystem;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 
 /**
  * Base class for game objects that are interacting in game, and in general can
  * move and can be destroyed. Not to be used for terrain except for things that
- * can be destroyed. For automaticaly updating them, add them to to Game with
- * addAgent().
+ * can be destroyed. For automaticaly updating them, add them to to AIAppState
+ * with addAgent().
  *
- * @see Game#addAgent(com.jme3.ai.agents.Agent)
- * @see Game#addAgent(com.jme3.ai.agents.Agent, com.jme3.math.Vector3f)
- * @see Game#addAgent(com.jme3.ai.agents.Agent, float, float, float) For other
- * GameObject use:
- * @see Game#addGameObject(com.jme3.ai.agents.util.GameObject)
+ * @see AIAppState#addAgent(com.jme3.ai.agents.Agent)
+ * @see AIAppState#addAgent(com.jme3.ai.agents.Agent, com.jme3.math.Vector3f)
+ * @see AIAppState#addAgent(com.jme3.ai.agents.Agent, float, float, float) For
+ * other GameEntity use:
+ * @see AIAppState#addGameObject(com.jme3.ai.agents.util.GameEntity)
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
  * @version 1.3.0
  */
-public abstract class GameObject extends AbstractControl {
+public abstract class GameEntity extends AbstractControl {
 
     /**
      * Container for the velocity of the game object.
      */
-    protected Vector3f velocity;
+    protected Vector3f velocity = Vector3f.UNIT_XYZ.clone();
     /**
-     * Mass of GameObject.
+     * Mass of GameEntity.
      */
     protected float mass;
     /**
-     * GameObject acceleration speed.
+     * GameEntity acceleration speed.
      */
     protected Vector3f acceleration;
     /**
-     * Maximum move speed of GameObject
+     * Maximum move speed of GameEntity
      */
     protected float maxMoveSpeed;
     /**
-     * Maximum force that can be applied to this GameObject.
+     * Maximum force that can be applied to this GameEntity.
      */
     protected float maxForce;
     /**
@@ -54,16 +56,18 @@ public abstract class GameObject extends AbstractControl {
      */
     private HPSystem hpSystem;
     /**
-     * Rotation speed of GameObject.
+     * Rotation speed of GameEntity.
      */
     protected float rotationSpeed;
     /**
-     * Radius of GameObject. It is needed for object that will be added in list
+     * Radius of GameEntity. It is needed for object that will be added in list
      * of objects that agent should avoid durring game, like mines etc.
      *
      * @see ObstacleAvoidanceBehaviour
      */
     protected float radius = 0;
+    protected int id;
+
     /**
      * @return The predicted position for this 'frame', taking into account
      * current position and velocity.
@@ -77,11 +81,11 @@ public abstract class GameObject extends AbstractControl {
     }
 
     /**
-     * @param gameObject Other game object
+     * @param gameEntity Other game object
      * @return The offset relative to another game object
      */
-    public Vector3f offset(GameObject gameObject) {
-        return gameObject.getLocalTranslation().subtract(getLocalTranslation());
+    public Vector3f offset(GameEntity gameEntity) {
+        return gameEntity.getLocalTranslation().subtract(getLocalTranslation());
     }
 
     /**
@@ -104,12 +108,12 @@ public abstract class GameObject extends AbstractControl {
      * how "forward" is the direction to the quarry (1 means dead ahead, 0 is
      * directly to the side, -1 is straight back)
      *
-     * @param gameObject Other game object
+     * @param gameEntity Other game object
      * @return The forwardness in relation with another agent
      */
-    public float forwardness(GameObject gameObject) {
+    public float forwardness(GameEntity gameEntity) {
         Vector3f agentLooks = fordwardVector();
-        float radiansAngleBetwen = agentLooks.angleBetween(offset(gameObject).normalize());
+        float radiansAngleBetwen = agentLooks.angleBetween(offset(gameEntity).normalize());
         return FastMath.cos(radiansAngleBetwen);
     }
 
@@ -124,19 +128,19 @@ public abstract class GameObject extends AbstractControl {
     }
 
     /**
-     * @param gameObject Other agent
+     * @param gameEntity Other agent
      * @return Distance relative to another game object
      */
-    public float distanceRelativeToGameObject(GameObject gameObject) {
-        return offset(gameObject).length();
+    public float distanceRelativeToGameObject(GameEntity gameEntity) {
+        return offset(gameEntity).length();
     }
 
     /**
-     * @param gameObject Other agent
+     * @param gameEntity Other agent
      * @return Distance from a position
      */
-    public float distanceSquaredRelativeToGameObject(GameObject gameObject) {
-        return offset(gameObject).lengthSquared();
+    public float distanceSquaredRelativeToGameObject(GameEntity gameEntity) {
+        return offset(gameEntity).lengthSquared();
     }
 
     /**
@@ -148,11 +152,11 @@ public abstract class GameObject extends AbstractControl {
     }
 
     /**
-     * @param pos Position
+     * @param position Position
      * @return Distance squared Distance from a position
      */
-    public float distanceSquaredFromPosition(Vector3f pos) {
-        return offset(pos).lengthSquared();
+    public float distanceSquaredFromPosition(Vector3f position) {
+        return offset(position).lengthSquared();
     }
 
     public float getMass() {
@@ -250,7 +254,7 @@ public abstract class GameObject extends AbstractControl {
     }
 
     public void setRadius(float radius) {
-        validateRadius(radius);
+        this.validateRadius(radius);
         this.radius = radius;
     }
 
@@ -268,9 +272,24 @@ public abstract class GameObject extends AbstractControl {
 
     protected void validateRadius(float radius) {
         if (radius < 0) {
-            throw new GameObjectExceptions.NegativeRadiusException("A GameObject can't have a negative radius. You tried to construct the agent with a " + radius + " radius.");
+            throw new GameEntityExceptions.NegativeRadiusException("A GameObject can't have a negative radius. You tried to construct the agent with a " + radius + " radius.");
         }
     }
-    
-    
+
+    @Override
+    protected void controlRender(RenderManager rm, ViewPort vp) {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "GameEntity{" + id + '}';
+    }
 }

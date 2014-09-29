@@ -5,17 +5,24 @@ package com.jme3.ai.agents.util;
  * @author Tihomir Radosavljevic
  * @version 1.0.0
  */
-public class GameObjectExceptions {
+public class GameEntityExceptions {
+
+    public static class GameEntityAttributeNotFound extends NullPointerException {
+
+        public GameEntityAttributeNotFound(GameEntity gameEntity, String message) {
+            super(gameEntity + " doesn't have " + message + '.');
+        }
+    }
 
     /**
      * @see NullPointerException
      * @author Tihomir Radosavljevic
      * @version 1.0.0
      */
-    public static class HPSystemNotFoundException extends NullPointerException {
+    public static class HPSystemNotFoundException extends GameEntityAttributeNotFound {
 
-        public HPSystemNotFoundException(String message) {
-            super(message);
+        public HPSystemNotFoundException(GameEntity gameEntity) {
+                super(gameEntity, "included HPSystem");
         }
     }
 

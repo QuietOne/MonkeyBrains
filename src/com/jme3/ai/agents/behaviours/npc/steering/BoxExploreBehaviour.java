@@ -3,12 +3,8 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.BoxExploreWithNegativeBoxDimensionsException;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.BoxExploreWithNegativeSubdivisionDistanceException;
-
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,9 +62,9 @@ public class BoxExploreBehaviour extends AbstractStrengthSteeringBehaviour {
 
     private void construct(Vector3f boxCenter, float boxWidthX, float boxWidthZ, float boxHeight, float subdivisionDistance) {
         if (boxWidthX < 0 || boxWidthZ < 0 || boxHeight < 0) {
-            throw new BoxExploreWithNegativeBoxDimensionsException("Box width, depth and height must be positive.");
+            throw new SteeringExceptions.BoxExploreWithNegativeValueException("Box width, depth and height must be positive.");
         } else if (subdivisionDistance <= 0) {
-            throw new BoxExploreWithNegativeSubdivisionDistanceException("The subdivision distance must be higher than 0");
+            throw new SteeringExceptions.BoxExploreWithNegativeValueException("The subdivision distance must be higher than 0.");
         }
 
         this.boxWidthX = boxWidthX;
@@ -84,8 +80,10 @@ public class BoxExploreBehaviour extends AbstractStrengthSteeringBehaviour {
      */
     protected void addNewTargets() {
         //Vertical subdivisions
-        for (float i = 0; i < this.boxHeight; i += this.subdivisionDistance) { //1st Horizontal subdivisions in each vertical subdivision
-            for (float j = 0; j < this.boxWidthX; j += this.subdivisionDistance) { //2nd Horizontal subdivisions
+        //1st Horizontal subdivisions in each vertical subdivision
+        for (float i = 0; i < this.boxHeight; i += this.subdivisionDistance) {
+            //2nd Horizontal subdivisions
+            for (float j = 0; j < this.boxWidthX; j += this.subdivisionDistance) {
                 for (float k = 0; k < this.boxWidthZ; k += this.subdivisionDistance) {
                     this.targets.add(this.zeroCorner.add(new Vector3f(j, i, k)));
                 }
@@ -132,7 +130,7 @@ public class BoxExploreBehaviour extends AbstractStrengthSteeringBehaviour {
 
     /**
      * The agent will have to explore the region again and all the progress will
-     * be lost
+     * be lost.
      */
     protected void resetExplore() {
         this.targets.clear();

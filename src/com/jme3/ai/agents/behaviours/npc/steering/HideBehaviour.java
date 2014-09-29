@@ -5,7 +5,7 @@ package com.jme3.ai.agents.behaviours.npc.steering;
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.HideWithoutTargetException;
 import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.NegativeSeparationFromObstacleException;
-import com.jme3.ai.agents.util.GameObject;
+import com.jme3.ai.agents.util.GameEntity;
 
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -29,7 +29,7 @@ public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
 
     private float separationFromObstacle;
     private Agent target;
-    private List<GameObject> obstacles;
+    private List<GameEntity> obstacles;
 
     /**
      * @param obstacles Obstacles that this agent will use to hide from the
@@ -44,7 +44,7 @@ public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
      * @see
      * AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent)
      */
-    public HideBehaviour(Agent agent, Agent target, List<GameObject> obstacles, float separationFromObstacle) {
+    public HideBehaviour(Agent agent, Agent target, List<GameEntity> obstacles, float separationFromObstacle) {
         super(agent);
         this.validateTarget(target);
         this.validateSeparationFromObstacle(separationFromObstacle);
@@ -60,7 +60,7 @@ public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
      * AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent,
      * com.jme3.scene.Spatial)
      */
-    public HideBehaviour(Agent agent, Agent target, List<GameObject> obstacles, float separationFromObstacle, Spatial spatial) {
+    public HideBehaviour(Agent agent, Agent target, List<GameEntity> obstacles, float separationFromObstacle, Spatial spatial) {
         super(agent, spatial);
         this.validateTarget(target);
         this.validateSeparationFromObstacle(separationFromObstacle);
@@ -88,10 +88,10 @@ public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
     protected Vector3f calculateRawSteering() {
         Vector3f steer = Vector3f.ZERO;
 
-        GameObject closestObstacle = null;
+        GameEntity closestObstacle = null;
         float closestDistanceFromAgent = Float.POSITIVE_INFINITY;
 
-        for (GameObject obstacle : this.obstacles) {
+        for (GameEntity obstacle : this.obstacles) {
             if (obstacle != this.agent) {
                 float distanceFromAgent = this.agent.distanceRelativeToGameObject(obstacle);
 
@@ -114,7 +114,7 @@ public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
         return steer;
     }
 
-    public void setObstacles(List<GameObject> obstacles) {
+    public void setObstacles(List<GameEntity> obstacles) {
         this.obstacles = obstacles;
     }
 }

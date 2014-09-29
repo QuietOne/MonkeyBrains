@@ -31,7 +31,9 @@ public abstract class AbstractSteeringBehaviour extends Behaviour {
      * Velocity of our agent.
      */
     protected Vector3f velocity;
-    
+    /**
+     * Time per frame.
+     */
     protected float timePerFrame;
 
     /**

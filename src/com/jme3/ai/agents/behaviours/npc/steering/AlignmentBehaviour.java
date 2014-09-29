@@ -4,8 +4,7 @@ package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.AgentExceptions;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.NegativeMaxDistanceException;
-
+import com.jme3.ai.agents.Team;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
@@ -48,7 +47,7 @@ public class AlignmentBehaviour extends AbstractStrengthSteeringBehaviour {
         try {
             neighbours = agent.getTeam().getMembers();
         } catch (NullPointerException npe) {
-            throw new AgentExceptions.TeamNotFoundExecption(agent);
+            throw new AgentExceptions.TeamNotFoundException(agent);
         }
     }
 
@@ -68,7 +67,7 @@ public class AlignmentBehaviour extends AbstractStrengthSteeringBehaviour {
             this.maxAngle = maxAngle;
             neighbours = agent.getTeam().getMembers();
         } catch (NullPointerException npe) {
-            throw new AgentExceptions.TeamNotFoundExecption(agent);
+            throw new AgentExceptions.TeamNotFoundException(agent);
         }
     }
 
@@ -90,7 +89,7 @@ public class AlignmentBehaviour extends AbstractStrengthSteeringBehaviour {
             this.maxAngle = maxAngle;
             neighbours = agent.getTeam().getMembers();
         } catch (NullPointerException npe) {
-            throw new AgentExceptions.TeamNotFoundExecption(agent);
+            throw new AgentExceptions.TeamNotFoundException(agent);
         }
     }
 
@@ -152,7 +151,7 @@ public class AlignmentBehaviour extends AbstractStrengthSteeringBehaviour {
 
     private void validateMaxDistance(float maxDistance) {
         if (maxDistance < 0) {
-            throw new NegativeMaxDistanceException(maxDistance);
+            throw new SteeringExceptions.NegativeValueException("The max distance value can not be negative.", maxDistance);
         }
     }
 
@@ -182,5 +181,9 @@ public class AlignmentBehaviour extends AbstractStrengthSteeringBehaviour {
 
     public void setNeighbours(List<Agent> neighbours) {
         this.neighbours = neighbours;
+    }
+
+    public void setNeighboursFromTeam(Team team) {
+        this.neighbours = team.getMembers();
     }
 }

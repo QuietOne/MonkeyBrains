@@ -83,9 +83,7 @@ public class BalancedCompoundSteeringBehaviour extends CompoundSteeringBehaviour
                     / this.totalForce.length());
         }
 
-
         this.partialForceCalculated();
-
         return partialForce;
     }
 
@@ -96,7 +94,8 @@ public class BalancedCompoundSteeringBehaviour extends CompoundSteeringBehaviour
         if (numberOfPartialForcesAlreadyCalculated == 0) {
             Vector3f totalForceAux = new Vector3f();
 
-            steerBehavioursLayerList.steerBehavioursLayerNode currentPointer = this.behaviours.getPointer(); //We do not want to modify the current pointer
+            //We do not want to modify the current pointer
+            steerBehavioursLayerList.steerBehavioursLayerNode currentPointer = this.behaviours.getPointer();
 
             behaviours.moveAtBeginning();
 
@@ -104,12 +103,11 @@ public class BalancedCompoundSteeringBehaviour extends CompoundSteeringBehaviour
                 Vector3f partial = behaviours.getBehaviour().calculateSteering();
                 partialForces.add(partial);
                 totalForceAux = totalForceAux.add(partial);
-
                 behaviours.moveNext();
             }
 
-            this.behaviours.setPointer(currentPointer); //Restore the previous pointer
-
+            //Restore the previous pointer
+            this.behaviours.setPointer(currentPointer);
             this.totalForce = totalForceAux;
         }
 
@@ -119,13 +117,11 @@ public class BalancedCompoundSteeringBehaviour extends CompoundSteeringBehaviour
      * Reset the forces if we have finished with all the forces
      */
     protected void partialForceCalculated() {
-
         numberOfPartialForcesAlreadyCalculated++;
 
         if (numberOfPartialForcesAlreadyCalculated >= this.numberOfBehaviours) {
             numberOfPartialForcesAlreadyCalculated = 0;
             partialForces.clear();
         }
-
     }
 }

@@ -3,8 +3,6 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.NegativeSlowingDistanceException;
-
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 
@@ -21,7 +19,13 @@ import com.jme3.scene.Spatial;
  */
 public class ArriveBehaviour extends SeekBehaviour {
 
+    /**
+     * Distance of targetPosition that is acceptable.
+     */
     private static final float ERROR_FACTOR = 0.001f;
+    /**
+     * Rate of negative acceleration.
+     */
     private float slowingDistance;
 
     /**
@@ -70,7 +74,8 @@ public class ArriveBehaviour extends SeekBehaviour {
 
     /**
      * @param slowingDistance Distance where the agent will start slowing
-     * @throws NegativeSlowingDistanceException If slowingDistance is lower than 0
+     * @throws NegativeSlowingDistanceException If slowingDistance is lower than
+     * 0
      * @see ArriveBehaviour#ArriveBehaviour(com.jme3.ai.agents.Agent,
      * com.jme3.ai.agents.Agent)
      */
@@ -119,7 +124,7 @@ public class ArriveBehaviour extends SeekBehaviour {
 
     private void validateSlowingDistance(float slowingDistance) {
         if (slowingDistance < 0) {
-            throw new NegativeSlowingDistanceException("The slowing distance value can not be negative. Current value is " + slowingDistance);
+            throw new SteeringExceptions.NegativeValueException("The slowing distance value can not be negative.", slowingDistance);
         }
     }
 

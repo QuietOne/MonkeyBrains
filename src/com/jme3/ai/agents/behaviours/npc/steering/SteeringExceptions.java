@@ -1,71 +1,82 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
+import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.BehaviourExceptions.IllegalBehaviourException;
 
 /**
+ * Class container for exceptions related to steering behaviour.
  *
- * @author Tihomir Radosavljevic
+ * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
  * @version 1.0.0
  */
 public class SteeringExceptions {
 
     /**
-     * @see IllegalBehaviour
+     * Main generic exception related for all illegal arguments for steering
+     * behaviours.
+     *
+     * @see IllegalBehaviourException
+     * @author Tihomir Radosavljević
+     * @version 1.0.0
      */
-    public static final class IllegalBrakingFactorException extends IllegalArgumentException {
+    public static class IllegalSteeringBehaviourException extends IllegalBehaviourException {
+
+        public IllegalSteeringBehaviourException(Agent agent, String message, float value) {
+            super(agent, message, value);
+        }
+
+        public IllegalSteeringBehaviourException(String message) {
+            super(message);
+        }
+    }
+
+    /**
+     * This exception is thrown when braking factor is not set in the [0, 1]
+     * interval.
+     *
+     * @see IllegalSteeringBehaviourException
+     * @author Jesús Martín Berlanga
+     * @version 1.0.1
+     */
+    public static class IllegalBrakingFactorException extends IllegalSteeringBehaviourException {
 
         public IllegalBrakingFactorException(float brakingFactor) {
-            super("The braking factor value must be contained in the [0,1] interval. The current value is " + brakingFactor);
+            super("The braking factor value must be contained in the [0,1] interval. The current value is " + brakingFactor + '.');
         }
     }
 
     /**
-     * @see IllegalBehaviourException
+     * This exception is thrown when negative value is given to steering
+     * behaviour.
+     *
+     * @see IllegalSteeringBehaviourException
+     * @author Jesús Martín Berlanga
+     * @author Tihomir Radosavljević
+     * @version 1.0.1
      */
-    public static class NegativeScalarMultiplierException extends IllegalBehaviourException {
+    public static class NegativeValueException extends IllegalSteeringBehaviourException {
 
-        public NegativeScalarMultiplierException(String message) {
+        public NegativeValueException(String message) {
             super(message);
         }
-    }
 
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class NegativeMaxDistanceException extends IllegalBehaviourException {
-
-        public NegativeMaxDistanceException(float maxDistance) {
-            super("The max distance value can not be negative. Current value is " + maxDistance);
+        public NegativeValueException(String message, float value) {
+            super(message + " You inputed " + value + '.');
         }
     }
 
     /**
-     * @see IllegalBehaviourException
+     * This exception is thrown when negative value is given to box explore
+     * steering behaviour.
+     *
+     * @see NegativeValueException
+     * @author Jesús Martín Berlanga
+     * @version 1.0.1
      */
-    public static class NegativeSlowingDistanceException extends IllegalBehaviourException {
+    public static class BoxExploreWithNegativeValueException extends NegativeValueException {
 
-        public NegativeSlowingDistanceException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class BoxExploreWithNegativeSubdivisionDistanceException extends IllegalBehaviourException {
-
-        public BoxExploreWithNegativeSubdivisionDistanceException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class BoxExploreWithNegativeBoxDimensionsException extends IllegalBehaviourException {
-
-        public BoxExploreWithNegativeBoxDimensionsException(String message) {
+        public BoxExploreWithNegativeValueException(String message) {
             super(message);
         }
     }
@@ -264,16 +275,6 @@ public class SteeringExceptions {
     public static class WallApproachNegativeOffsetException extends IllegalBehaviourException {
 
         public WallApproachNegativeOffsetException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class WanderWithoutWanderAreaException extends IllegalBehaviourException {
-
-        public WanderWithoutWanderAreaException(String message) {
             super(message);
         }
     }

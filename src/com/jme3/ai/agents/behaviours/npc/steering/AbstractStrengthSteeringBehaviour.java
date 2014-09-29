@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.NegativeScalarMultiplierException;
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.NegativeValueException;
 
 import com.jme3.math.Plane;
 import com.jme3.math.Vector3f;
@@ -79,9 +79,9 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
      * If you call this function you will be able to increase or decrease the
      * steering behaviour force multiplying it by a scalar.
      *
-     * @param scalar Escalar that will multiply the full steer force.
+     * @param scalar Scalar that will multiply the full steer force.
      *
-     * @throws NegativeScalarMultiplierException If scalar is lower than 0
+     * @throws NegativeValueException If scalar is lower than 0
      */
     public void setupStrengthControl(float scalar) {
         this.validateScalar(scalar);
@@ -91,14 +91,13 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
 
     /**
      * If you call this function you will be able to modify the full steering
-     * force on a especific axis (x, y, z)
+     * force on a especific axis (x, y, z).
      *
      * @param x X axis multiplier
      * @param y Y axis multiplier
      * @param z Z axis multiplier
      *
-     * @throws NegativeScalarMultiplierException If any axis multiplier is lower
-     * than 0
+     * @throws NegativeValueException If any axis multiplier is lower than 0
      */
     public void setupStrengthControl(float x, float y, float z) {
         this.validateScalar(x);
@@ -112,14 +111,13 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
 
     /**
      * If you call this function you will be able to modify the full steering
-     * force on a especific axis (x, y, z)
+     * force on a especific axis (x, y, z).
      *
      * @param x X axis multiplier
      * @param y Y axis multiplier
      * @param z Z axis multiplier
      *
-     * @throws NegativeScalarMultiplierException If any axis multiplier is lower
-     * than 0
+     * @throws NegativeValueException If any axis multiplier is lower than 0
      */
     public void setupStrengthControl(Vector3f vector) {
         validateScalar(vector.getX());
@@ -156,7 +154,7 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
 
     private void validateScalar(float scalar) {
         if (scalar < 0) {
-            throw new NegativeScalarMultiplierException("All the scalar multipliers must be positives.");
+            throw new NegativeValueException("The scalar multiplyer must be positive.", scalar);
         }
     }
 

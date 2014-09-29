@@ -4,7 +4,6 @@ package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.AgentExceptions;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.NegativeMaxDistanceException;
 
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
@@ -36,7 +35,7 @@ public class CohesionBehaviour extends AbstractStrengthSteeringBehaviour {
         try {
             this.neighbours = agent.getTeam().getMembers();
         } catch (NullPointerException npe) {
-            throw new AgentExceptions.TeamNotFoundExecption(agent);
+            throw new AgentExceptions.TeamNotFoundException(agent);
         }
 
     }
@@ -61,7 +60,7 @@ public class CohesionBehaviour extends AbstractStrengthSteeringBehaviour {
             this.maxAngle = maxAngle;
             this.neighbours = agent.getTeam().getMembers();
         } catch (NullPointerException npe) {
-            throw new AgentExceptions.TeamNotFoundExecption(agent);
+            throw new AgentExceptions.TeamNotFoundException(agent);
         }
     }
 
@@ -75,7 +74,7 @@ public class CohesionBehaviour extends AbstractStrengthSteeringBehaviour {
         try {
             this.neighbours = agent.getTeam().getMembers();
         } catch (NullPointerException npe) {
-            throw new AgentExceptions.TeamNotFoundExecption(agent);
+            throw new AgentExceptions.TeamNotFoundException(agent);
         }
     }
 
@@ -93,7 +92,7 @@ public class CohesionBehaviour extends AbstractStrengthSteeringBehaviour {
             this.maxAngle = maxAngle;
             this.neighbours = agent.getTeam().getMembers();
         } catch (NullPointerException npe) {
-            throw new AgentExceptions.TeamNotFoundExecption(agent);
+            throw new AgentExceptions.TeamNotFoundException(agent);
         }
     }
 
@@ -155,7 +154,7 @@ public class CohesionBehaviour extends AbstractStrengthSteeringBehaviour {
 
     private void validateMaxDistance(float maxDistance) {
         if (maxDistance < 0) {
-            throw new NegativeMaxDistanceException(maxDistance);
+            throw new SteeringExceptions.NegativeValueException("The max distance value can not be negative.",maxDistance);
         }
     }
 

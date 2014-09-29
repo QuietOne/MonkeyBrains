@@ -1,6 +1,8 @@
 package com.jme3.ai.agents.util.weapons;
 
-import com.jme3.ai.agents.util.GameObject;
+import com.jme3.ai.agents.util.GameEntity;
+import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 
 /**
@@ -9,12 +11,12 @@ import com.jme3.scene.Spatial;
  * @author Tihomir Radosavljević
  * @version 1.0.0
  */
-public abstract class AbstractBullet extends GameObject {
+public abstract class AbstractBullet extends GameEntity {
 
     /**
      * Weapon from which bullet was fired.
      */
-    protected AbstractFirearmWeapon weapon;
+    protected AbstractBulletBasedWeapon weapon;
 
     /**
      * Constructor for AbstractBullet.
@@ -32,7 +34,7 @@ public abstract class AbstractBullet extends GameObject {
      *
      * @return weapon from which bullet was fired
      */
-    public AbstractFirearmWeapon getWeapon() {
+    public AbstractBulletBasedWeapon getWeapon() {
         return weapon;
     }
 
@@ -41,7 +43,7 @@ public abstract class AbstractBullet extends GameObject {
      *
      * @param weapon weapon from which bullet was fired
      */
-    public void setWeapon(AbstractFirearmWeapon weapon) {
+    public void setWeapon(AbstractBulletBasedWeapon weapon) {
         this.weapon = weapon;
     }
 }

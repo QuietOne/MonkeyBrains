@@ -1,7 +1,7 @@
 package com.jme3.ai.agents.util.weapons;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.util.GameObject;
+import com.jme3.ai.agents.util.GameEntity;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -11,7 +11,7 @@ import com.jme3.renderer.ViewPort;
  * @author Tihomir Radosavljevic
  * @version 2.0.0
  */
-public abstract class AbstractWeapon extends GameObject {
+public abstract class AbstractWeapon extends GameEntity {
 
     /**
      * Name of weapon.
@@ -65,7 +65,7 @@ public abstract class AbstractWeapon extends GameObject {
      * @param target
      * @return
      */
-    public boolean isInRange(GameObject target) {
+    public boolean isInRange(GameEntity target) {
         return isInRange(target.getLocalTranslation());
     }
 
@@ -119,7 +119,7 @@ public abstract class AbstractWeapon extends GameObject {
      * @param target
      * @param tpf time per frame
      */
-    public void attack(GameObject target, float tpf) {
+    public void attack(GameEntity target, float tpf) {
         attack(target.getLocalTranslation(), tpf);
     }
 

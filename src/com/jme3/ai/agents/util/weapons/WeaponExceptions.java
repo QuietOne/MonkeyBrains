@@ -7,11 +7,5 @@ package com.jme3.ai.agents.util.weapons;
  */
 public class WeaponExceptions {
 
-    public static class WeaponNotFound extends NullPointerException{
-
-        public WeaponNotFound(String message) {
-            super(message);
-        }
-
-    }
+    
 }

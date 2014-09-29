@@ -3,7 +3,7 @@
 package com.jme3.ai.agents.behaviours;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.BehaviourExceptions.NullAgentException;
+import com.jme3.ai.agents.behaviours.BehaviourExceptions.AgentNotIncluded;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 
@@ -29,11 +29,11 @@ public abstract class Behaviour extends AbstractControl {
      * execution.
      *
      * @param agent to whom behaviour belongs
-     * @throws NullAgentException if agent is null
+     * @throws AgentNotIncluded if agent is null
      */
     public Behaviour(Agent agent) {
         if (agent == null) {
-            throw new BehaviourExceptions.NullAgentException();
+            throw new BehaviourExceptions.AgentNotIncluded();
         }
         this.agent = agent;
         this.spatial = agent.getSpatial();
@@ -45,11 +45,11 @@ public abstract class Behaviour extends AbstractControl {
      * @param agent to whom behaviour belongs
      * @param spatial which is active during execution
      * @see Behaviour#Behaviour(com.jme3.ai.agents.Agent)
-     * @throws NullAgentException if agent is null
+     * @throws AgentNotIncluded if agent is null
      */
     public Behaviour(Agent agent, Spatial spatial) {
         if (agent == null) {
-            throw new BehaviourExceptions.NullAgentException();
+            throw new BehaviourExceptions.AgentNotIncluded();
         }
         this.agent = agent;
         this.spatial = spatial;

@@ -1,9 +1,11 @@
 package com.jme3.ai.agents.behaviours;
 
+import com.jme3.ai.agents.Agent;
+
 /**
- * Class container for exceptions related to steering.
+ * Class container for exceptions related to behaviours.
  *
- * @author Tihomir Radosavljevic
+ * @author Tihomir Radosavljević
  * @version 1.0.0
  */
 public class BehaviourExceptions {
@@ -16,23 +18,29 @@ public class BehaviourExceptions {
      *
      * @see IllegalBehaviourException
      * @author Jesús Martín Berlanga
-     * @version 1.0.2
+     * @author Tihomir Radosavljević
+     * @version 1.1.0
      */
     public static class IllegalBehaviourException extends IllegalArgumentException {
 
         public IllegalBehaviourException(String message) {
             super(message);
         }
+
+        public IllegalBehaviourException(Agent agent, String message, float value) {
+            super(agent + message + value + '.');
+        }
     }
 
     /**
      * @see IllegalBehaviourException
      * @author Jesús Martín Berlanga
-     * @version 1.0.1
+     * @author Tihomir Radosavljević
+     * @version 1.1.0
      */
-    public static class NullAgentException extends IllegalBehaviourException {
+    public static class AgentNotIncluded extends IllegalBehaviourException {
 
-        public NullAgentException() {
+        public AgentNotIncluded() {
             super("You can not instantiate a behaviour without an agent.");
         }
     }
@@ -42,25 +50,31 @@ public class BehaviourExceptions {
      * not been initialized.
      *
      * @see NullPointerException
-     * @author Tihomir Radosaljevic
+     * @author Tihomir Radosaljević
      * @version 1.0.0
      */
     public static class NullBehaviourException extends NullPointerException {
 
-        public NullBehaviourException(){
+        public NullBehaviourException() {
             super("Behaviour has not been initialized");
         }
-        
+
         public NullBehaviourException(String message) {
             super(message);
         }
     }
-    
-    public static class TargetNotFound extends IllegalBehaviourException {
+
+    /**
+     * This exception is thrown if the behaviour tries to call null target.
+     *
+     * @see IllegalStateException
+     * @author Tihomir Radosaljević
+     * @version 1.0.0
+     */
+    public static class TargetNotFound extends IllegalStateException {
 
         public TargetNotFound() {
             super("Target can not be null");
         }
-        
     }
 }

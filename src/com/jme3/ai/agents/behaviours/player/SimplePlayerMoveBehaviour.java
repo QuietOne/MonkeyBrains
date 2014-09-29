@@ -4,8 +4,6 @@ import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.ai.agents.behaviours.npc.SimpleMoveBehaviour;
 import com.jme3.input.controls.AnalogListener;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 import java.util.HashMap;
 import java.util.List;
@@ -46,10 +44,6 @@ public class SimplePlayerMoveBehaviour extends SimpleMoveBehaviour implements An
             return;
         }
         supportedOperations.get(operation).update(tpf);
-    }
-
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
     }
 
     public void onAnalog(String name, float value, float tpf) {

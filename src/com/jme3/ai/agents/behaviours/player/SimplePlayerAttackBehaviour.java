@@ -3,14 +3,12 @@ package com.jme3.ai.agents.behaviours.player;
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.ai.agents.behaviours.npc.SimpleAttackBehaviour;
-import com.jme3.ai.agents.util.control.Game;
+import com.jme3.ai.agents.util.control.AIAppState;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.math.Plane;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 import java.util.HashMap;
 import java.util.List;
@@ -53,15 +51,11 @@ public class SimplePlayerAttackBehaviour extends Behaviour implements ActionList
         supportedOperations.get(operation).update(tpf);
     }
 
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
-    }
-
     public void onAction(String name, boolean isPressed, float tpf) {
         operation = name;
         if (isPressed) {
             supportedOperations.get(operation).setEnabled(true);
-            Vector2f click2d = Game.getInstance().getApp().getInputManager().getCursorPosition();
+            Vector2f click2d = AIAppState.getInstance().getApp().getInputManager().getCursorPosition();
             Vector3f click3d = agent.getCamera().getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 0f).clone();
             Vector3f dir = agent.getCamera().getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
             Ray ray = new Ray(click3d, dir);

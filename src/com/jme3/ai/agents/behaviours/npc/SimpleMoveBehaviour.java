@@ -16,10 +16,10 @@ import com.jme3.scene.Spatial;
  *
  * @see Agent#moveSpeed
  * @see MoveBehaviour
- * 
+ *
  * @author Tihomir Radosavljević
  * @version 1.0.1
- * @deprecated
+ * @deprecated in favour of steer behaviour MoveSpeed
  */
 public class SimpleMoveBehaviour extends Behaviour {
 
@@ -110,7 +110,7 @@ public class SimpleMoveBehaviour extends Behaviour {
     public void setDistanceError(float distanceError) {
         this.distanceError = distanceError;
     }
-    
+
     /**
      * Method for rotating agent in direction of velocity of agent.
      *

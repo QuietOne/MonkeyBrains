@@ -3,25 +3,25 @@ package com.jme3.ai.agents.behaviours.npc;
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.Behaviour;
 import com.jme3.math.FastMath;
-import com.jme3.ai.agents.events.GameObjectSeenEvent;
-import com.jme3.ai.agents.events.GameObjectSeenListener;
+import com.jme3.ai.agents.events.GameEntitySeenEvent;
+import com.jme3.ai.agents.events.GameEntitySeenListener;
 import java.util.ArrayList;
 import java.util.List;
-import com.jme3.ai.agents.util.control.Game;
-import com.jme3.ai.agents.util.GameObject;
+import com.jme3.ai.agents.util.control.AIAppState;
+import com.jme3.ai.agents.util.GameEntity;
 
 /**
  * Simple look behaviour for NPC. It calls for all behaviour that are added in
- * listeners. That behaviours must implement GameObjectSeenListener.
+ * listeners. That behaviours must implement GameEntitySeenListener.
  *
- * @see GameObjectSeenListener
+ * @see GameEntitySeenListener
  *
- * This behaviour can only see GameObject if it is added to game.
- * @see Game#addGameObject(com.jme3.ai.agents.util.GameObject)
+ * This behaviour can only see GameEntity if it is added to game.
+ * @see AIAppState#addGameEntity(com.jme3.ai.agents.util.GameEntity)
  * <br>or for agents
- * @see Game#addAgent(com.jme3.ai.agents.Agent) For seeing things on terrain it
- * uses
- * @see Game#look(com.jme3.ai.agents.Agent, float)
+ * @see AIAppState#addAgent(com.jme3.ai.agents.Agent) For seeing things on
+ * terrain it uses
+ * @see AIAppState#look(com.jme3.ai.agents.Agent, float)
  *
  * @author Tihomir Radosavljević
  * @version 1.0.1
@@ -31,7 +31,7 @@ public class SimpleLookBehaviour extends Behaviour {
     /**
      * List of listeners to which behaviours GameObjectSeen should forward to.
      */
-    protected List<GameObjectSeenListener> listeners;
+    protected List<GameEntitySeenListener> listeners;
     /**
      * Angle in which GameObjects will be seen.
      */
@@ -42,7 +42,7 @@ public class SimpleLookBehaviour extends Behaviour {
      */
     public SimpleLookBehaviour(Agent agent) {
         super(agent);
-        listeners = new ArrayList<GameObjectSeenListener>();
+        listeners = new ArrayList<GameEntitySeenListener>();
         //default value
         viewAngle = FastMath.QUARTER_PI;
     }
@@ -53,7 +53,7 @@ public class SimpleLookBehaviour extends Behaviour {
      */
     public SimpleLookBehaviour(Agent agent, float viewAngle) {
         super(agent);
-        listeners = new ArrayList<GameObjectSeenListener>();
+        listeners = new ArrayList<GameEntitySeenListener>();
         this.viewAngle = viewAngle;
     }
 
@@ -61,20 +61,20 @@ public class SimpleLookBehaviour extends Behaviour {
      * Method for calling all behaviours that are affected by what agent is
      * seeing.
      *
-     * @param gameObjectSeen Agent that have been seen
+     * @param gameEntitySeen Agent that have been seen
      */
-    protected void triggerListeners(GameObject gameObjectSeen) {
-        //create GameObjectSeenEvent
-        GameObjectSeenEvent event = new GameObjectSeenEvent(agent, gameObjectSeen);
+    protected void triggerListeners(GameEntity gameEntitySeen) {
+        //create GameEntitySeenEvent
+        GameEntitySeenEvent event = new GameEntitySeenEvent(agent, gameEntitySeen);
         //forward it to all listeners
-        for (GameObjectSeenListener listener : listeners) {
-            listener.handleGameObjectSeenEvent(event);
+        for (GameEntitySeenListener listener : listeners) {
+            listener.handleGameEntitySeenEvent(event);
         }
     }
 
     @Override
-    protected void controlUpdate(float tpf) {
-        List<GameObject> agents = look(agent, viewAngle);
+    protected final void controlUpdate(float tpf) {
+        List<GameEntity> agents = look(agent, viewAngle);
         for (int i = 0; i < agents.size(); i++) {
             triggerListeners(agents.get(i));
         }
@@ -84,23 +84,23 @@ public class SimpleLookBehaviour extends Behaviour {
      * Method for determining what agent sees. There is default implementation
      * for agent seeing without obstacles.
      *
-     * @see Game#look(com.jme3.ai.agents.Agent, float)
-     * @see Game#lookable(com.jme3.ai.agents.Agent,
-     * com.jme3.ai.agents.util.GameObject, float)
+     * @see AIAppState#look(com.jme3.ai.agents.Agent, float)
+     * @see AIAppState#lookable(com.jme3.ai.agents.Agent,
+     * com.jme3.ai.agents.util.GameEntity, float)
      * @param agent - watcher
      * @param viewAngle - viewing angle
      * @return list of all game objects that can be seen by agent
      */
-    protected List<GameObject> look(Agent agent, float viewAngle) {
-        return Game.getInstance().look(agent, viewAngle);
+    protected List<GameEntity> look(Agent agent, float viewAngle) {
+        return AIAppState.getInstance().look(agent, viewAngle);
     }
 
     /**
-     * Adding listener that will trigger when GameObject is seen.
+     * Adding listener that will trigger when GameEntity is seen.
      *
      * @param listener
      */
-    public void addListener(GameObjectSeenListener listener) {
+    public void addListener(GameEntitySeenListener listener) {
         listeners.add(listener);
     }
 
@@ -109,7 +109,7 @@ public class SimpleLookBehaviour extends Behaviour {
      *
      * @param listener
      */
-    public void removeListener(GameObjectSeenListener listener) {
+    public void removeListener(GameEntitySeenListener listener) {
         listeners.remove(listener);
     }
 

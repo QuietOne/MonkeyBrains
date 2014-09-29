@@ -1,10 +1,10 @@
-//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
-
+//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved.
+//Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
 package com.jme3.ai.agents.behaviours.npc;
 
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.Behaviour;
-import com.jme3.ai.agents.util.control.Game;
+import com.jme3.ai.agents.util.control.AIAppState;
 
 
 import java.util.ArrayList;
@@ -14,10 +14,9 @@ import java.util.List;
 /**
  * Simple main behaviour for NPC. Main behaviour contains other Behaviours and
  * if active it will update all behavioour that are enabled. <br> <br>
- * 
- * Jesús Martín Berlanga: "You can only add one steer behaviour to this container. But you can use
- * CompoundSteeringBehaviour to merge many steer behaviours."
- * 
+ * You can only add one steer behaviour to this container. But you can use
+ * CompoundSteeringBehaviour to merge more steer behaviours into one.
+ *
  * @author Tihomir Radosavljević
  * @version 1.1.1
  */
@@ -32,13 +31,12 @@ public class SimpleMainBehaviour extends Behaviour {
      * @see LinkedList
      */
     protected List<Behaviour> behaviours;
-
     /**
      * Instance of game. Main behaviour will not work if game is over.
      *
-     * @see Game#over
+     * @see AIAppState#over
      */
-    protected Game game;
+    protected AIAppState game;
 
     /**
      * This behaviour never have spatial.
@@ -48,7 +46,7 @@ public class SimpleMainBehaviour extends Behaviour {
     public SimpleMainBehaviour(Agent agent) {
         //Main behaviour doesn't have need for spatials.
         super(agent);
-        game = Game.getInstance();
+        game = AIAppState.getInstance();
         behaviours = new LinkedList<Behaviour>();
         enabled = true;
     }
@@ -57,7 +55,7 @@ public class SimpleMainBehaviour extends Behaviour {
     protected void controlUpdate(float tpf) {
         for (Behaviour behaviour : behaviours) {
             behaviour.update(tpf);
-        } 
+        }
     }
 
     /**

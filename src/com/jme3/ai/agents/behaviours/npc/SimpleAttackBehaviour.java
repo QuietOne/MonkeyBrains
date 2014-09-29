@@ -1,12 +1,12 @@
 package com.jme3.ai.agents.behaviours.npc;
 
 import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.AgentExceptions;
 import com.jme3.ai.agents.behaviours.Behaviour;
-import com.jme3.ai.agents.events.GameObjectSeenEvent;
-import com.jme3.ai.agents.events.GameObjectSeenListener;
-import com.jme3.ai.agents.util.GameObject;
+import com.jme3.ai.agents.events.GameEntitySeenEvent;
+import com.jme3.ai.agents.events.GameEntitySeenListener;
+import com.jme3.ai.agents.util.GameEntity;
 import com.jme3.ai.agents.util.weapons.AbstractFirearmWeapon;
-import com.jme3.ai.agents.util.weapons.WeaponExceptions;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 
@@ -17,17 +17,17 @@ import com.jme3.scene.Spatial;
  *
  * @see AbstractFirearmWeapon#hasBullets()
  * @see AbstractFirearmWeapon#isInRange(com.jme3.math.Vector3f)
- * @see AbstractFirearmWeapon#isInRange(com.jme3.ai.agents.util.GameObject)
+ * @see AbstractFirearmWeapon#isInRange(com.jme3.ai.agents.util.GameEntity)
  *
  * @author Tihomir Radosavljević
  * @version 1.0.2
  */
-public class SimpleAttackBehaviour extends Behaviour implements GameObjectSeenListener {
+public class SimpleAttackBehaviour extends Behaviour implements GameEntitySeenListener {
 
     /**
      * Target for attack behaviour.
      */
-    protected GameObject targetedObject;
+    protected GameEntity targetedObject;
     /**
      * Target for attack behaviour.
      */
@@ -51,7 +51,7 @@ public class SimpleAttackBehaviour extends Behaviour implements GameObjectSeenLi
     /**
      * @param target at which agent will attack
      */
-    public void setTarget(GameObject target) {
+    public void setTarget(GameEntity target) {
         this.targetedObject = target;
     }
 
@@ -74,21 +74,23 @@ public class SimpleAttackBehaviour extends Behaviour implements GameObjectSeenLi
                     agent.getInventory().getActiveWeapon().attack(targetedObject, tpf);
                 }
             } catch (NullPointerException npe) {
-                throw new WeaponExceptions.WeaponNotFound("Agent "+ agent.getName() + " doesn't have active weapon");
+                throw new AgentExceptions.WeaponNotFoundException(agent);
             }
+        } else {
+            throw new AgentExceptions.InventoryNotFoundException(agent);
         }
     }
 
     /**
      * Behaviour can automaticaly update its targetedObject with
-     * GameObjectSeenEvent, if it is agent, then it check if it is in range and
+     * GameEntitySeenEvent, if it is agent, then it check if it is in range and
      * check if they are in same team.
      *
      * @param event
      */
-    public void handleGameObjectSeenEvent(GameObjectSeenEvent event) {
-        if (event.getGameObjectSeen() instanceof Agent) {
-            Agent targetAgent = (Agent) event.getGameObjectSeen();
+    public void handleGameEntitySeenEvent(GameEntitySeenEvent event) {
+        if (event.getGameEntitySeen() instanceof Agent) {
+            Agent targetAgent = (Agent) event.getGameEntitySeen();
             if (agent.isSameTeam(targetAgent)) {
                 return;
             }
@@ -96,7 +98,7 @@ public class SimpleAttackBehaviour extends Behaviour implements GameObjectSeenLi
                 return;
             }
         }
-        targetedObject = event.getGameObjectSeen();
+        targetedObject = event.getGameEntitySeen();
         enabled = true;
     }
 

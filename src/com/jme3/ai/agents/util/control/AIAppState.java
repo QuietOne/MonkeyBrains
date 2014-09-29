@@ -1,9 +1,9 @@
 package com.jme3.ai.agents.util.control;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.util.weapons.AbstractFirearmWeapon;
-import com.jme3.ai.agents.util.GameObject;
-import com.jme3.ai.agents.util.GameObjectExceptions;
+import com.jme3.ai.agents.util.GameEntity;
+import com.jme3.ai.agents.util.GameEntityExceptions;
+import com.jme3.ai.agents.util.weapons.AbstractWeapon;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.math.Vector3f;
@@ -14,12 +14,12 @@ import java.util.List;
 /**
  * Class with information about agents and consequences of their behaviours in
  * game. It is not necessary to use it but it enables easier game status
- * updates. Contains agents and gameObjects and provides generic game control.
+ * updates. Contains agents and gameEntities and provides generic ai control.
  *
  * @author Tihomir Radosavljević
- * @version 1.3.0
+ * @version 2.0.0
  */
-public class Game extends AbstractAppState {
+public class AIAppState extends AbstractAppState {
 
     /**
      * Status of game with agents.
@@ -40,19 +40,19 @@ public class Game extends AbstractAppState {
     /**
      * Controls of game.
      */
-    protected GameControl gameControl;
+    protected AIControl aiControl;
     /**
      * List of all agents that are active in game.
      */
     protected List<Agent> agents;
     /**
-     * List of all GameObjects in game except for agents.
+     * List of all GameEntities in game except for agents.
      */
-    protected List<GameObject> gameObjects;
+    protected List<GameEntity> gameEntities;
 
-    protected Game() {
+    protected AIAppState() {
         agents = new LinkedList<Agent>();
-        gameObjects = new LinkedList<GameObject>();
+        gameEntities = new LinkedList<GameEntity>();
     }
 
     /**
@@ -140,7 +140,7 @@ public class Game extends AbstractAppState {
      * @param agent
      * @param damage
      */
-    public void decreaseHitPoints(Agent agent, double damage) {
+    public void decreaseHP(Agent agent, double damage) {
         //finding agent and decreasing his healthbar
         int i = 0;
         try {
@@ -155,7 +155,7 @@ public class Game extends AbstractAppState {
                 }
             }
         } catch (NullPointerException npe) {
-            throw new GameObjectExceptions.HPSystemNotFoundException("Agent " + agents.get(i).getName() + " doesn't have initialized HPSystem");
+            throw new GameEntityExceptions.HPSystemNotFoundException(agent);
         }
     }
 
@@ -166,8 +166,8 @@ public class Game extends AbstractAppState {
      * @param viewAngle
      * @return all agents that is seen by agent
      */
-    public List<GameObject> look(Agent agent, float viewAngle) {
-        List<GameObject> temp = new LinkedList<GameObject>();
+    public List<GameEntity> look(Agent agent, float viewAngle) {
+        List<GameEntity> temp = new LinkedList<GameEntity>();
         //are there seen agents
         for (int i = 0; i < agents.size(); i++) {
             if (agents.get(i).isEnabled()) {
@@ -176,9 +176,9 @@ public class Game extends AbstractAppState {
                 }
             }
         }
-        for (GameObject gameObject : gameObjects) {
-            if (gameObject.isEnabled() && lookable(agent, gameObject, viewAngle)) {
-                temp.add(gameObject);
+        for (GameEntity gameEntity : gameEntities) {
+            if (gameEntity.isEnabled() && lookable(agent, gameEntity, viewAngle)) {
+                temp.add(gameEntity);
             }
         }
         return temp;
@@ -189,19 +189,19 @@ public class Game extends AbstractAppState {
      * doesn't include obstacles into calculation.
      *
      * @param observer
-     * @param gameObject
+     * @param gameEntity
      * @param heightAngle
      * @param widthAngle
      * @return
      */
-    public boolean lookable(Agent observer, GameObject gameObject, float viewAngle) {
+    public boolean lookable(Agent observer, GameEntity gameEntity, float viewAngle) {
         //if agent is not in visible range
-        if (observer.getLocalTranslation().distance(gameObject.getLocalTranslation())
+        if (observer.getLocalTranslation().distance(gameEntity.getLocalTranslation())
                 > observer.getVisibilityRange()) {
             return false;
         }
         Vector3f direction = observer.getLocalRotation().mult(new Vector3f(0, 0, -1));
-        Vector3f direction2 = observer.getLocalTranslation().subtract(gameObject.getLocalTranslation()).normalizeLocal();
+        Vector3f direction2 = observer.getLocalTranslation().subtract(gameEntity.getLocalTranslation()).normalizeLocal();
         float angle = direction.angleBetween(direction2);
         if (angle > viewAngle) {
             return false;
@@ -214,11 +214,14 @@ public class Game extends AbstractAppState {
      */
     @Override
     public void update(float tpf) {
+        if (!inProgress) {
+            return;
+        }
         for (int i = 0; i < agents.size(); i++) {
             agents.get(i).update(tpf);
         }
-        for (int i = 0; i < gameObjects.size(); i++) {
-            gameObjects.get(i).update(tpf);
+        for (int i = 0; i < gameEntities.size(); i++) {
+            gameEntities.get(i).update(tpf);
         }
     }
 
@@ -230,8 +233,8 @@ public class Game extends AbstractAppState {
         return agents;
     }
 
-    public List<GameObject> getGameObjects() {
-        return gameObjects;
+    public List<GameEntity> getGameEntities() {
+        return gameEntities;
     }
 
     public boolean isFriendlyFire() {
@@ -245,58 +248,47 @@ public class Game extends AbstractAppState {
     /**
      * Check friendly fire and decreaseHP of target if conditions are ok.
      *
-     * @see Game#friendlyFire
-     * @see Game#decreaseHP(com.jme3.ai.agents.Agent, double)
-     * @param attacker agent who attacks
-     * @param target agent who is attacked
-     */
-    public void agentAttack(Agent attacker, Agent target) {
-        if (friendlyFire && attacker.isSameTeam(target)) {
-            return;
-        }
-        decreaseHitPoints(target, attacker.getInventory().getActiveWeapon().getAttackDamage());
-    }
-
-    /**
-     * Check friendly fire and decreaseHP of target if conditions are ok.
-     *
-     * @see Game#friendlyFire
-     * @see Game#decreaseHP(com.jme3.ai.agents.Agent, double)
+     * @see AIAppState#friendlyFire
+     * @see AIAppState#decreaseHP(com.jme3.ai.agents.Agent, double)
      * @param attacker agent who attacks
      * @param target agent who is attacked
      * @param weapon weapon with which is target being attacked
      */
-    public void agentAttack(Agent attacker, Agent target, AbstractFirearmWeapon weapon) {
+    public void agentAttack(Agent attacker, Agent target, AbstractWeapon weapon) {
         if (friendlyFire && attacker.isSameTeam(target)) {
             return;
         }
-        decreaseHitPoints(target, weapon.getAttackDamage());
+        decreaseHP(target, weapon.getAttackDamage());
     }
 
-    public void addGameObject(GameObject gameObject) {
-        gameObjects.add(gameObject);
+    public void addGameEntity(GameEntity gameEntity) {
+        gameEntities.add(gameEntity);
     }
 
-    public void removeGameObject(GameObject gameObject) {
-        gameObject.getSpatial().removeFromParent();
-        gameObjects.remove(gameObject);
+    public void removeGameEntity(GameEntity gameEntity) {
+        gameEntity.getSpatial().removeFromParent();
+        gameEntities.remove(gameEntity);
     }
 
-    public static Game getInstance() {
+    public static AIAppState getInstance() {
         return GameHolder.INSTANCE;
     }
 
-    public GameControl getGameControl() {
-        return gameControl;
+    public AIControl getAIControl() {
+        return aiControl;
     }
 
-    public void setGameControl(GameControl gameControl) {
-        this.gameControl = gameControl;
+    public void setAIControl(AIControl aiControl) {
+        this.aiControl = aiControl;
+    }
+
+    public boolean isInProgress() {
+        return inProgress;
     }
 
     private static class GameHolder {
 
-        private static final Game INSTANCE = new Game();
+        private static final AIAppState INSTANCE = new AIAppState();
     }
 
     public void start() {

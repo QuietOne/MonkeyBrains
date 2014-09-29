@@ -1,7 +1,7 @@
 package com.jme3.ai.agents.util.control;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.util.GameObject;
+import com.jme3.ai.agents.util.GameEntity;
 import com.jme3.input.FlyByCamera;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
@@ -10,9 +10,9 @@ import com.jme3.renderer.Camera;
  * Base interface for game controls used in game.
  *
  * @author Tihomir Radosavljević
- * @version 1.0.0
+ * @version 1.0.1
  */
-public interface GameControl {
+public interface AIControl {
 
     /**
      * Add all inputManagerMapping that will player use.
@@ -46,8 +46,8 @@ public interface GameControl {
     public void restart();   
     /**
      * Method for creating objects in given area.
-     * @param gameObject object that should be created
+     * @param gameEntity object that should be created
      * @param area where object will be created
      */
-    public void spawn(GameObject gameObject, Vector3f... area);
+    public void spawn(GameEntity gameEntity, Vector3f... area);
 }

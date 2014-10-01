@@ -1,17 +1,40 @@
-//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved.
-//Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+/**
+ * Copyright (c) 2014, jMonkeyEngine All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of 'jMonkeyEngine' nor the names of its contributors may be
+ * used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.PathFollowIstinsufficientPointsException;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.PathFollowNegativeCohesionStrengthException;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.PathFollowNegativeRadiusException;
-
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.PathFollowInsufficientPointsException;
 import com.jme3.math.Plane;
 import com.jme3.math.Plane.Side;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
-
 import java.util.ArrayList;
 
 /**
@@ -62,9 +85,10 @@ public class PathFollowBehaviour extends AbstractStrengthSteeringBehaviour {
      * consequently the path route. The minimum number of points is two.
      * @param pathRadius Spine radius i.e the path width
      *
-     * @throws PathFollowIstinsufficientPointsException If orderedPointsList size is
-     * lower than 2
-     * @throws PathFollowNegativeRadiusException If path radius is negative
+     * @throws PathFollowInsufficientPointsException If orderedPointsList size
+     * is lower than 2
+     * @throws SteeringExceptions.NegativeValueException If path radius is
+     * negative
      *
      * @see
      * AbstractStrengthSteeringBehaviour#AbstractStrengthSteeringBehaviour(com.jme3.ai.agents.Agent)
@@ -92,8 +116,8 @@ public class PathFollowBehaviour extends AbstractStrengthSteeringBehaviour {
 
     /**
      * @param cohesionStrength Cohesion multiplier
-     * @throws PathFollowNegativeCohesionStrengthException If cohesionStrength is
-     * negative
+     * @throws PathFollowNegativeCohesionStrengthException If cohesionStrength
+     * is negative
      * @see PathFollowBehaviour#PathFollowBehaviour(com.jme3.ai.agents.Agent,
      * java.util.ArrayList, float)
      */
@@ -120,17 +144,11 @@ public class PathFollowBehaviour extends AbstractStrengthSteeringBehaviour {
 
     private static void validateConstruction(ArrayList<Vector3f> orderedPointsList, float pathRadius, float cohesionStrength) {
         if (orderedPointsList.size() < 2) {
-            throw new PathFollowIstinsufficientPointsException(
-                    "To create the path it is needed at least two points. You have passed  "
-                    + orderedPointsList.size() + " points.");
+            throw new PathFollowInsufficientPointsException("To create the path it is needed at least two points.", orderedPointsList.size());
         } else if (pathRadius < 0) {
-            throw new PathFollowNegativeRadiusException(
-                    "The path radius can not be negative. You have passed  "
-                    + pathRadius + " as the radius value.");
+            throw new SteeringExceptions.NegativeValueException("The path radius can not be negative.", pathRadius);
         } else if (cohesionStrength < 0) {
-            throw new PathFollowNegativeCohesionStrengthException(
-                    "The path cohesion strength must be a positive value. You have passed  "
-                    + cohesionStrength + " as the cohesion strength argument.");
+            throw new SteeringExceptions.NegativeValueException("The path cohesion strength must be a positive value.", cohesionStrength);
         }
     }
 
@@ -173,15 +191,14 @@ public class PathFollowBehaviour extends AbstractStrengthSteeringBehaviour {
 
                 Vector3f posProjection = this.nextExit.getClosestPoint(this.agent.getLocalTranslation());
                 float distanceToCenter = posProjection.subtract(this.orderedPointsList.get(this.nextSpineJoint)).length();
-
-                if (distanceToCenter > this.pathRadius) //The agent is outside the path
-                {
+                //chaeck if the agent is outside the path
+                if (distanceToCenter > this.pathRadius) {
                     //Move to the next spine and inside the path
                     Vector3f moveToSpine = this.agent.offset(this.orderedPointsList.get(this.nextSpineJoint)).normalize();
                     Vector3f moveToCenter = this.orderedPointsList.get(this.nextSpineJoint).subtract(posProjection).normalize();
                     steer = moveToSpine.add(moveToCenter);
-                }//Move through the path 
-                else {
+                } else {
+                    //Move through the path
                     Vector3f moveThroughPathSteer = exitNormal.normalize();
 
                     Vector3f predictedPos = this.agent.getPredictedPosition();
@@ -203,8 +220,8 @@ public class PathFollowBehaviour extends AbstractStrengthSteeringBehaviour {
                         this.nextSpineJoint++;
                     }
                 }
-            } //The path has ended
-            else {
+            } else {
+                //The path has ended
                 this.active = false;
             }
         }

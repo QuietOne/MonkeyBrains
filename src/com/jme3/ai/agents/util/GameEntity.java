@@ -1,5 +1,32 @@
-//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved. 
-//Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+/**
+ * Copyright (c) 2014, jMonkeyEngine All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of 'jMonkeyEngine' nor the names of its contributors may be
+ * used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.jme3.ai.agents.util;
 
 import com.jme3.ai.agents.Agent;
@@ -27,14 +54,14 @@ import com.jme3.scene.control.AbstractControl;
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
- * @version 1.3.0
+ * @version 1.3.2
  */
 public abstract class GameEntity extends AbstractControl {
 
     /**
      * Container for the velocity of the game object.
      */
-    protected Vector3f velocity = Vector3f.UNIT_XYZ.clone();
+    protected Vector3f velocity = Vector3f.UNIT_X.clone();
     /**
      * Mass of GameEntity.
      */
@@ -54,7 +81,7 @@ public abstract class GameEntity extends AbstractControl {
     /**
      * HitPoint System that will agent use.
      */
-    private HPSystem hpSystem;
+    protected HPSystem hpSystem;
     /**
      * Rotation speed of GameEntity.
      */
@@ -66,6 +93,10 @@ public abstract class GameEntity extends AbstractControl {
      * @see ObstacleAvoidanceBehaviour
      */
     protected float radius = 0;
+    /**
+     * Unique id of gameEntity. Used internaly in framework. Changing may cause
+     * unexpecting results.
+     */
     protected int id;
 
     /**
@@ -199,7 +230,12 @@ public abstract class GameEntity extends AbstractControl {
     }
 
     public void setLocalRotation(Quaternion rotation) {
-        spatial.setLocalRotation(rotation);
+        try {
+            spatial.setLocalRotation(rotation);
+        } catch (NullPointerException e) {
+            throw new GameEntityExceptions.GameEntityAttributeNotFound(this, "spatial");
+        }
+
     }
 
     /**
@@ -207,7 +243,11 @@ public abstract class GameEntity extends AbstractControl {
      * @return local translation of agent
      */
     public Vector3f getLocalTranslation() {
-        return spatial.getLocalTranslation();
+        try {
+            return spatial.getLocalTranslation();
+        } catch (NullPointerException e) {
+            throw new GameEntityExceptions.GameEntityAttributeNotFound(this, "spatial");
+        }
     }
 
     /**
@@ -291,5 +331,27 @@ public abstract class GameEntity extends AbstractControl {
     @Override
     public String toString() {
         return "GameEntity{" + id + '}';
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + this.id;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final GameEntity other = (GameEntity) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
     }
 }

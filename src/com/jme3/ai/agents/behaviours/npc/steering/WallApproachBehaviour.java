@@ -1,17 +1,40 @@
-//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved.
-//Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+/**
+ * Copyright (c) 2014, jMonkeyEngine All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of 'jMonkeyEngine' nor the names of its contributors may be
+ * used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.WallApproachNegativeOffsetException;
 import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.WallApproachWithoutWallException;
-
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 
@@ -60,7 +83,7 @@ public class WallApproachBehaviour extends AbstractStrengthSteeringBehaviour {
     private static final float MIN_RAY_TEST_OFFSET = 0.001f;
 
     /**
-     * @throws WallApproachNegativeOffsetException If offsetToMaintain is
+     * @throws SteeringExceptions.NegativeValueException If offsetToMaintain is
      * negative
      */
     public void setOffsetToMaintain(float offsetToMaintain) {
@@ -75,7 +98,7 @@ public class WallApproachBehaviour extends AbstractStrengthSteeringBehaviour {
      * to maintain
      *
      * @throws WallApproachWithoutWallException If the wall is a null pointer
-     * @throws WallApproachNegativeOffsetException If offsetToMaintain is
+     * @throws SteeringExceptions.NegativeValueException If offsetToMaintain is
      * negative
      *
      * @see
@@ -116,8 +139,7 @@ public class WallApproachBehaviour extends AbstractStrengthSteeringBehaviour {
 
     private static void validateConstruction(Node wall, float offsetToMaintain) {
         if (wall == null) {
-            throw new WallApproachWithoutWallException(
-                    "You can not instantiate a new wall approach behaviour without a wall.");
+            throw new WallApproachWithoutWallException("You can not instantiate a new wall approach behaviour without a wall.");
         } else {
             WallApproachBehaviour.validateOffsetToMaintain(offsetToMaintain);
         }
@@ -125,9 +147,7 @@ public class WallApproachBehaviour extends AbstractStrengthSteeringBehaviour {
 
     private static void validateOffsetToMaintain(float offsetToMaintain) {
         if (offsetToMaintain < 0) {
-            throw new WallApproachNegativeOffsetException(
-                    "The superficial offset to maintain cannot be negative. You have passed  "
-                    + offsetToMaintain + " as offset.");
+            throw new SteeringExceptions.NegativeValueException("The superficial offset to maintain cannot be negative.", offsetToMaintain);
         }
     }
 
@@ -154,7 +174,9 @@ public class WallApproachBehaviour extends AbstractStrengthSteeringBehaviour {
         return steer;
     }
 
-    //Check for intersections with the wall - Ray test
+    /**
+     * Check for intersections with the wall - Ray test
+     */
     private Vector3f approximateSurfaceLocation() {
         class LowerDistances {
 
@@ -227,7 +249,6 @@ public class WallApproachBehaviour extends AbstractStrengthSteeringBehaviour {
         if (collisionResult != null && !Float.isNaN(collisionResult.getDistance()) && !Float.isInfinite(collisionResult.getDistance())) {
             surfaceLocation = results.getClosestCollision().getContactPoint();
         }
-
         return surfaceLocation;
     }
 }

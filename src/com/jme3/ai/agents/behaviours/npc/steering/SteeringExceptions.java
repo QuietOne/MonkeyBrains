@@ -1,7 +1,36 @@
+/**
+ * Copyright (c) 2014, jMonkeyEngine All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of 'jMonkeyEngine' nor the names of its contributors may be
+ * used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.BehaviourExceptions.IllegalBehaviourException;
+import com.jme3.ai.agents.behaviours.BehaviourExceptions.BehaviourException;
 
 /**
  * Class container for exceptions related to steering behaviour.
@@ -15,47 +44,33 @@ public class SteeringExceptions {
     /**
      * Main generic exception related for all illegal arguments for steering
      * behaviours.
-     *
-     * @see IllegalBehaviourException
-     * @author Tihomir Radosavljević
-     * @version 1.0.0
      */
-    public static class IllegalSteeringBehaviourException extends IllegalBehaviourException {
+    public static class SteeringBehaviourException extends BehaviourException {
 
-        public IllegalSteeringBehaviourException(Agent agent, String message, float value) {
+        public SteeringBehaviourException(Agent agent, String message, float value) {
             super(agent, message, value);
         }
 
-        public IllegalSteeringBehaviourException(String message) {
+        public SteeringBehaviourException(String message) {
             super(message);
         }
     }
 
     /**
-     * This exception is thrown when braking factor is not set in the [0, 1]
-     * interval.
-     *
-     * @see IllegalSteeringBehaviourException
-     * @author Jesús Martín Berlanga
-     * @version 1.0.1
+     * This exception is thrown when value is not set in the [0, 1] interval.
      */
-    public static class IllegalBrakingFactorException extends IllegalSteeringBehaviourException {
+    public static class IllegalIntervalException extends SteeringBehaviourException {
 
-        public IllegalBrakingFactorException(float brakingFactor) {
-            super("The braking factor value must be contained in the [0,1] interval. The current value is " + brakingFactor + '.');
+        public IllegalIntervalException(String factorName, float value) {
+            super("The " + factorName + " factor value must be contained in the [0,1] interval. The current value is " + value + '.');
         }
     }
 
     /**
      * This exception is thrown when negative value is given to steering
      * behaviour.
-     *
-     * @see IllegalSteeringBehaviourException
-     * @author Jesús Martín Berlanga
-     * @author Tihomir Radosavljević
-     * @version 1.0.1
      */
-    public static class NegativeValueException extends IllegalSteeringBehaviourException {
+    public static class NegativeValueException extends SteeringBehaviourException {
 
         public NegativeValueException(String message) {
             super(message);
@@ -66,215 +81,23 @@ public class SteeringExceptions {
         }
     }
 
-    /**
-     * This exception is thrown when negative value is given to box explore
-     * steering behaviour.
-     *
-     * @see NegativeValueException
-     * @author Jesús Martín Berlanga
-     * @version 1.0.1
-     */
-    public static class BoxExploreWithNegativeValueException extends NegativeValueException {
+    public static class InvalidAreaException extends SteeringBehaviourException {
 
-        public BoxExploreWithNegativeValueException(String message) {
+        public InvalidAreaException(String message) {
             super(message);
         }
     }
 
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class ContainmentWithInvalidContainmenetAreaException extends IllegalBehaviourException {
+    public static class PathFollowInsufficientPointsException extends BehaviourException {
 
-        public ContainmentWithInvalidContainmenetAreaException(String message) {
-            super(message);
+        public PathFollowInsufficientPointsException(String message, float value) {
+            super(message + " You inputed " + value + '.');
         }
     }
 
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class ContainmentWithoutContainmentAreaException extends IllegalBehaviourException {
-
-        public ContainmentWithoutContainmentAreaException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class HideWithoutTargetException extends IllegalBehaviourException {
-
-        public HideWithoutTargetException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class NegativeSeparationFromObstacleException extends IllegalBehaviourException {
-
-        public NegativeSeparationFromObstacleException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class NegativeDistanceToEvadeException extends IllegalBehaviourException {
-
-        public NegativeDistanceToEvadeException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class LeaderFollowWithoutLeaderException extends IllegalBehaviourException {
-
-        public LeaderFollowWithoutLeaderException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class NegativeDistanceToChangeFocusException extends IllegalBehaviourException {
-
-        public NegativeDistanceToChangeFocusException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class ObstacleAvoindanceWithNegativeMinDistanceException extends IllegalBehaviourException {
-
-        public ObstacleAvoindanceWithNegativeMinDistanceException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class ObstacleAvoindanceWithNoMinTimeToCollisionException extends IllegalBehaviourException {
-
-        private ObstacleAvoindanceWithNoMinTimeToCollisionException(String message) {
-            super(message);
-        }
-    }
-
-    public static class PathFollowIstinsufficientPointsException extends IllegalBehaviourException {
-
-        public PathFollowIstinsufficientPointsException(String message) {
-            super(message);
-        }
-    }
-
-    public static class PathFollowNegativeRadiusException extends IllegalBehaviourException {
-
-        public PathFollowNegativeRadiusException(String message) {
-            super(message);
-        }
-    }
-
-    public static class PathFollowNegativeCohesionStrengthException extends IllegalBehaviourException {
-
-        public PathFollowNegativeCohesionStrengthException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class QueuingWithNegativeMinDistanceException extends IllegalBehaviourException {
-
-        public QueuingWithNegativeMinDistanceException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class UnalignedObstacleAvoindanceWithNegativeDistanceMultiplierException extends IllegalBehaviourException {
-
-        public UnalignedObstacleAvoindanceWithNegativeDistanceMultiplierException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class ObstacleAvoindanceWithoutTimeIntervalException extends IllegalBehaviourException {
-
-        public ObstacleAvoindanceWithoutTimeIntervalException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class SphereWanderInvalidRandomFactorException extends IllegalBehaviourException {
-
-        public SphereWanderInvalidRandomFactorException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class SphereWanderInvalidRotationFactorException extends IllegalBehaviourException {
-
-        public SphereWanderInvalidRotationFactorException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class SphereWanderWithoutTimeIntervalException extends IllegalBehaviourException {
-
-        public SphereWanderWithoutTimeIntervalException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class SphereWanderWithoutRadiusException extends IllegalBehaviourException {
-
-        public SphereWanderWithoutRadiusException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * @see IllegalBehaviourException
-     */
-    public static class WallApproachWithoutWallException extends IllegalBehaviourException {
+    public static class WallApproachWithoutWallException extends BehaviourException {
 
         public WallApproachWithoutWallException(String message) {
-            super(message);
-        }
-    }
-
-    public static class WallApproachNegativeOffsetException extends IllegalBehaviourException {
-
-        public WallApproachNegativeOffsetException(String message) {
             super(message);
         }
     }

@@ -1,3 +1,32 @@
+/**
+ * Copyright (c) 2014, jMonkeyEngine All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of 'jMonkeyEngine' nor the names of its contributors may be
+ * used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.jme3.ai.agents.util.control;
 
 import com.jme3.ai.agents.Agent;
@@ -17,7 +46,7 @@ import java.util.List;
  * updates. Contains agents and gameEntities and provides generic ai control.
  *
  * @author Tihomir Radosavljević
- * @version 2.0.0
+ * @version 2.1.1
  */
 public class AIAppState extends AbstractAppState {
 
@@ -49,10 +78,40 @@ public class AIAppState extends AbstractAppState {
      * List of all GameEntities in game except for agents.
      */
     protected List<GameEntity> gameEntities;
+    /**
+     * Used internaly for difference between game entities.
+     */
+    private int idCounter;
+    /**
+     * Used internaly for difference between agents.
+     */
+    private int idCounterAgent;
+    public static final int MAX_NUMBER_OF_AGENTS = 1000;
 
     protected AIAppState() {
         agents = new LinkedList<Agent>();
         gameEntities = new LinkedList<GameEntity>();
+        idCounter = 1001;
+    }
+
+    private int setIdCouterToGameEntity() {
+        //value should change to check availability
+        if (idCounter < Integer.MAX_VALUE) {
+            idCounter++;
+        } else {
+            idCounter = MAX_NUMBER_OF_AGENTS;
+        }
+        return idCounter;
+    }
+
+    private int setIdCounterToAgent() {
+        //value should change to check availability
+        if (idCounterAgent < MAX_NUMBER_OF_AGENTS - 1) {
+            idCounterAgent++;
+        } else {
+            idCounterAgent = 0;
+        }
+        return idCounterAgent;
     }
 
     /**
@@ -63,6 +122,7 @@ public class AIAppState extends AbstractAppState {
      */
     public void addAgent(Agent agent) {
         agents.add(agent);
+        agent.setId(setIdCounterToAgent());
         if (inProgress) {
             agent.start();
         }
@@ -79,6 +139,7 @@ public class AIAppState extends AbstractAppState {
     public void addAgent(Agent agent, Vector3f position) {
         agent.setLocalTranslation(position);
         agents.add(agent);
+        agent.setId(setIdCounterToAgent());
         if (inProgress) {
             agent.start();
         }
@@ -97,6 +158,7 @@ public class AIAppState extends AbstractAppState {
     public void addAgent(Agent agent, float x, float y, float z) {
         agent.setLocalTranslation(x, y, z);
         agents.add(agent);
+        agent.setId(setIdCounterToAgent());
         if (inProgress) {
             agent.start();
         }
@@ -155,58 +217,8 @@ public class AIAppState extends AbstractAppState {
                 }
             }
         } catch (NullPointerException npe) {
-            throw new GameEntityExceptions.HPSystemNotFoundException(agent);
+            throw new GameEntityExceptions.GameEntityAttributeNotFound(agent, "included HPSystem");
         }
-    }
-
-    /**
-     * Check what agents are seen by one agent.
-     *
-     * @param agent agent which is looking
-     * @param viewAngle
-     * @return all agents that is seen by agent
-     */
-    public List<GameEntity> look(Agent agent, float viewAngle) {
-        List<GameEntity> temp = new LinkedList<GameEntity>();
-        //are there seen agents
-        for (int i = 0; i < agents.size(); i++) {
-            if (agents.get(i).isEnabled()) {
-                if (!agents.get(i).equals(agent) && lookable(agent, agents.get(i), viewAngle)) {
-                    temp.add(agents.get(i));
-                }
-            }
-        }
-        for (GameEntity gameEntity : gameEntities) {
-            if (gameEntity.isEnabled() && lookable(agent, gameEntity, viewAngle)) {
-                temp.add(gameEntity);
-            }
-        }
-        return temp;
-    }
-
-    /**
-     * Use with cautious. It works for this example, but it is not general it
-     * doesn't include obstacles into calculation.
-     *
-     * @param observer
-     * @param gameEntity
-     * @param heightAngle
-     * @param widthAngle
-     * @return
-     */
-    public boolean lookable(Agent observer, GameEntity gameEntity, float viewAngle) {
-        //if agent is not in visible range
-        if (observer.getLocalTranslation().distance(gameEntity.getLocalTranslation())
-                > observer.getVisibilityRange()) {
-            return false;
-        }
-        Vector3f direction = observer.getLocalRotation().mult(new Vector3f(0, 0, -1));
-        Vector3f direction2 = observer.getLocalTranslation().subtract(gameEntity.getLocalTranslation()).normalizeLocal();
-        float angle = direction.angleBetween(direction2);
-        if (angle > viewAngle) {
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -263,6 +275,7 @@ public class AIAppState extends AbstractAppState {
 
     public void addGameEntity(GameEntity gameEntity) {
         gameEntities.add(gameEntity);
+        gameEntity.setId(setIdCouterToGameEntity());
     }
 
     public void removeGameEntity(GameEntity gameEntity) {

@@ -1,33 +1,52 @@
-//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved.
-//Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+/**
+ * Copyright (c) 2014, jMonkeyEngine All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of 'jMonkeyEngine' nor the names of its contributors may be
+ * used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.SphereWanderInvalidRandomFactorException;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.SphereWanderInvalidRotationFactorException;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.SphereWanderWithoutRadiusException;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.SphereWanderWithoutTimeIntervalException;
-
 import com.jme3.bounding.BoundingSphere;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
-
 import java.util.Random;
 
 /**
- * "Wander is a type of random steering. This idea can be implemented several
+ * Wander is a type of random steering. This idea can be implemented several
  * ways, but one that has produced good results is to constrain the steering
  * force to the surface of a sphere located slightly ahead of the character. To
  * produce the steering force for the next frame: a random displacement is added
  * to the previous value, and the sum is constrained again to the sphere's
  * surface. The sphere's radius determines the maximum wandering strength and
- * the magnitude of the random displacement determines the wander 'rate'."
+ * the magnitude of the random displacement determines the wander 'rate'.
  * <br><br>
  *
  * The steer force is contained in the XY plane
@@ -68,12 +87,11 @@ public class SphereWanderBehaviour extends AbstractStrengthSteeringBehaviour {
      * @param rotationFactor Defines the maximum random variaton for each
      * iteration.
      *
-     * @throws SphereWanderWithoutTimeIntervalException If timeInterval is lower
-     * or equals to 0
-     * @throws SphereWanderInvalidRandomFactorException If randomFactor is not
-     * contained in the [0,1] interval
-     * @throws SphereWanderInvalidRotationFactorException If rotationFactor is
-     * not contained in the [0,1] interval
+     * @throws SteeringExceptions.NegativeValueException If timeInterval is
+     * lower or equals to 0
+     * @throws SteeringExceptions.IllegalIntervalException If randomFactor is
+     * not contained in the [0,1] interval or if rotationFactor is not contained
+     * in the [0,1] interval
      */
     public SphereWanderBehaviour(Agent agent, float timeInterval, float randomFactor, float rotationFactor) {
         super(agent);
@@ -95,11 +113,11 @@ public class SphereWanderBehaviour extends AbstractStrengthSteeringBehaviour {
 
     private void construct(float timeInterval, float randomFactor, float rotationFactor) {
         if (timeInterval <= 0) {
-            throw new SphereWanderWithoutTimeIntervalException("The time interval must be possitive. The current value is: " + timeInterval);
+            throw new SteeringExceptions.NegativeValueException("The time interval must be possitive." + timeInterval);
         } else if (randomFactor < 0 || randomFactor > 1) {
-            throw new SphereWanderInvalidRandomFactorException("The random factor value must be contained in the [0,1] interval. The current value is " + randomFactor);
+            throw new SteeringExceptions.IllegalIntervalException("random", randomFactor);
         } else if (rotationFactor < 0 || rotationFactor > 1) {
-            throw new SphereWanderInvalidRotationFactorException("The rotation factor value must be contained in the [0,1] interval. The current value is " + rotationFactor);
+            throw new SteeringExceptions.IllegalIntervalException("rotation", rotationFactor);
         }
 
         this.timeInterval = timeInterval;
@@ -225,12 +243,12 @@ public class SphereWanderBehaviour extends AbstractStrengthSteeringBehaviour {
      * The sphere radius is 0.75 by default. Note that low radius values can
      * cause unexpected errors.
      *
-     * @throws SphereWanderWithoutRadiusException If sphereRadius is lower or
-     * equals to 0
+     * @throws SteeringExceptions.NegativeValueException If sphereRadius is
+     * lower or equals to 0
      */
     public void setSphereRadius(float sphereRadius) {
         if (sphereRadius <= 0) {
-            throw new SphereWanderWithoutRadiusException("The sphere radius must be possitive. Current value is: " + sphereRadius);
+            throw new SteeringExceptions.NegativeValueException("The sphere radius must be possitive.", sphereRadius);
         }
         this.sphereRadius = sphereRadius;
     }

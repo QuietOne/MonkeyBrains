@@ -1,14 +1,43 @@
-//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved.
-//Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+/**
+ * Copyright (c) 2014, jMonkeyEngine All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of 'jMonkeyEngine' nor the names of its contributors may be
+ * used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.Behaviour;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.IllegalBrakingFactorException;
-
+import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.IllegalIntervalException;
+import com.jme3.ai.agents.util.GameEntity;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Base class for all steering behaviours. This behaviour contains some
@@ -123,12 +152,12 @@ public abstract class AbstractSteeringBehaviour extends Behaviour {
     /**
      * Note that 0 means the maximum braking force and 1 No braking force
      *
-     * @throws IllegalBrakingFactorException If the braking factor is not
-     * contained in the [0,1] interval
+     * @throws IllegalIntervalException If the braking factor is not contained
+     * in the [0,1] interval
      */
     protected final void setBrakingFactor(float brakingFactor) {
         if (brakingFactor < 0 || brakingFactor > 1) {
-            throw new IllegalBrakingFactorException(brakingFactor);
+            throw new IllegalIntervalException("braking", brakingFactor);
         }
         this.brakingFactor = brakingFactor;
     }
@@ -161,5 +190,19 @@ public abstract class AbstractSteeringBehaviour extends Behaviour {
 
     public void setTimePerFrame(float timePerFrame) {
         this.timePerFrame = timePerFrame;
+    }
+
+    /**
+     * Convenience method for converting list of agents to list of entities.
+     *
+     * @param agents
+     * @return
+     */
+    protected List<GameEntity> convertToGameEntities(List<Agent> agents) {
+        List<GameEntity> entities = new LinkedList<GameEntity>();
+        for (Agent tempAgent : agents) {
+            entities.add(tempAgent);
+        }
+        return entities;
     }
 }

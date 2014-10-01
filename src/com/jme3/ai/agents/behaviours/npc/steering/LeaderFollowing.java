@@ -1,12 +1,36 @@
-//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved.
-//Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+/**
+ * Copyright (c) 2014, jMonkeyEngine All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of 'jMonkeyEngine' nor the names of its contributors may be
+ * used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.LeaderFollowWithoutLeaderException;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.NegativeDistanceToChangeFocusException;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.NegativeDistanceToEvadeException;
-
+import com.jme3.ai.agents.behaviours.BehaviourExceptions;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
@@ -71,9 +95,10 @@ public class LeaderFollowing extends SeekBehaviour {
      * @param minimunAngle Minimum angle betwen the target velocity and the
      * vehicle location.
      *
-     * @throws LeaderFollowWithoutLeaderException If target is null
-     * @throws NegativeDistanceToEvadeException If distanceToEvade is lower than 0
-     * @throws NegativeDistanceToChangeFocusException If distanceToEvade is lower than 0
+     * @throws BehaviourExceptions.TargetNotFoundException If target (leader) is
+     * null
+     * @throws SteeringExceptions.NegativeValueException If distanceToEvade is
+     * lower than 0 or if distanceToEvade is lower than 0
      *
      * @see LeaderFollowing#LeaderFollowing(com.jme3.ai.agents.Agent,
      * com.jme3.ai.agents.Agent)
@@ -110,19 +135,19 @@ public class LeaderFollowing extends SeekBehaviour {
 
     private void validateDistanceToEvade(float distanceToEvade) {
         if (distanceToEvade < 0) {
-            throw new NegativeDistanceToEvadeException("The distance to evade can not be negative. Current value is " + distanceToEvade);
+            throw new SteeringExceptions.NegativeValueException("The distance to evade can not be negative.", distanceToEvade);
         }
     }
 
     private void validateTarget(Agent target) {
         if (target == null) {
-            throw new LeaderFollowWithoutLeaderException("The target can not be null.");
+            throw new BehaviourExceptions.TargetNotFoundException();
         }
     }
 
     private void validateDistanceToChangeFocus(float distanceToChangeFocus) {
         if (distanceToChangeFocus < 0) {
-            throw new NegativeDistanceToChangeFocusException("The distance to change focus can not be negative. Current value is " + distanceToChangeFocus);
+            throw new SteeringExceptions.NegativeValueException("The distance to change focus can not be negative.", distanceToChangeFocus);
         }
     }
 
@@ -140,7 +165,7 @@ public class LeaderFollowing extends SeekBehaviour {
         Vector3f projectedLocation = this.getTarget().getLocalTranslation().add(predictedPositionDiff.mult(
                 this.calculateFocusFactor(distanceBetwen)));
 
-        this.arriveBehaviour.setSeekingPos(projectedLocation);
+        this.arriveBehaviour.setSeekingPosition(projectedLocation);
 
         steer = this.arriveBehaviour.calculateRawSteering();
 

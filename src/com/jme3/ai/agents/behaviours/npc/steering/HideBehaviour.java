@@ -1,29 +1,51 @@
-//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved.
-//Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+/**
+ * Copyright (c) 2014, jMonkeyEngine All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of 'jMonkeyEngine' nor the names of its contributors may be
+ * used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.HideWithoutTargetException;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.NegativeSeparationFromObstacleException;
+import com.jme3.ai.agents.behaviours.BehaviourExceptions;
 import com.jme3.ai.agents.util.GameEntity;
-
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
-
 import java.util.List;
 
 /**
- * "Hide behavior involves identifying a target location which is on the
- * opposite side of an obstacle from the opponent, and steering toward it using
- * seek." <br><br>
+ * Hide behavior involves identifying a target location which is on the opposite
+ * side of an obstacle from the opponent, and steering toward it using seek.
+ * <br><br>
  *
  * First of all we check which is the nearest obstacle with a radius equal or
  * lower than the agent, then we hide behind it.
  *
  * @author Jesús Martín Berlanga
- * @version 1.0
+ * @version 1.0.1
  */
 public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
 
@@ -37,9 +59,9 @@ public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
      * @param separationFromObstacle Distance from the obstacle surface that
      * this agent will maintain
      *
-     * @throws NegativeSeparationFromObstacleException If separationFromObstacle
-     * is lower than 0
-     * @throws HideWithoutTargetException If target is null
+     * @throws SteeringExceptions.NegativeValueException If
+     * separationFromObstacle is lower than 0
+     * @throws BehaviourExceptions.TargetNotFoundException If target is null
      *
      * @see
      * AbstractSteeringBehaviour#AbstractSteeringBehaviour(com.jme3.ai.agents.Agent)
@@ -71,13 +93,13 @@ public class HideBehaviour extends AbstractStrengthSteeringBehaviour {
 
     private void validateTarget(Agent target) {
         if (target == null) {
-            throw new HideWithoutTargetException("The target can not be null.");
+            throw new BehaviourExceptions.TargetNotFoundException();
         }
     }
 
     private void validateSeparationFromObstacle(float separationFromObstacle) {
         if (separationFromObstacle < 0) {
-            throw new NegativeSeparationFromObstacleException("The separation distance from the obstacle can not be negative. Current value is " + separationFromObstacle);
+            throw new SteeringExceptions.NegativeValueException("The separation distance from the obstacle can not be negative.", separationFromObstacle);
         }
     }
 

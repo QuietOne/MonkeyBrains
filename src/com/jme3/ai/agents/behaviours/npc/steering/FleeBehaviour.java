@@ -1,12 +1,36 @@
-//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved.
-//Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+/**
+ * Copyright (c) 2014, jMonkeyEngine All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of 'jMonkeyEngine' nor the names of its contributors may be
+ * used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 
 /**
@@ -14,8 +38,7 @@ import com.jme3.scene.Spatial;
  * velocity is radially aligned away from the target. The desired velocity
  * points in the opposite direction.
  *
- * Jesús Martín Berlanga: "You can flee another agent or a specific space
- * location".
+ * You can flee another agent or a specific space location.
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
@@ -27,7 +50,7 @@ public class FleeBehaviour extends AbstractStrengthSteeringBehaviour {
      * Agent from whom we flee.
      */
     private Agent target;
-    private Vector3f fleePos;
+    private Vector3f fleePosition;
 
     /**
      * Constructor for flee behaviour.
@@ -60,7 +83,7 @@ public class FleeBehaviour extends AbstractStrengthSteeringBehaviour {
      */
     public FleeBehaviour(Agent agent, Vector3f fleePos) {
         super(agent);
-        this.fleePos = fleePos;
+        this.fleePosition = fleePos;
     }
 
     /**
@@ -72,7 +95,7 @@ public class FleeBehaviour extends AbstractStrengthSteeringBehaviour {
      */
     public FleeBehaviour(Agent agent, Vector3f fleePos, Spatial spatial) {
         super(agent, spatial);
-        this.fleePos = fleePos;
+        this.fleePosition = fleePos;
     }
 
     /**
@@ -88,8 +111,8 @@ public class FleeBehaviour extends AbstractStrengthSteeringBehaviour {
 
         if (this.target != null) {
             desiredVelocity = target.getLocalTranslation().subtract(agent.getLocalTranslation());
-        } else if (this.fleePos != null) {
-            desiredVelocity = this.fleePos.subtract(agent.getLocalTranslation());
+        } else if (this.fleePosition != null) {
+            desiredVelocity = this.fleePosition.subtract(agent.getLocalTranslation());
         } else {
             return new Vector3f(); //We do not have any target or flee position
         }
@@ -118,15 +141,15 @@ public class FleeBehaviour extends AbstractStrengthSteeringBehaviour {
      */
     public void setTarget(Agent target) {
         this.target = target;
-        this.fleePos = null;
+        this.fleePosition = null;
     }
 
-    public Vector3f getFleePos() {
-        return this.fleePos;
+    public Vector3f getFleePosition() {
+        return this.fleePosition;
     }
 
-    public void setFleePos(Vector3f fleePos) {
-        this.fleePos = fleePos;
+    public void setFleePosition(Vector3f fleePosition) {
+        this.fleePosition = fleePosition;
         this.target = null;
     }
 }

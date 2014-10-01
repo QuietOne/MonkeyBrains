@@ -1,11 +1,36 @@
-//Copyright (c) 2014, Jesús Martín Berlanga. All rights reserved.
-//Distributed under the BSD licence. Read "com/jme3/ai/license.txt".
+/**
+ * Copyright (c) 2014, jMonkeyEngine All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of 'jMonkeyEngine' nor the names of its contributors may be
+ * used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.jme3.ai.agents.behaviours.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions.UnalignedObstacleAvoindanceWithNegativeDistanceMultiplierException;
 import com.jme3.ai.agents.util.GameEntity;
-
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 import com.jme3.math.Plane;
@@ -16,11 +41,11 @@ import java.util.List;
  * This behaviour is similar to ObstacleAvoidanceBehaviour wich the difference
  * that the obstacles can be other agents in movement. <br> <br>
  *
- * "Unaligned collision avoidance behavior: avoid colliding with other nearby
+ * Unaligned collision avoidance behavior: avoid colliding with other nearby
  * vehicles moving in unconstrained directions. Determine which if any) other
  * other vehicle we would collide with first, then steers to avoid the site of
  * that potential collision. Returns a steering force vector, which is zero
- * length if there is no impending collision."
+ * length if there is no impending collision.
  *
  * @see ObstacleAvoidanceBehaviour
  *
@@ -96,7 +121,7 @@ public class UnalignedCollisionAvoidanceBehaviour extends ObstacleAvoidanceBehav
 
     private void validateDistanceMultiplier(float distanceMultiplier) {
         if (distanceMultiplier < 0) {
-            throw new UnalignedObstacleAvoindanceWithNegativeDistanceMultiplierException("The min distance from an obstacle can not be negative. Current value is " + distanceMultiplier);
+            throw new SteeringExceptions.NegativeValueException("The min distance from an obstacle can not be negative.", distanceMultiplier);
         }
     }
 
@@ -133,8 +158,8 @@ public class UnalignedCollisionAvoidanceBehaviour extends ObstacleAvoidanceBehav
 
                 /* "If the time is in the future, sooner than any other
                  threatened collision..." */
-                if ((time >= 0) && (time < minTime * (obstacle.getRadius() + this.agent.getRadius()))) // "At OpenSeer" =>  if ((time >= 0) && (time < minTime))
-                {
+                if ((time >= 0) && (time < minTime * (obstacle.getRadius() + this.agent.getRadius()))) {
+                    // "At OpenSeer" =>  if ((time >= 0) && (time < minTime))
                     Vector3f threatPositionAtNearestApproach = new Vector3f();
                     Vector3f ourPositionAtNearestApproach = new Vector3f();
 
@@ -195,14 +220,14 @@ public class UnalignedCollisionAvoidanceBehaviour extends ObstacleAvoidanceBehav
                     Vector3f sidePoint = sidePlane.getClosestPoint(threat.getLocalTranslation());
                     Vector3f sideVector = this.agent.offset(sidePoint).normalize().negate();
 
-                    if (sideVector.negate().equals(Vector3f.ZERO)) //Move in a random direction
-                    {
+                    if (sideVector.negate().equals(Vector3f.ZERO)) {
+                        //Move in a random direction
                         sideVector = randomVectInPlane(this.agent.getVelocity(), this.agent.getLocalTranslation()).normalize();
                     }
 
                     steer = sideVector.mult(this.agent.getMoveSpeed());
-                } // "perpendicular paths:"  Steer away and slow/increase the speed knowing future positions
-                else {
+                } else {
+                    // "perpendicular paths:"  Steer away and slow/increase the speed knowing future positions
                     steer = xxxOurPositionAtNearestApproach.subtract(xxxThreatPositionAtNearestApproach);
                 }
             }

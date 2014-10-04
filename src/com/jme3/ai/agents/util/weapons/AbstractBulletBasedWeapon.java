@@ -35,7 +35,7 @@ import com.jme3.math.Vector3f;
 /**
  * Weapons with bullets.
  *
- * @author Tihomir Radosavljevic
+ * @author Tihomir Radosavljević
  * @version 1.0.0
  */
 public abstract class AbstractBulletBasedWeapon extends AbstractWeapon {

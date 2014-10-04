@@ -36,7 +36,7 @@ import com.jme3.math.Vector3f;
 /**
  * Abstract class for defining weapons used by agents.
  *
- * @author Tihomir Radosavljevic
+ * @author Tihomir Radosavljević
  * @version 2.0.0
  */
 public abstract class AbstractWeapon extends GameEntity {

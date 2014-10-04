@@ -49,7 +49,7 @@ import java.util.List;
  *
  * @see ObstacleAvoidanceBehaviour
  *
- * @author Jesús Martín Berlangas
+ * @author Jesús Martín Berlanga
  * @version 1.1.1
  */
 public class UnalignedCollisionAvoidanceBehaviour extends ObstacleAvoidanceBehaviour {

@@ -31,7 +31,6 @@ package com.jme3.ai.agents.util.control;
 
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.util.GameEntity;
-import com.jme3.ai.agents.util.GameEntityExceptions;
 import com.jme3.ai.agents.util.weapons.AbstractWeapon;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
@@ -67,9 +66,13 @@ public class AIAppState extends AbstractAppState {
      */
     protected Application app;
     /**
-     * Controls of game.
+     * Controls for game.
      */
     protected AIControl aiControl;
+    /**
+     * HP controls for game.
+     */
+    protected AIHPControl aiHPControl;
     /**
      * List of all agents that are active in game.
      */
@@ -86,6 +89,9 @@ public class AIAppState extends AbstractAppState {
      * Used internaly for difference between agents.
      */
     private int idCounterAgent;
+    /**
+     * Maximum number of agents supported by framework.
+     */
     public static final int MAX_NUMBER_OF_AGENTS = 1000;
 
     protected AIAppState() {
@@ -95,7 +101,7 @@ public class AIAppState extends AbstractAppState {
     }
 
     private int setIdCouterToGameEntity() {
-        //value should change to check availability
+        //FIXME: value should change to check availability
         if (idCounter < Integer.MAX_VALUE) {
             idCounter++;
         } else {
@@ -105,7 +111,7 @@ public class AIAppState extends AbstractAppState {
     }
 
     private int setIdCounterToAgent() {
-        //value should change to check availability
+        //FIXME: value should change to check availability
         if (idCounterAgent < MAX_NUMBER_OF_AGENTS - 1) {
             idCounterAgent++;
         } else {
@@ -197,31 +203,6 @@ public class AIAppState extends AbstractAppState {
     }
 
     /**
-     * Decreasing hitPoints of agent for value of damage.
-     *
-     * @param agent
-     * @param damage
-     */
-    public void decreaseHP(Agent agent, double damage) {
-        //finding agent and decreasing his healthbar
-        int i = 0;
-        try {
-            for (; i < agents.size(); i++) {
-                if (agents.get(i).equals(agent)) {
-                    agents.get(i).getHpSystem().decreaseHP(damage);
-                    if (!agents.get(i).isEnabled()) {
-                        agents.get(i).stop();
-                        agents.get(i).getSpatial().removeFromParent();
-                    }
-                    break;
-                }
-            }
-        } catch (NullPointerException npe) {
-            throw new GameEntityExceptions.GameEntityAttributeNotFound(agent, "included HPSystem");
-        }
-    }
-
-    /**
      * Method that will update all alive agents and fired bullets while active.
      */
     @Override
@@ -261,7 +242,7 @@ public class AIAppState extends AbstractAppState {
      * Check friendly fire and decreaseHP of target if conditions are ok.
      *
      * @see AIAppState#friendlyFire
-     * @see AIAppState#decreaseHP(com.jme3.ai.agents.Agent, double)
+     * @see AIHPControl#decreaseHP(com.jme3.ai.agents.Agent, float)
      * @param attacker agent who attacks
      * @param target agent who is attacked
      * @param weapon weapon with which is target being attacked
@@ -270,7 +251,27 @@ public class AIAppState extends AbstractAppState {
         if (friendlyFire && attacker.isSameTeam(target)) {
             return;
         }
-        decreaseHP(target, weapon.getAttackDamage());
+        try {
+            aiHPControl.decreaseHP(target, weapon.getAttackDamage());
+        } catch (NullPointerException e) {
+            throw new NullPointerException("AIHPControl is not set.");
+        }
+    }
+
+    /**
+     * Decrease hp of target.
+     *
+     * @see AIHPControl#decreaseHP(com.jme3.ai.agents.util.GameEntity, float)
+     * @param attacker agent who attacks
+     * @param target game entity who is attacked
+     * @param weapon weapon with which is target being attacked
+     */
+    public void gameEntityAttack(Agent attacker, GameEntity target, AbstractWeapon weapon) {
+        try {
+            aiHPControl.decreaseHP(target, weapon.getAttackDamage());
+        } catch (NullPointerException e) {
+            throw new NullPointerException("AIHPControl is not set.");
+        }
     }
 
     public void addGameEntity(GameEntity gameEntity) {
@@ -325,5 +326,13 @@ public class AIAppState extends AbstractAppState {
     public void setApp(Application app) {
         this.app = app;
         rootNode = (Node) app.getViewPort().getScenes().get(0);
+    }
+
+    public AIHPControl getAIHPControl() {
+        return aiHPControl;
+    }
+
+    public void setAIHPControl(AIHPControl aiHPControl) {
+        this.aiHPControl = aiHPControl;
     }
 }

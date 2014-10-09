@@ -67,4 +67,11 @@ public class GameEntityExceptions {
             super(message);
         }
     }
+    
+    public static class MaxGameEntitiesException extends RuntimeException {
+
+        public MaxGameEntitiesException() {
+            super("There are more game entities than the framework supports.");
+        } 
+    }
 }

@@ -33,12 +33,12 @@ import com.jme3.ai.agents.behaviours.npc.SimpleAttackBehaviour;
 import com.jme3.ai.agents.util.weapons.AbstractWeapon;
 
 /**
- * InventorySystem is meant for making custom inventory that Agent will use.
+ * Inventory is meant for making custom inventory that Agent will use.
  *
  * @author Tihomir Radosavljević
  * @version 1.0.0
  */
-public interface InventorySystem {
+public interface Inventory {
 
     /**
      * Method for updating all inventory items, such as cooldown etc.

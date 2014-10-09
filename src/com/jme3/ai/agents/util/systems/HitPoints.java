@@ -27,56 +27,29 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.jme3.ai.agents.util.control;
-
-import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.util.GameEntity;
-import com.jme3.input.FlyByCamera;
-import com.jme3.math.Vector3f;
-import com.jme3.renderer.Camera;
+package com.jme3.ai.agents.util.systems;
 
 /**
- * Base interface for game controls used in game.
+ * Interface for implementing HitPoints.
  *
  * @author Tihomir Radosavljević
- * @version 1.0.1
+ * @version 1.0.0
  */
-public interface AIControl {
+public interface HitPoints {
 
     /**
-     * Add all inputManagerMapping that will player use.
+     * @return current HP of game entity.
      */
-    public void setInputManagerMapping();
+    public float getCurrentHP();
+
     /**
-     * Add all camera settings that will be used in game.
-     * @param cam 
+     * @return max HP of game entity.
      */
-    public void setCameraSettings(Camera cam);
+    public float getMaxHP();
+
     /**
-     * Add all fly camera settings that will be used in game.
-     * @param flyCam 
+     * Method for decreasing HP.
+     * @param damage 
      */
-    public void setFlyCameraSettings(FlyByCamera flyCam);
-    /**
-     * Method for marking the end of game. Should also stop the game.
-     * @see Game#stop() 
-     * @return 
-     */
-    public boolean finish();
-    /**
-     * Calculating if the agent won the game.
-     * @param agent
-     * @return 
-     */
-    public boolean win(Agent agent);
-    /**
-     * Restarting all game parameters.
-     */
-    public void restart();   
-    /**
-     * Method for creating objects in given area.
-     * @param gameEntity object that should be created
-     * @param area where object will be created
-     */
-    public void spawn(GameEntity gameEntity, Vector3f... area);
+    public void decreaseHP(double damage);
 }

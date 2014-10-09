@@ -27,29 +27,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.jme3.ai.agents.util.systems;
+package com.jme3.ai.agents.util.control;
+
+import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.util.GameEntity;
 
 /**
- * Interface for implementing HPSystem.
+ * Base interface for HP controls used in game.
  *
  * @author Tihomir Radosavljević
  * @version 1.0.0
  */
-public interface HPSystem {
+public interface HitPointsControl {
 
     /**
-     * @return current HP of game entity.
+     * Decreasing hitPoints of agent for value of damage.
+     *
+     * @param agent
+     * @param damage
      */
-    public float getCurrentHP();
+    public void decreaseHP(Agent agent, float damage);
 
     /**
-     * @return max HP of game entity.
+     * Decreasing hitPoints of game entity for value of damage.
+     *
+     * @param gameEntity
+     * @param damage
      */
-    public float getMaxHP();
-
-    /**
-     * Method for decreasing HP.
-     * @param damage 
-     */
-    public void decreaseHP(double damage);
+    public void decreaseHP(GameEntity gameEntity, float damage);
 }

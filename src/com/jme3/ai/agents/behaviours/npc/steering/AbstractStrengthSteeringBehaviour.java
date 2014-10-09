@@ -222,7 +222,6 @@ public abstract class AbstractStrengthSteeringBehaviour extends AbstractSteering
                 strengthSteeringForce = this.plane.getClosestPoint(strengthSteeringForce).mult(this.scalar);
                 break;
 
-            default:
         }
 
         return strengthSteeringForce;

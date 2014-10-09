@@ -89,4 +89,11 @@ public class AgentExceptions {
             super(message);
         }
     }
+    
+    public static class MaxAgentsException extends RuntimeException {
+
+        public MaxAgentsException() {
+            super("There are more agents than the framework supports.");
+        } 
+    }
 }

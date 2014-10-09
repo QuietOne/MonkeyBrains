@@ -32,12 +32,12 @@ package com.jme3.ai.agents.util.systems;
 import com.jme3.ai.agents.Agent;
 
 /**
- * Basic implementation of HPSystem for agents.
+ * Basic implementation of HitPoints for agents.
  *
  * @author Tihomir Radosavljević
  * @version 1.0.0
  */
-public class BasicAgentHPSystem implements HPSystem {
+public class SimpleAgentHPSystem implements HitPoints {
     /**
      * Current hit point value.
      */
@@ -45,13 +45,13 @@ public class BasicAgentHPSystem implements HPSystem {
     private float maxHP;
     private Agent agent;
 
-    public BasicAgentHPSystem(Agent agent) {
+    public SimpleAgentHPSystem(Agent agent) {
         this.agent = agent;
         this.currentHP = 100f;
         this.maxHP = 100f;
     }
 
-    public BasicAgentHPSystem(Agent agent, float maxHP) {
+    public SimpleAgentHPSystem(Agent agent, float maxHP) {
         this.maxHP = maxHP;
         this.currentHP = maxHP;
         this.agent = agent;

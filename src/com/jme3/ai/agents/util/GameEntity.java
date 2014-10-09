@@ -32,7 +32,7 @@ package com.jme3.ai.agents.util;
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviours.npc.steering.ObstacleAvoidanceBehaviour;
 import com.jme3.ai.agents.util.control.AIAppState;
-import com.jme3.ai.agents.util.systems.HPSystem;
+import com.jme3.ai.agents.util.systems.HitPoints;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -81,7 +81,7 @@ public abstract class GameEntity extends AbstractControl {
     /**
      * HitPoint System that will agent use.
      */
-    protected HPSystem hpSystem;
+    protected HitPoints hitPoints;
     /**
      * Rotation speed of GameEntity.
      */
@@ -302,12 +302,12 @@ public abstract class GameEntity extends AbstractControl {
         return this.radius;
     }
 
-    public HPSystem getHpSystem() {
-        return hpSystem;
+    public HitPoints getHitPoints() {
+        return hitPoints;
     }
 
-    public void setHpSystem(HPSystem hpSystem) {
-        this.hpSystem = hpSystem;
+    public void setHitPoints(HitPoints hitPoints) {
+        this.hitPoints = hitPoints;
     }
 
     protected void validateRadius(float radius) {

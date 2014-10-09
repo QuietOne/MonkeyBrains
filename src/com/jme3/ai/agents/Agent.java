@@ -34,7 +34,7 @@ import com.jme3.ai.agents.behaviours.BehaviourExceptions.NullBehaviourException;
 import com.jme3.ai.agents.behaviours.npc.SimpleMainBehaviour;
 import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions;
 import com.jme3.ai.agents.util.GameEntity;
-import com.jme3.ai.agents.util.systems.InventorySystem;
+import com.jme3.ai.agents.util.systems.Inventory;
 import com.jme3.scene.Spatial;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
@@ -76,7 +76,7 @@ public final class Agent<T> extends GameEntity {
     /**
      * Inventory that agent will use.
      */
-    private InventorySystem inventory;
+    private Inventory inventory;
 
     public Agent() {
     }
@@ -240,7 +240,7 @@ public final class Agent<T> extends GameEntity {
      *
      * @return inventory that agent is using
      */
-    public InventorySystem getInventory() {
+    public Inventory getInventory() {
         return inventory;
     }
 
@@ -249,7 +249,7 @@ public final class Agent<T> extends GameEntity {
      *
      * @param inventory
      */
-    public void setInventory(InventorySystem inventory) {
+    public void setInventory(Inventory inventory) {
         this.inventory = inventory;
     }
 

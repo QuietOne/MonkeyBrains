@@ -30,7 +30,9 @@
 package com.jme3.ai.agents.util.control;
 
 import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.AgentExceptions;
 import com.jme3.ai.agents.util.GameEntity;
+import com.jme3.ai.agents.util.GameEntityExceptions;
 import com.jme3.ai.agents.util.weapons.AbstractWeapon;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
@@ -68,11 +70,11 @@ public class AIAppState extends AbstractAppState {
     /**
      * Controls for game.
      */
-    protected AIControl aiControl;
+    protected GameControl gameControl;
     /**
      * HP controls for game.
      */
-    protected AIHPControl aiHPControl;
+    protected HitPointsControl hitPointsControl;
     /**
      * List of all agents that are active in game.
      */
@@ -100,24 +102,58 @@ public class AIAppState extends AbstractAppState {
         idCounter = 1001;
     }
 
+    /**
+     * Method for getting new available id for game entities.
+     *
+     * @return unique id
+     */
     private int setIdCouterToGameEntity() {
-        //FIXME: value should change to check availability
-        if (idCounter < Integer.MAX_VALUE) {
-            idCounter++;
-        } else {
-            idCounter = MAX_NUMBER_OF_AGENTS;
+        if (gameEntities.size() >= Integer.MAX_VALUE - MAX_NUMBER_OF_AGENTS - 1) {
+            throw new GameEntityExceptions.MaxGameEntitiesException();
+        }
+        while (!isAvailable(gameEntities, idCounter)) {
+            if (idCounter < Integer.MAX_VALUE) {
+                idCounter++;
+            } else {
+                idCounter = MAX_NUMBER_OF_AGENTS;
+            }
         }
         return idCounter;
     }
 
+    /**
+     * Method for getting new available id for agents.
+     *
+     * @return unique id
+     */
     private int setIdCounterToAgent() {
-        //FIXME: value should change to check availability
-        if (idCounterAgent < MAX_NUMBER_OF_AGENTS - 1) {
-            idCounterAgent++;
-        } else {
-            idCounterAgent = 0;
+        if (agents.size() >= MAX_NUMBER_OF_AGENTS - 1) {
+            throw new AgentExceptions.MaxAgentsException();
+        }
+        while (!isAvailable(agents, idCounterAgent)) {
+            if (idCounterAgent < MAX_NUMBER_OF_AGENTS - 1) {
+                idCounterAgent++;
+            } else {
+                idCounterAgent = 0;
+            }
         }
         return idCounterAgent;
+    }
+
+    /**
+     * Helper function for checking if some specific id is available.
+     *
+     * @param list
+     * @param id
+     * @return
+     */
+    private boolean isAvailable(List list, int id) {
+        for (int i = 0; i < list.size(); i++) {
+            if (((GameEntity) list.get(i)).getId() == id) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -242,7 +278,7 @@ public class AIAppState extends AbstractAppState {
      * Check friendly fire and decreaseHP of target if conditions are ok.
      *
      * @see AIAppState#friendlyFire
-     * @see AIHPControl#decreaseHP(com.jme3.ai.agents.Agent, float)
+     * @see HitPointsControl#decreaseHP(com.jme3.ai.agents.Agent, float)
      * @param attacker agent who attacks
      * @param target agent who is attacked
      * @param weapon weapon with which is target being attacked
@@ -252,7 +288,7 @@ public class AIAppState extends AbstractAppState {
             return;
         }
         try {
-            aiHPControl.decreaseHP(target, weapon.getAttackDamage());
+            hitPointsControl.decreaseHP(target, weapon.getAttackDamage());
         } catch (NullPointerException e) {
             throw new NullPointerException("AIHPControl is not set.");
         }
@@ -261,14 +297,15 @@ public class AIAppState extends AbstractAppState {
     /**
      * Decrease hp of target.
      *
-     * @see AIHPControl#decreaseHP(com.jme3.ai.agents.util.GameEntity, float)
+     * @see HitPointsControl#decreaseHP(com.jme3.ai.agents.util.GameEntity,
+     * float)
      * @param attacker agent who attacks
      * @param target game entity who is attacked
      * @param weapon weapon with which is target being attacked
      */
     public void gameEntityAttack(Agent attacker, GameEntity target, AbstractWeapon weapon) {
         try {
-            aiHPControl.decreaseHP(target, weapon.getAttackDamage());
+            hitPointsControl.decreaseHP(target, weapon.getAttackDamage());
         } catch (NullPointerException e) {
             throw new NullPointerException("AIHPControl is not set.");
         }
@@ -288,12 +325,12 @@ public class AIAppState extends AbstractAppState {
         return GameHolder.INSTANCE;
     }
 
-    public AIControl getAIControl() {
-        return aiControl;
+    public GameControl getGameControl() {
+        return gameControl;
     }
 
-    public void setAIControl(AIControl aiControl) {
-        this.aiControl = aiControl;
+    public void setGameControl(GameControl gameControl) {
+        this.gameControl = gameControl;
     }
 
     public boolean isInProgress() {
@@ -328,11 +365,11 @@ public class AIAppState extends AbstractAppState {
         rootNode = (Node) app.getViewPort().getScenes().get(0);
     }
 
-    public AIHPControl getAIHPControl() {
-        return aiHPControl;
+    public HitPointsControl getHitPointsControl() {
+        return hitPointsControl;
     }
 
-    public void setAIHPControl(AIHPControl aiHPControl) {
-        this.aiHPControl = aiHPControl;
+    public void setHitPointsControl(HitPointsControl aiHPControl) {
+        this.hitPointsControl = aiHPControl;
     }
 }

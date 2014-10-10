@@ -27,24 +27,47 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.jme3.ai.agents.util.control;
-
-import com.jme3.ai.agents.util.GameEntity;
-
 /**
- * Base interface for hit point controls used in game.
- *
+ * Steer behaviors. 
+ * 
+ * Basic steering behavior ai structure provided by Tihomir Radosavljević. 
+ * Incorporate full steer behavior project into MonkeyBrains by Jesús Martín Berlanga. <br> <br>
+ * 
+ * References: <br>
+ *  - Craig W. Reynolds: "Steering Behaviors For Autonomous Characters" <br>
+ *  - OpenSteer <br> 
+ * <br>
+ * 
+ * For more information visit: http://jmesteer.bdevel.org/
+ * <br><br>
+ * 
+ * If you find any bug please contact with me (Jesús) and I will be glad to fix it.
+ * You will find my email at the website mentioned before.
+ * 
+ * @version 3.0.2, 20/8/2014
+ * <br><br><br>
+ * 
+ * 
+ * 
+ * ////////////////////////// <br>
+ * ////////Changelog///////// <br>
+ * ////////////////////////// <br> 
+ * <br>
+ * - 3.0.2, 9/10/2014 <br>
+ * Some steers accepts game entities instead of agents <br><br>
+ * 
+ * - 3.0.1, 20/8/2014: <br>
+ * Small javadoc fixes <br><br>
+ * 
+ * - 3.0, 17/8/2014: <br>
+ * First official release <br><br>
+ * 
+ * ...
+ * <br><br><br>
+ * 
+ * 
+ * 
+ * @author Jesús Martin Berlanga
  * @author Tihomir Radosavljević
- * @version 1.1.0
  */
-public interface HitPointsControl {
-
-    /**
-     * Decreasing hitPoints of targeted entity for value of damage caused by
-     * attacking entity.
-     *
-     * @param target
-     * @param damage
-     */
-    public void decreaseHitPoints(GameEntity target, float damage);
-}
+package com.jme3.ai.agents.behaviors.npc.steering;

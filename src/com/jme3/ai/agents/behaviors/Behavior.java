@@ -27,24 +27,61 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.jme3.ai.agents.util.control;
+package com.jme3.ai.agents.behaviors;
 
-import com.jme3.ai.agents.util.GameEntity;
+import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviors.BehaviorExceptions.AgentNotIncludedException;
+import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Spatial;
+import com.jme3.scene.control.AbstractControl;
 
 /**
- * Base interface for hit point controls used in game.
+ * Base class for agent behaviors.
  *
  * @author Tihomir Radosavljević
- * @version 1.1.0
+ * @author Jesús Martín Berlanga
+ * @version 1.2.1
  */
-public interface HitPointsControl {
+public abstract class Behavior extends AbstractControl {
 
     /**
-     * Decreasing hitPoints of targeted entity for value of damage caused by
-     * attacking entity.
-     *
-     * @param target
-     * @param damage
+     * Agent to whom behavior belongs.
      */
-    public void decreaseHitPoints(GameEntity target, float damage);
+    protected Agent agent;
+
+    /**
+     * Constructor for behavior that doesn't have any special spatial during
+     * execution.
+     *
+     * @param agent to whom behavior belongs
+     * @throws AgentNotIncludedException if agent is null
+     */
+    public Behavior(Agent agent) {
+        if (agent == null) {
+            throw new BehaviorExceptions.AgentNotIncludedException();
+        }
+        this.agent = agent;
+        this.spatial = agent.getSpatial();
+    }
+
+    /**
+     * Constructor for behavior that has spatial during execution.
+     *
+     * @param agent to whom behavior belongs
+     * @param spatial which is active during execution
+     * @see Behavior#Behavior(com.jme3.ai.agents.Agent)
+     * @throws AgentNotIncludedException if agent is null
+     */
+    public Behavior(Agent agent, Spatial spatial) {
+        if (agent == null) {
+            throw new BehaviorExceptions.AgentNotIncludedException();
+        }
+        this.agent = agent;
+        this.spatial = spatial;
+    }
+
+    @Override
+    protected void controlRender(RenderManager rm, ViewPort vp) {
+    }
 }

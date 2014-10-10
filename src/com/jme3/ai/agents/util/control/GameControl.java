@@ -74,9 +74,9 @@ public interface GameControl {
      */
     public void restart();   
     /**
-     * Method for creating objects in given area.
-     * @param gameEntity object that should be created
-     * @param area where object will be created
+     * Method for creating entities in given area.
+     * @param gameEntity entity that should be created
+     * @param area where entity will be created
      */
     public void spawn(GameEntity gameEntity, Vector3f... area);
 }

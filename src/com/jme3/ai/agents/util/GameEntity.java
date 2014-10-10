@@ -30,8 +30,8 @@
 package com.jme3.ai.agents.util;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.ai.agents.behaviours.npc.steering.ObstacleAvoidanceBehaviour;
-import com.jme3.ai.agents.util.control.AIAppState;
+import com.jme3.ai.agents.behaviors.npc.steering.ObstacleAvoidanceBehavior;
+import com.jme3.ai.agents.util.control.MonkeyBrainsAppState;
 import com.jme3.ai.agents.util.systems.HitPoints;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
@@ -43,14 +43,14 @@ import com.jme3.scene.control.AbstractControl;
 /**
  * Base class for game objects that are interacting in game, and in general can
  * move and can be destroyed. Not to be used for terrain except for things that
- * can be destroyed. For automaticaly updating them, add them to to AIAppState
+ * can be destroyed. For automaticaly updating them, add them to to MonkeyBrainsAppState
  * with addAgent().
  *
- * @see AIAppState#addAgent(com.jme3.ai.agents.Agent)
- * @see AIAppState#addAgent(com.jme3.ai.agents.Agent, com.jme3.math.Vector3f)
- * @see AIAppState#addAgent(com.jme3.ai.agents.Agent, float, float, float) For
+ * @see MonkeyBrainsAppState#addAgent(com.jme3.ai.agents.Agent)
+ * @see MonkeyBrainsAppState#addAgent(com.jme3.ai.agents.Agent, com.jme3.math.Vector3f)
+ * @see MonkeyBrainsAppState#addAgent(com.jme3.ai.agents.Agent, float, float, float) For
  * other GameEntity use:
- * @see AIAppState#addGameObject(com.jme3.ai.agents.util.GameEntity)
+ * @see MonkeyBrainsAppState#addGameObject(com.jme3.ai.agents.util.GameEntity)
  *
  * @author Tihomir Radosavljević
  * @author Jesús Martín Berlanga
@@ -71,7 +71,7 @@ public abstract class GameEntity extends AbstractControl {
      */
     protected Vector3f acceleration;
     /**
-     * Maximum move speed of GameEntity
+     * Maximum move speed of GameEntity.
      */
     protected float maxMoveSpeed;
     /**
@@ -90,7 +90,7 @@ public abstract class GameEntity extends AbstractControl {
      * Radius of GameEntity. It is needed for object that will be added in list
      * of objects that agent should avoid durring game, like mines etc.
      *
-     * @see ObstacleAvoidanceBehaviour
+     * @see ObstacleAvoidanceBehavior
      */
     protected float radius = 0;
     /**
@@ -112,8 +112,8 @@ public abstract class GameEntity extends AbstractControl {
     }
 
     /**
-     * @param gameEntity Other game object
-     * @return The offset relative to another game object
+     * @param gameEntity Other game entitys
+     * @return The offset relative to another game entity
      */
     public Vector3f offset(GameEntity gameEntity) {
         return gameEntity.getLocalTranslation().subtract(getLocalTranslation());
@@ -135,11 +135,11 @@ public abstract class GameEntity extends AbstractControl {
     }
 
     /**
-     * Calculates the forwardness in relation with another game object. That is
+     * Calculates the forwardness in relation with another game entity. That is
      * how "forward" is the direction to the quarry (1 means dead ahead, 0 is
      * directly to the side, -1 is straight back)
      *
-     * @param gameEntity Other game object
+     * @param gameEntity Other game entity
      * @return The forwardness in relation with another agent
      */
     public float forwardness(GameEntity gameEntity) {
@@ -160,9 +160,9 @@ public abstract class GameEntity extends AbstractControl {
 
     /**
      * @param gameEntity Other agent
-     * @return Distance relative to another game object
+     * @return Distance relative to another game entity
      */
-    public float distanceRelativeToGameObject(GameEntity gameEntity) {
+    public float distanceRelativeToGameEntity(GameEntity gameEntity) {
         return offset(gameEntity).length();
     }
 
@@ -170,16 +170,16 @@ public abstract class GameEntity extends AbstractControl {
      * @param gameEntity Other agent
      * @return Distance from a position
      */
-    public float distanceSquaredRelativeToGameObject(GameEntity gameEntity) {
+    public float distanceSquaredRelativeToGameEntity(GameEntity gameEntity) {
         return offset(gameEntity).lengthSquared();
     }
 
     /**
-     * @param pos Position
+     * @param position Position
      * @return Distance from a position
      */
-    public float distanceFromPosition(Vector3f pos) {
-        return offset(pos).length();
+    public float distanceFromPosition(Vector3f position) {
+        return offset(position).length();
     }
 
     /**

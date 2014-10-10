@@ -29,7 +29,7 @@
  */
 package com.jme3.ai.agents.util.weapons;
 
-import com.jme3.ai.agents.util.control.AIAppState;
+import com.jme3.ai.agents.util.control.MonkeyBrainsAppState;
 import com.jme3.math.Vector3f;
 
 /**
@@ -65,7 +65,7 @@ public abstract class AbstractBulletBasedWeapon extends AbstractWeapon {
         AbstractBullet firedBullet = controlAttack(direction, tpf);
         if (firedBullet != null) {
             //if there is bullet than add it to be updated regulary in game
-            AIAppState.getInstance().addGameEntity(firedBullet);
+            MonkeyBrainsAppState.getInstance().addGameEntity(firedBullet);
         }
         //set weapon cooldown
         setFullCooldown();

@@ -27,39 +27,57 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.jme3.ai.agents.util.systems;
+package com.jme3.ai.agents.behaviors.npc.steering;
 
-import com.jme3.ai.agents.behaviors.npc.SimpleAttackBehavior;
-import com.jme3.ai.agents.util.weapons.AbstractWeapon;
+import com.jme3.ai.agents.Agent;
+import com.jme3.ai.agents.behaviors.BehaviorExceptions;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Spatial;
 
 /**
- * Inventory is meant for making custom inventory that Agent will use.
+ * Evasion is analogous to pursuit, except that flee is used to steer away from
+ * the predicted future position of the target character.
  *
- * @author Tihomir Radosavljević
- * @version 1.0.0
+ * @author Jesús Martín Berlanga
+ * @version 1.2.1
  */
-public interface Inventory {
+public class EvadeBehavior extends FleeBehavior {
 
     /**
-     * Method for updating all inventory items, such as cooldown etc.
-     *
-     * @param tpf time per frame
+     * @throws TargetNotFoundException If target is null
+     * @see FleeBehavior#FleeBehavior(com.jme3.ai.agents.Agent,
+     * com.jme3.ai.agents.Agent)
      */
-    public void update(float tpf);
+    public EvadeBehavior(Agent agent, Agent target) {
+        super(agent, target);
+        this.validateTarget(target);
+    }
 
     /**
-     * Return total inventory mass. Used primarily for steering behaviors.
-     *
-     * @return
+     * @throws TargetNotFoundException If target is null
+     * @see FleeBehavior#FleeBehavior(com.jme3.ai.agents.Agent,
+     * com.jme3.ai.agents.Agent, com.jme3.scene.Spatial)
      */
-    public float getInventoryMass();
+    public EvadeBehavior(Agent agent, Agent target, Spatial spatial) {
+        super(agent, target, spatial);
+        this.validateTarget(target);
+    }
+
+    private void validateTarget(Agent target) {
+        if (target == null) {
+            throw new BehaviorExceptions.TargetNotFoundException();
+        }
+    }
 
     /**
-     * Return active weapon. It is necessairy to implement if you use
-     * SimpleAttackBehavior.
-     *
-     * @see SimpleAttackBehavior
-     * @return
+     * @see FleeBehavior#calculateRawSteering()
      */
-    public AbstractWeapon getActiveWeapon();
+    @Override
+    protected Vector3f calculateRawSteering() {
+        Vector3f projectedLocation = this.getTarget().getPredictedPosition();
+
+        //Return flee steering force
+        Vector3f desiredVelocity = projectedLocation.subtract(agent.getLocalTranslation());
+        return desiredVelocity.subtract(velocity).negate();
+    }
 }

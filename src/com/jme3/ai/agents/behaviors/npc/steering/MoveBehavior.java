@@ -27,24 +27,59 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.jme3.ai.agents.util.control;
+package com.jme3.ai.agents.behaviors.npc.steering;
 
-import com.jme3.ai.agents.util.GameEntity;
+import com.jme3.ai.agents.Agent;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Spatial;
 
 /**
- * Base interface for hit point controls used in game.
+ * Simple move behavior: Agent moves in the "moveDirection" direction.
  *
- * @author Tihomir Radosavljević
- * @version 1.1.0
+ * @autor Jesús Martín Berlanga
+ * @version 1.1.1
  */
-public interface HitPointsControl {
+public class MoveBehavior extends AbstractStrengthSteeringBehavior {
 
     /**
-     * Decreasing hitPoints of targeted entity for value of damage caused by
-     * attacking entity.
-     *
-     * @param target
-     * @param damage
+     * Move direction of agent.
      */
-    public void decreaseHitPoints(GameEntity target, float damage);
+    protected Vector3f moveDirection;
+
+    /**
+     * @see
+     * AbstractStrengthSteeringBehavior#AbstractStrengthSteeringBehavior(com.jme3.ai.agents.Agent)
+     */
+    public MoveBehavior(Agent agent) {
+        super(agent);
+    }
+
+    /**
+     * @see
+     * AbstractStrengthSteeringBehavior#AbstractStrengthSteeringBehavior(com.jme3.ai.agents.Agent,
+     * com.jme3.scene.Spatial)
+     */
+    public MoveBehavior(Agent agent, Spatial spatial) {
+        super(agent, spatial);
+    }
+
+    public Vector3f getMoveDirection() {
+        return moveDirection;
+    }
+
+    public void setMoveDirection(Vector3f moveDirection) {
+        this.moveDirection = moveDirection.normalize();
+    }
+
+    /**
+     * @see AbstractStrengthSteeringBehavior#calculateRawSteering()
+     */
+    @Override
+    protected Vector3f calculateRawSteering() {
+        Vector3f steer = new Vector3f();
+        if (this.moveDirection != null) {
+            steer = this.moveDirection;
+        }
+        return steer;
+    }
 }

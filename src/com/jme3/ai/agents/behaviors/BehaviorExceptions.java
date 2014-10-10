@@ -27,24 +27,59 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.jme3.ai.agents.util.control;
+package com.jme3.ai.agents.behaviors;
 
-import com.jme3.ai.agents.util.GameEntity;
+import com.jme3.ai.agents.Agent;
 
 /**
- * Base interface for hit point controls used in game.
+ * Class container for exceptions related to behaviors.
  *
  * @author Tihomir Radosavljević
- * @version 1.1.0
+ * @author Jesús Martín Berlanga
+ * @version 1.0.0
  */
-public interface HitPointsControl {
+public class BehaviorExceptions {
 
     /**
-     * Decreasing hitPoints of targeted entity for value of damage caused by
-     * attacking entity.
-     *
-     * @param target
-     * @param damage
+     * This exception is thrown if it has been tried to instantiate a behavior
+     * with illegal arguments.
      */
-    public void decreaseHitPoints(GameEntity target, float damage);
+    public static class BehaviorException extends RuntimeException {
+
+        public BehaviorException(String message) {
+            super(message);
+        }
+
+        public BehaviorException(Agent agent, String message, float value) {
+            super(agent + message + value + '.');
+        }
+    }
+
+    public static class AgentNotIncludedException extends BehaviorException {
+
+        public AgentNotIncludedException() {
+            super("You can not instantiate a behaviour without an agent.");
+        }
+    }
+
+    public static class NullBehaviorException extends BehaviorException {
+
+        public NullBehaviorException() {
+            super("Behaviour has not been initialized");
+        }
+
+        public NullBehaviorException(String message) {
+            super(message);
+        }
+    }
+
+    /**
+     * This exception is thrown if the behavior tries to call null target.
+     */
+    public static class TargetNotFoundException extends BehaviorException {
+
+        public TargetNotFoundException() {
+            super("Target can not be null");
+        }
+    }
 }

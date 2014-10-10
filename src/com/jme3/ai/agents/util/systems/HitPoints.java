@@ -33,23 +33,23 @@ package com.jme3.ai.agents.util.systems;
  * Interface for implementing HitPoints.
  *
  * @author Tihomir Radosavljević
- * @version 1.0.0
+ * @version 1.0.1
  */
 public interface HitPoints {
 
     /**
-     * @return current HP of game entity.
+     * @return current hit points of game entity.
      */
-    public float getCurrentHP();
+    public float getCurrentHitPoints();
 
     /**
-     * @return max HP of game entity.
+     * @return max value for hit points of game entity.
      */
-    public float getMaxHP();
+    public float getMaxHitPoints();
 
     /**
-     * Method for decreasing HP.
+     * Method for decreasing hit points.
      * @param damage 
      */
-    public void decreaseHP(double damage);
+    public void decreaseHitPoints(double damage);
 }

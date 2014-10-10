@@ -29,10 +29,10 @@
  */
 package com.jme3.ai.agents;
 
-import com.jme3.ai.agents.behaviours.Behaviour;
-import com.jme3.ai.agents.behaviours.BehaviourExceptions.NullBehaviourException;
-import com.jme3.ai.agents.behaviours.npc.SimpleMainBehaviour;
-import com.jme3.ai.agents.behaviours.npc.steering.SteeringExceptions;
+import com.jme3.ai.agents.behaviors.Behavior;
+import com.jme3.ai.agents.behaviors.BehaviorExceptions.NullBehaviorException;
+import com.jme3.ai.agents.behaviors.npc.SimpleMainBehavior;
+import com.jme3.ai.agents.behaviors.npc.steering.SteeringExceptions;
 import com.jme3.ai.agents.util.GameEntity;
 import com.jme3.ai.agents.util.systems.Inventory;
 import com.jme3.scene.Spatial;
@@ -45,7 +45,7 @@ import com.jme3.renderer.Camera;
  *
  * @author Jesús Martín Berlanga
  * @author Tihomir Radosavljević
- * @version 1.7.3
+ * @version 1.7.4
  */
 public final class Agent<T> extends GameEntity {
 
@@ -62,13 +62,9 @@ public final class Agent<T> extends GameEntity {
      */
     private Team team;
     /**
-     * Main behaviour of Agent. Behaviour that will be active while his alive.
+     * Main behaviour of Agent. Behavior that will be active while his alive.
      */
-    private Behaviour mainBehaviour;
-    /**
-     * Visibility range. How far agent can see.
-     */
-    private float visibilityRange;
+    private Behavior mainBehavior;
     /**
      * Camera that is attached to agent.
      */
@@ -105,22 +101,22 @@ public final class Agent<T> extends GameEntity {
     }
 
     /**
-     * @return main behaviour of agent
+     * @return main behavior of agent
      */
-    public Behaviour getMainBehaviour() {
-        return mainBehaviour;
+    public Behavior getMainBehavior() {
+        return mainBehavior;
     }
 
     /**
-     * Setting main behaviour to agent. For more how should main behaviour look
+     * Setting main behavior to agent. For more how should main behavior look
      * like:
      *
-     * @see SimpleMainBehaviour
-     * @param mainBehaviour
+     * @see SimpleMainBehavior
+     * @param mainBehavior
      */
-    public void setMainBehaviour(Behaviour mainBehaviour) {
-        this.mainBehaviour = mainBehaviour;
-        this.mainBehaviour.setEnabled(false);
+    public void setMainBehaviour(Behavior mainBehavior) {
+        this.mainBehavior = mainBehavior;
+        this.mainBehavior.setEnabled(false);
     }
 
     /**
@@ -137,10 +133,10 @@ public final class Agent<T> extends GameEntity {
      */
     public void start() {
         enabled = true;
-        if (mainBehaviour == null) {
-            throw new NullBehaviourException("Agent " + name + " does not have set main behaviour.");
+        if (mainBehavior == null) {
+            throw new NullBehaviorException("Agent " + name + " does not have set main behavior.");
         }
-        mainBehaviour.setEnabled(true);
+        mainBehavior.setEnabled(true);
     }
 
     /**
@@ -151,21 +147,7 @@ public final class Agent<T> extends GameEntity {
      */
     public void stop() {
         enabled = false;
-        mainBehaviour.setEnabled(false);
-    }
-
-    /**
-     * @return visibility range of agent
-     */
-    public float getVisibilityRange() {
-        return visibilityRange;
-    }
-
-    /**
-     * @param visibilityRange how far agent can see
-     */
-    public void setVisibilityRange(float visibilityRange) {
-        this.visibilityRange = visibilityRange;
+        mainBehavior.setEnabled(false);
     }
 
     /**
@@ -184,8 +166,8 @@ public final class Agent<T> extends GameEntity {
 
     @Override
     protected void controlUpdate(float tpf) {
-        if (mainBehaviour != null) {
-            mainBehaviour.update(tpf);
+        if (mainBehavior != null) {
+            mainBehavior.update(tpf);
         }
         //for updating cooldown on inventory items
         if (inventory != null) {
@@ -270,7 +252,7 @@ public final class Agent<T> extends GameEntity {
      * @param GameEntity The other agent
      * @param minDistance Min. distance to be in the same "neighborhood"
      * @param maxDistance Max. distance to be in the same "neighborhood"
-     * @param MaxAngle Max angle in radians
+     * @param maxAngle Max angle in radians
      *
      * @throws SteeringExceptions.NegativeValueException If minDistance or
      * maxDistance is lower than 0
@@ -278,7 +260,7 @@ public final class Agent<T> extends GameEntity {
      * @return If this agent is in the same "neighborhood" in relation with
      * another agent.
      */
-    public boolean inBoidNeighborhood(GameEntity neighbour, float minDistance, float maxDistance, float MaxAngle) {
+    public boolean inBoidNeighborhood(GameEntity neighbour, float minDistance, float maxDistance, float maxAngle) {
         if (minDistance < 0) {
             throw new SteeringExceptions.NegativeValueException("The min distance can not be negative.", minDistance);
         } else if (maxDistance < 0) {
@@ -288,7 +270,7 @@ public final class Agent<T> extends GameEntity {
         if (this == neighbour) {
             isInBoidNeighborhood = false;
         } else {
-            float distanceSquared = distanceSquaredRelativeToGameObject(neighbour);
+            float distanceSquared = distanceSquaredRelativeToGameEntity(neighbour);
             // definitely in neighborhood if inside minDistance sphere
             if (distanceSquared < (minDistance * minDistance)) {
                 isInBoidNeighborhood = true;
@@ -300,7 +282,7 @@ public final class Agent<T> extends GameEntity {
                 if (this.getAcceleration() != null) {
                     Vector3f unitOffset = this.offset(neighbour).divide(distanceSquared);
                     float forwardness = this.forwardness(unitOffset);
-                    isInBoidNeighborhood = forwardness > FastMath.cos(MaxAngle);
+                    isInBoidNeighborhood = forwardness > FastMath.cos(maxAngle);
                 } else {
                     isInBoidNeighborhood = false;
                 }
@@ -311,15 +293,15 @@ public final class Agent<T> extends GameEntity {
     }
 
     /**
-     * "Given two vehicles, based on their current positions and velocities,
-     * determine the time until nearest approach."
+     * Given two vehicles, based on their current positions and velocities,
+     * determine the time until nearest approach.
      *
-     * @param gameObject Other gameObject
+     * @param gameEntity Other gameEntity
      * @return The time until nearest approach
      */
-    public float predictNearestApproachTime(GameEntity gameObject) {
+    public float predictNearestApproachTime(GameEntity gameEntity) {
         Vector3f agentVelocity = velocity;
-        Vector3f otherVelocity = gameObject.getVelocity();
+        Vector3f otherVelocity = gameEntity.getVelocity();
 
         if (agentVelocity == null) {
             agentVelocity = new Vector3f();
@@ -344,26 +326,26 @@ public final class Agent<T> extends GameEntity {
 
         /* "find distance from its path to origin (compute offset from
          other to us, find length of projection onto path)" */
-        Vector3f offset = gameObject.offset(this);
+        Vector3f offset = gameEntity.offset(this);
         float projection = relTangent.dot(offset);
 
         return projection / relSpeed;
     }
 
     /**
-     * "Given the time until nearest approach (predictNearestApproachTime)
+     * Given the time until nearest approach (predictNearestApproachTime)
      * determine position of each vehicle at that time, and the distance between
-     * them"
+     * them.
      *
-     * @param gameObject Other gameObject
+     * @param agent Other agent
      * @param time The time until nearest approach
      * @return The time until nearest approach
      *
      * @see Agent#predictNearestApproachTime(com.jme3.ai.agents.Agent)
      */
-    public float computeNearestApproachPositions(Agent gameObject, float time) {
+    public float computeNearestApproachPositions(Agent agent, float time) {
         Vector3f agentVelocity = velocity;
-        Vector3f otherVelocity = gameObject.getVelocity();
+        Vector3f otherVelocity = agent.getVelocity();
 
         if (agentVelocity == null) {
             agentVelocity = new Vector3f();
@@ -380,13 +362,13 @@ public final class Agent<T> extends GameEntity {
     }
 
     /**
-     * "Given the time until nearest approach (predictNearestApproachTime)
+     * Given the time until nearest approach (predictNearestApproachTime)
      * determine position of each vehicle at that time, and the distance between
-     * them" <br> <br>
+     * them. <br> <br>
      *
      * Anotates the positions at nearest approach in the given vectors.
      *
-     * @param gameObject Other gameObject
+     * @param gameEntity Other gameEntity
      * @param time The time until nearest approach
      * @param ourPositionAtNearestApproach Pointer to a vector, This bector will
      * be changed to our position at nearest approach
@@ -397,9 +379,9 @@ public final class Agent<T> extends GameEntity {
      *
      * @see Agent#predictNearestApproachTime(com.jme3.ai.agents.Agent)
      */
-    public float computeNearestApproachPositions(GameEntity gameObject, float time, Vector3f ourPositionAtNearestApproach, Vector3f hisPositionAtNearestApproach) {
+    public float computeNearestApproachPositions(GameEntity gameEntity, float time, Vector3f ourPositionAtNearestApproach, Vector3f hisPositionAtNearestApproach) {
         Vector3f agentVelocity = this.getVelocity();
-        Vector3f otherVelocity = gameObject.getVelocity();
+        Vector3f otherVelocity = gameEntity.getVelocity();
 
         if (agentVelocity == null) {
             agentVelocity = new Vector3f();

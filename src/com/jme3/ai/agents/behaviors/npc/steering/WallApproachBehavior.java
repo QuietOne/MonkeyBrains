@@ -129,7 +129,7 @@ public class WallApproachBehavior extends AbstractStrengthSteeringBehavior {
         WallApproachBehavior.validateConstruction(wall, offsetToMaintain);
         this.wall = wall;
         this.offsetToMaintain = offsetToMaintain;
-
+        
         if (offsetToMaintain != 0) {
             this.rayTestOffset = (offsetToMaintain + agent.getRadius()) * 4;
         } else {

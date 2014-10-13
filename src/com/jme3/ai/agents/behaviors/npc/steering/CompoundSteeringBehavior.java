@@ -221,7 +221,7 @@ public class CompoundSteeringBehavior extends AbstractStrengthSteeringBehavior {
      *
      * @param behavior Behavior that you want to remove
      */
-    public void removeSteerBehaviour(AbstractSteeringBehavior behavior) {
+    public void removeSteerBehavior(AbstractSteeringBehavior behavior) {
         this.behaviors.remove(behavior);
     }
 
@@ -237,7 +237,7 @@ public class CompoundSteeringBehavior extends AbstractStrengthSteeringBehavior {
      * @param minLengthToInvalidSteer If the behavior steer force length is
      * less than this value It will be considered inactive
      */
-    public void addSteerBehaviour(AbstractSteeringBehavior behavior, int priority, float minLengthToInvalidSteer) {
+    public void addSteerBehavior(AbstractSteeringBehavior behavior, int priority, float minLengthToInvalidSteer) {
         this.behaviors.add(behavior, priority, minLengthToInvalidSteer);
     }
 

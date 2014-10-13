@@ -114,7 +114,7 @@ public final class Agent<T> extends GameEntity {
      * @see SimpleMainBehavior
      * @param mainBehavior
      */
-    public void setMainBehaviour(Behavior mainBehavior) {
+    public void setMainBehavior(Behavior mainBehavior) {
         this.mainBehavior = mainBehavior;
         this.mainBehavior.setEnabled(false);
     }

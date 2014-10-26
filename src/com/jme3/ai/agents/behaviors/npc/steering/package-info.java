@@ -44,7 +44,7 @@
  * If you find any bug please contact with me (Jesús) and I will be glad to fix it.
  * You will find my email at the website mentioned before.
  * 
- * @version 3.0.2, 20/8/2014
+ * @version 3.1.0, 26/10/2014
  * <br><br><br>
  * 
  * 
@@ -53,13 +53,18 @@
  * ////////Changelog///////// <br>
  * ////////////////////////// <br> 
  * <br>
- * - 3.0.2, 9/10/2014 <br>
- * Some steers accepts game entities instead of agents <br><br>
+ * - 3.1.0, 26/10/2014, Jesús Martín Berlanga: <br>
+ * Wander behavior fixes <br><br>
  * 
- * - 3.0.1, 20/8/2014: <br>
+ * - 3.0.2, 9/10/2014, Tihomir Radosavljević: <br>
+ * Some steers accepts game entities instead of agents <br><br>
+ * Official integration with MonkeyBrains. Naming and style conventions to 
+ * follow the same structure. <br><br>
+ * 
+ * - 3.0.1, 20/8/2014, Jesús Martín Berlanga: <br>
  * Small javadoc fixes <br><br>
  * 
- * - 3.0, 17/8/2014: <br>
+ * - 3.0, 17/8/2014, Jesús Martín Berlanga: <br>
  * First official release <br><br>
  * 
  * ...

@@ -44,9 +44,9 @@ import javax.swing.Timer;
  * @see com.jme3.ai.agents.behaviors.npc.SimpleMainBehavior
  *
  * @author Jesús Martín Berlanga
- * @version 2.1
+ * @version 2.1.1
  */
-public class SlowBehavior extends AbstractStrengthSteeringBehavior {
+public class SlowBehavior extends AbstractSteeringBehavior {
 
     private int timeInterval;
     private float slowPercentage;
@@ -153,7 +153,7 @@ public class SlowBehavior extends AbstractStrengthSteeringBehavior {
     }
 
     @Override
-    protected Vector3f calculateRawSteering() {
+    protected Vector3f calculateSteering() {
         return Vector3f.ZERO;
     }
 

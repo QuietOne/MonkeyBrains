@@ -35,53 +35,60 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 
-import java.util.Random;
-
 /**
  * This behavior is based on a easy implementation that "generates random
- * steering force each frame, but this produces rather uninteresting motion. It
- * is 'twitchy' and produces no sustained turns. <br><br>
+ * steering force inside an area each frame, but this produces rather 
+ * uninteresting motion. It is 'twitchy' and produces no sustained turns. 
+ * <br><br>
  *
- * Wander behavior is steering behavior where agent moves randomly on terrain.
  * This is done by same calculation as seek behaviour, but difference is that
  * target for this behavior are random positions that changes durring time.
- *
+ * 
+ * @see AbstractWander
+ * 
  * @author Tihomir Radosavljević
+ * - Original wander idea by Thiomir
  * @author Jesús Martín Berlanga
+ * - Wander redesign by Jesús: Clearer and simpler version
  *
- * @version 1.4.1
+ * @version 2.0
  */
-public class WanderBehavior extends AbstractStrengthSteeringBehavior {
+public class WanderAreaBehavior extends AbstractWanderBehavior {
 
     /**
      * Position of target.
      */
     protected Vector3f targetPosition;
     /**
-     * Time interval durring which target position doesn't change.
-     */
-    protected float timeInterval;
-    /**
      * Current time.
      */
-    protected float time;
+    protected float time = -1;
     /**
      * Area in which agent will wander.
      */
-    protected Vector3f[] area;
+    protected Vector3f center = Vector3f.ZERO;
+    /**
+     * Offset from the center of the area
+     */
+    protected class Offset {
+        public float x = Integer.MAX_VALUE;
+        public float y = Integer.MAX_VALUE;
+        public float z = Integer.MAX_VALUE;
+    }
+    /** 
+     * @see Offset
+     */
+    protected Offset offset = new Offset();
 
     /**
      * Constructor for wander behavior.
      *
      * @param agent to whom behavior belongs
      */
-    public WanderBehavior(Agent agent) {
+    public WanderAreaBehavior(Agent agent) {
         super(agent);
-        targetPosition = new Vector3f();
         velocity = new Vector3f();
         timeInterval = 2f;
-        time = timeInterval;
-        this.area = new Vector3f[]{Vector3f.NEGATIVE_INFINITY, Vector3f.POSITIVE_INFINITY};
     }
 
     /**
@@ -90,13 +97,10 @@ public class WanderBehavior extends AbstractStrengthSteeringBehavior {
      * @param agent to whom behavior belongs
      * @param spatial active spatial during excecution of behavior
      */
-    public WanderBehavior(Agent agent, Spatial spatial) {
+    public WanderAreaBehavior(Agent agent, Spatial spatial) {
         super(agent, spatial);
-        targetPosition = new Vector3f();
         velocity = new Vector3f();
         timeInterval = 2f;
-        time = timeInterval;
-        this.area = new Vector3f[]{Vector3f.NEGATIVE_INFINITY, Vector3f.POSITIVE_INFINITY};
     }
 
     /**
@@ -120,64 +124,39 @@ public class WanderBehavior extends AbstractStrengthSteeringBehavior {
     protected void changeTargetPosition(float tpf) {
         time -= tpf;
         if (time <= 0) {
-            Random random = new Random();
-            float x = 0, y = 0, z = 0;
-            int distance = (int) FastMath.abs(area[1].x - area[0].x);
-            if (distance > 1) {
-                x = random.nextInt(distance / 2);
-                if (random.nextBoolean()) {
-                    x *= -1;
-                }
-            }
-
-            distance = (int) FastMath.abs(area[1].z - area[0].z);
-            if (distance > 1) {
-                z = random.nextInt(distance / 2);
-                if (random.nextBoolean()) {
-                    z *= -1;
-                }
-            }
-
-            distance = (int) FastMath.abs(area[1].y - area[0].y);
-            if (distance > 1) {
-                y = random.nextInt(distance / 2);
-                if (random.nextBoolean()) {
-                    y *= -1;
-                }
-            }
-
-            targetPosition = new Vector3f(x, y, z);
-            targetPosition.addLocal(area[0]);
+            float rOffsetX = (FastMath.nextRandomFloat() - 0.5f)*2 * this.offset.x;
+            float rOffsetY = (FastMath.nextRandomFloat() - 0.5f)*2 * this.offset.y;
+            float rOffsetZ = (FastMath.nextRandomFloat() - 0.5f)*2 * this.offset.z; 
+            targetPosition = center.add(rOffsetX, rOffsetY, rOffsetZ);
             time = timeInterval;
         }
     }
-
-    /**
-     * Get time interval for changing target position.
-     *
-     * @return
-     */
-    public float getTimeInterval() {
-        return timeInterval;
-    }
-
-    /**
-     * Setting time interval for changing target position.
-     *
-     * @param timeInterval
-     */
-    public void setTimeInterval(float timeInterval) {
-        this.timeInterval = timeInterval;
-    }
-
+   
     /**
      * Setting area for wander.
      *
-     * @param from
-     * @param to
+     * @param center center of the area
+     * @param offsetX max random offset from center
+     * @param offsetY max random offset from center
+     * @param offsetZ max random offset from center
      */
-    public void setArea(Vector3f from, Vector3f to) {
-        area[0] = new Vector3f(Math.min(from.x, to.x), Math.min(from.y, to.y), Math.min(from.z, to.z));
-        area[1] = new Vector3f(Math.max(from.x, to.x), Math.max(from.y, to.y), Math.max(from.z, to.z));
+    public void setArea(Vector3f center, float offsetX, float offsetY, float offsetZ) {
+        this.center = center;
+        this.offset.x = offsetX;
+        this.offset.y = offsetY;
+        this.offset.z = offsetZ;
+    }
+    
+    /**
+     * Setting area for wander.
+     *
+     * @param center center of the area
+     * @param offset max random offset from center
+     */
+    public void setArea(Vector3f center, Vector3f offset) {
+        this.center = center;
+        this.offset.x = offset.x;
+        this.offset.y = offset.y;
+        this.offset.z = offset.z;
     }
 }

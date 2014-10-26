@@ -30,10 +30,9 @@
 package com.jme3.ai.agents.behaviors.npc.steering;
 
 import com.jme3.ai.agents.Agent;
-import com.jme3.math.FastMath;
+import com.jme3.ai.agents.behaviors.npc.steering.SteeringExceptions.IllegalIntervalException;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
-import java.util.Random;
 
 /**
  * Wander is a type of random steering. This behavior retain steering direction
@@ -41,88 +40,89 @@ import java.util.Random;
  * the character may be turning up and to the right, and on the next frame will
  * still be turning in almost the same direction.
  *
- * @see WanderBehavior
+ * @see SimpleWanderBehavior
  *
  * @author Jesús Martín Berlanga
- * @version 1.1.0
+ * @version 2.0
  */
-public class RelativeWanderBehavior extends WanderBehavior {
+public class RelativeWanderBehavior extends SimpleWanderBehavior {
 
     private float relativeFactor;
-
+    private Vector3f lastSteer;
+    
     /**
      * @param relativeFactor How much should differ each new wander force ? A
      * value near to 0 means that each new force must differ slightly from the
-     * previous one.
-     * @see WanderBehavior#WanderBehavior(com.jme3.ai.agents.Agent)
+     * previous one. 1 means that the behaviour will work as a simple wander
+     * behavior
+     * @see SimpleWanderBehavior
+     * @see SimpleWanderBehavior#SimpleWanderBehavior(com.jme3.ai.agents.Agent,
+     * float, float, float) 
+     * @throws IllegalIntervalException If relative factor is not contained in 
+     * the [0, 1] interval.
      */
-    public RelativeWanderBehavior(Agent agent, Vector3f from, Vector3f to, float relativeFactor) {
-        super(agent);
-        super.setArea(from, to);
+    public RelativeWanderBehavior(Agent agent, float rX, float rY, float rZ, float relativeFactor) {
+        super(agent, rX, rY, rZ);
+        this.validateRelativeFactor(relativeFactor);
         this.relativeFactor = relativeFactor;
+        this.currentSteer = this.newRandomSteer();
     }
 
     /**
      * @see
      * RelativeWanderBehavior#RelativeWanderBehavior(com.jme3.ai.agents.Agent,
      * com.jme3.math.Vector3f, com.jme3.math.Vector3f, float)
-     * @see WanderBehavior#WanderBehavior(com.jme3.ai.agents.Agent,
-     * com.jme3.scene.Spatial)
+     * @see SimpleWanderBehavior#SimpleWanderBehavior(com.jme3.ai.agents.Agent, 
+     * float, float, float, com.jme3.scene.Spatial) 
      */
-    public RelativeWanderBehavior(Agent agent, Vector3f from, Vector3f to, float relativeFactor, Spatial spatial) {
-        super(agent, spatial);
-        super.setArea(from, to);
+    public RelativeWanderBehavior(Agent agent, float rX, float rY, float rZ, float relativeFactor, Spatial spatial) {
+        super(agent, rX, rY, rZ);
+        this.validateRelativeFactor(relativeFactor);
         this.relativeFactor = relativeFactor;
+        this.currentSteer = this.newRandomSteer();
     }
 
-    /**
-     * Calculate steering vector.
-     *
-     * @return steering vector
-     */
-    @Override
-    protected Vector3f calculateRawSteering() {
-        changeTargetPosition(timePerFrame);
-        return targetPosition;
+    private void validateRelativeFactor(float factor) {
+        if(factor < 0 || factor > 1)
+            throw new IllegalIntervalException("relative", factor);
     }
-
+    
     /**
-     * @see WanderBehavior#changeTargetPosition(float)
+     * @see SimpleWanderBehavior#changeSteer(float)
      */
     @Override
-    protected void changeTargetPosition(float tpf) {
+    protected void changeSteer(float tpf) {
         time -= tpf;
         if (time <= 0) {
-            Random random = new Random();
-            float x = 0, y = 0, z = 0;
-            int distance = (int) FastMath.abs(area[1].x - area[0].x);
-            if (distance > 1) {
-                x = random.nextInt(distance / 2);
-                if (random.nextBoolean()) {
-                    x *= -1;
-                }
-            }
-
-            distance = (int) FastMath.abs(area[1].z - area[0].z);
-            if (distance > 1) {
-                z = random.nextInt(distance / 2);
-                if (random.nextBoolean()) {
-                    z *= -1;
-                }
-            }
-
-            distance = (int) FastMath.abs(area[1].y - area[0].y);
-            if (distance > 1) {
-                y = random.nextInt(distance / 2);
-                if (random.nextBoolean()) {
-                    y *= -1;
-                }
-            }
-
-            Vector3f newSteer = new Vector3f(x, y, z);
-            this.targetPosition = this.targetPosition.add(newSteer.mult(this.relativeFactor)).normalize().mult(newSteer.length());
-            targetPosition.addLocal(area[0]);
+            lastSteer = currentSteer;
+            Vector3f randomSteer = this.newRandomSteer();
+            randomSteer.setX(lastSteer.x*(1-relativeFactor) + randomSteer.getX()*relativeFactor);
+            randomSteer.setY(lastSteer.y*(1-relativeFactor) + randomSteer.getY()*relativeFactor);
+            randomSteer.setZ(lastSteer.z*(1-relativeFactor) + randomSteer.getZ()*relativeFactor);
+            currentSteer = randomSteer;
             time = timeInterval;
         }
+    }
+        
+    /**
+     * @param relativeFactor How much should differ each new wander force ? A
+     * value near to 0 means that each new force must differ slightly from the
+     * previous one. 1 means that the behaviour will work as a simple wander
+     * behavior
+     * @throws IllegalIntervalException If relative factor is not contained in 
+     * the [0, 1] interval.
+     */
+    public void setRelativeFactor(float factor) {
+        this.validateRelativeFactor(factor);
+        this.relativeFactor = factor;
+    }
+    /**
+     * @return relativeFactor How much differ each new wander force. A
+     * value near to 0 means that each new force differ slightly from the
+     * previous one. 1 means that the behaviour works as a simple wander
+     * behavior.
+     */
+    public float getRelativeFactor() {
+        return this.relativeFactor;
     }
 }

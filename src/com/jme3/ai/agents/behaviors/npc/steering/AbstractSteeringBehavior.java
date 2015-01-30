@@ -126,9 +126,10 @@ public abstract class AbstractSteeringBehavior extends Behavior {
     protected float agentTotalMass() {
         float mass = 0;
         mass += agent.getMass();
-        if (agent.getInventory() != null) {
-            mass += agent.getInventory().getInventoryMass();
-        }
+        // Inventory mass must be implemented somewhere else :(
+        //if (agent.getInventory() != null) {
+        //    mass += agent.getInventory().getInventoryMass();
+        //}
         return mass;
     }
 

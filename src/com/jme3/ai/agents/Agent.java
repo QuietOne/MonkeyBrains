@@ -34,11 +34,9 @@ import com.jme3.ai.agents.behaviors.BehaviorExceptions.NullBehaviorException;
 import com.jme3.ai.agents.behaviors.npc.SimpleMainBehavior;
 import com.jme3.ai.agents.behaviors.npc.steering.SteeringExceptions;
 import com.jme3.ai.agents.util.GameEntity;
-import com.jme3.ai.agents.util.systems.Inventory;
 import com.jme3.scene.Spatial;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.Camera;
 
 /**
  * Class that represents Agent.
@@ -47,7 +45,7 @@ import com.jme3.renderer.Camera;
  * @author Tihomir Radosavljević
  * @version 1.7.4
  */
-public final class Agent<T> extends GameEntity {
+public class Agent<T> extends GameEntity {
 
     /**
      * Class that enables you to add all variable you need for your agent.
@@ -65,14 +63,6 @@ public final class Agent<T> extends GameEntity {
      * Main behaviour of Agent. Behavior that will be active while his alive.
      */
     private Behavior mainBehavior;
-    /**
-     * Camera that is attached to agent.
-     */
-    private Camera camera;
-    /**
-     * Inventory that agent will use.
-     */
-    private Inventory inventory;
 
     public Agent() {
     }
@@ -169,10 +159,6 @@ public final class Agent<T> extends GameEntity {
         if (mainBehavior != null) {
             mainBehavior.update(tpf);
         }
-        //for updating cooldown on inventory items
-        if (inventory != null) {
-            inventory.update(tpf);
-        }
     }
 
     /**
@@ -202,38 +188,6 @@ public final class Agent<T> extends GameEntity {
         return team.equals(agent.getTeam());
     }
 
-    /**
-     * @return camera that is attached to agent
-     */
-    public Camera getCamera() {
-        return camera;
-    }
-
-    /**
-     * Setting camera for agent. It is recommended for use mouse input.
-     *
-     * @param camera
-     */
-    public void setCamera(Camera camera) {
-        this.camera = camera;
-    }
-
-    /**
-     *
-     * @return inventory that agent is using
-     */
-    public Inventory getInventory() {
-        return inventory;
-    }
-
-    /**
-     * Setting inventory system for agent to use.
-     *
-     * @param inventory
-     */
-    public void setInventory(Inventory inventory) {
-        this.inventory = inventory;
-    }
 
     /**
      * Check if this agent is considered in the same "neighborhood" in relation

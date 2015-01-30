@@ -32,7 +32,7 @@ package com.jme3.ai.agents.util;
 import com.jme3.ai.agents.Agent;
 import com.jme3.ai.agents.behaviors.npc.steering.ObstacleAvoidanceBehavior;
 import com.jme3.ai.agents.util.control.MonkeyBrainsAppState;
-import com.jme3.ai.agents.util.systems.HitPoints;
+import monkeystuff.systems.HitPoints;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;

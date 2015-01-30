@@ -168,7 +168,7 @@ public class MonkeyBrainsAppState extends AbstractAppState {
         if (inProgress) {
             agent.start();
         }
-        rootNode.attachChild(agent.getSpatial());
+        //rootNode.attachChild(agent.getSpatial());
     }
 
     /**
@@ -185,7 +185,7 @@ public class MonkeyBrainsAppState extends AbstractAppState {
         if (inProgress) {
             agent.start();
         }
-        rootNode.attachChild(agent.getSpatial());
+//        rootNode.attachChild(agent.getSpatial());
     }
 
     /**
@@ -204,7 +204,7 @@ public class MonkeyBrainsAppState extends AbstractAppState {
         if (inProgress) {
             agent.start();
         }
-        rootNode.attachChild(agent.getSpatial());
+//        rootNode.attachChild(agent.getSpatial());
     }
 
     /**

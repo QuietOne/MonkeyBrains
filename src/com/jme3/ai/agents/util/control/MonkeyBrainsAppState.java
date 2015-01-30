@@ -60,10 +60,6 @@ public class MonkeyBrainsAppState extends AbstractAppState {
      */
     protected boolean friendlyFire = true;
     /**
-     * Node for all game geometry representation.
-     */
-    protected Node rootNode;
-    /**
      * Application to which this game is attached.
      */
     protected Application app;
@@ -254,10 +250,6 @@ public class MonkeyBrainsAppState extends AbstractAppState {
         }
     }
 
-    public Node getRootNode() {
-        return rootNode;
-    }
-
     public List<Agent> getAgents() {
         return agents;
     }
@@ -353,7 +345,6 @@ public class MonkeyBrainsAppState extends AbstractAppState {
 
     public void setApp(Application app) {
         this.app = app;
-        rootNode = (Node) app.getViewPort().getScenes().get(0);
     }
 
     public HitPointsControl getHitPointsControl() {

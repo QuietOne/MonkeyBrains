@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package redpill;
+package redmonkey;
 
 import com.jme3.math.Vector3f;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 /**
  *
  */
-public class RPAIItem {
+public class RMItem {
     Vector3f position;
     Vector3f direction;
     ArrayList<String> tags;

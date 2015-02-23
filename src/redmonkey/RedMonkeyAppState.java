@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package redpill;
+package redmonkey;
 
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
@@ -13,25 +13,25 @@ import java.util.ArrayList;
 /**
  * TODO This should run every 100ms
  */
-public class RPAppState extends AbstractAppState{
+public class RedMonkeyAppState extends AbstractAppState{
 
-    RPAISpace space;
-    ArrayList<RPSense> senses=new ArrayList<RPSense>();
+    RMSpace space;
+    ArrayList<RMSense> senses=new ArrayList<RMSense>();
     
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         initialized = true;
-        space=new RPAISpace();
+        space=new RMSpace();
     }
     
     
-    public void addSense(RPSense sense){
+    public void addSense(RMSense sense){
         senses.add(sense);
     }
     
     @Override
     public void update(float tpf){
-        for (RPSense sense:senses)
+        for (RMSense sense:senses)
             sense.scan();
     }
 }

@@ -12,9 +12,9 @@ import java.util.ArrayList;
  *
  */
 public class RMItem {
-    Vector3f position;
-    Vector3f direction;
-    ArrayList<String> tags;
+    public Vector3f position;
+    public Vector3f direction;
+    public ArrayList<String> tags;
     
     public boolean hasTag(String tag){
         return tags.contains(tag);

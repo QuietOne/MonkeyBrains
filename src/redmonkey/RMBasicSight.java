@@ -11,13 +11,11 @@ import java.util.ArrayList;
 /**
  * Very basic sight. Can see any item that is inside a sphere with the specified radius.
  */
-public class RMBasicSight implements RMSense{
+public class RMBasicSight extends RMSense{
     Vector3f position;
-    RMSpace space;
     float radius;
-    public RMBasicSight(RMSpace space, Vector3f position, float radius){
+    public RMBasicSight(Vector3f position, float radius){
         this.position=position;
-        this.space=space;
         this.radius=radius;
     }
     public ArrayList<RMItem> scan(){

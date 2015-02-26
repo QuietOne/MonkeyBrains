@@ -11,15 +11,12 @@ import java.util.ArrayList;
 /**
  * Very basic sight. Can see everything.
  */
-public class RMOmniSight implements RMSense{
+public class RMOmniSight extends RMSense{
     Vector3f position;
-    RMSpace space;
-    float radius;
-    public RMOmniSight(RMSpace space, Vector3f position, float radius){
+    public RMOmniSight(Vector3f position){
         this.position=position;
-        this.space=space;
-        this.radius=radius;
     }
+    
     public ArrayList<RMItem> scan(){
         ArrayList<RMItem> result=new ArrayList<RMItem>();
         for (RMItem item:space.items){

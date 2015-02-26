@@ -10,6 +10,11 @@ import java.util.ArrayList;
  *
  * @author mmarcon
  */
-public interface RMSense {
-    public ArrayList<RMItem> scan();
+public abstract class RMSense {
+    RMSpace space;
+    public abstract ArrayList<RMItem> scan();
+    public void setSpace(RMSpace space){
+        this.space=space;
+    }
+
 }

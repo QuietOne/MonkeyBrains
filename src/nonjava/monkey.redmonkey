@@ -1,0 +1,17 @@
+#
+# Monkey tree
+#
+
+# Alias definitions
+import sense:"redmonkey.SenseTask"
+import goto:"redmonkey.GotoTask"
+import sleep:"redmonkey.SleepTask"
+
+# Tree definition (note that root is optional)
+root
+  selector
+    sequence
+      sense tag:Banana
+      goto
+    sequence
+      sleep times:5

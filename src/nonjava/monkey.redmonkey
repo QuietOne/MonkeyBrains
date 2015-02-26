@@ -3,9 +3,9 @@
 #
 
 # Alias definitions
-import sense:"redmonkey.SenseTask"
-import goto:"redmonkey.GotoTask"
-import sleep:"redmonkey.SleepTask"
+import sense:"redmonkey.elements.monkey.SenseTask"
+import goto:"redmonkey.elements.monkey.GotoTask"
+import sleep:"redmonkey.elements.monkey.SleepTask"
 
 # Tree definition (note that root is optional)
 root

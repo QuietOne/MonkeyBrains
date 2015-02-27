@@ -13,11 +13,14 @@ import com.badlogic.gdx.ai.btree.Task;
  */
 public class SenseTask extends LeafTask<RMMonkey> {
 
-    public static final Metadata METADATA = new Metadata(LeafTask.METADATA, "tag");
+    public static final Metadata METADATA = new Metadata(LeafTask.METADATA, "tag", "number");
     public String tag;
+    public int number;
 
     @Override
     public void run(RMMonkey redMonkey) {
+        System.out.println("tag:"+tag);
+        System.out.println("number:"+number);
         if (redMonkey.lookingAround(tag)) {
             success();
         } else {

@@ -12,9 +12,7 @@ import java.util.ArrayList;
  * Very basic sight. Can see everything.
  */
 public class RMOmniSight extends RMSense{
-    Vector3f position;
-    public RMOmniSight(Vector3f position){
-        this.position=position;
+    public RMOmniSight(){
     }
     
     public ArrayList<RMItem> scan(){

@@ -21,7 +21,6 @@ public class RMMonkey extends RMItem {
     public RMMonkey(Vector3f position) {
         tags.add("Monkey");
         this.position = position;
-        sense = new RMOmniSight(position);
     }
 
     public void setSpace(RMSpace space) {
@@ -34,6 +33,7 @@ public class RMMonkey extends RMItem {
     }
 
     public boolean lookingAround(String tag) {
+        System.out.print("looking around");
         for (RMItem sensedItem : sense.scan()) {
             if (sensedItem.hasTag(tag)) {
                 lookingFor = sensedItem;
@@ -44,6 +44,7 @@ public class RMMonkey extends RMItem {
     }
 
     public boolean goTo(){
+        System.out.println("GOTO");
         //TODO
         return true;
 }

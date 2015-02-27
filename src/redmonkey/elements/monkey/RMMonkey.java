@@ -4,6 +4,7 @@
  */
 package redmonkey.elements.monkey;
 
+import com.jme3.animation.AnimChannel;
 import com.jme3.math.Vector3f;
 import redmonkey.RMItem;
 import redmonkey.RMOmniSight;
@@ -23,6 +24,12 @@ public class RMMonkey extends RMItem {
         this.position = position;
     }
 
+    AnimChannel channel;
+    
+    public void setChannel(AnimChannel channel){
+        this.channel=channel;
+    }
+    
     public void setSpace(RMSpace space) {
         space.addItems(this);
         sense.setSpace(space);

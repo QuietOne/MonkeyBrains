@@ -35,8 +35,14 @@ public class RMMonkey extends RMItem {
         sense.setSpace(space);
     }
     
+    boolean sleeping=false;
+    boolean goTo=false;
+    
     public void sleep(){
+        if (!sleeping)
+            channel.setAnim("Idle");
         System.out.println("zzz");
+        sleeping=true;
     }
 
     public boolean lookingAround(String tag) {
@@ -51,7 +57,10 @@ public class RMMonkey extends RMItem {
     }
 
     public boolean goTo(){
+        if (!goTo)
+            channel.setAnim("Punches");
         System.out.println("GOTO");
+        goTo=true;
         //TODO
         return true;
 }

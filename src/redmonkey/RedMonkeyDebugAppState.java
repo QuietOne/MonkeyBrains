@@ -62,6 +62,8 @@ public class RedMonkeyDebugAppState extends BaseAppState {
             //copy existing spatials
             if (oldObjects.containsKey(physicsObject)) {
                 BitmapText spat = oldObjects.get(physicsObject);
+                spat.setText(physicsObject.toString());
+                spat.setLocalTranslation(physicsObject.position);
                 labels.put(physicsObject, spat);
                 oldObjects.remove(physicsObject);
             } else {

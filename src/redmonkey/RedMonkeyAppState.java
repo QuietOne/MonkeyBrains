@@ -8,20 +8,22 @@ package redmonkey;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.math.Vector3f;
 import java.util.ArrayList;
+import redmonkey.elements.monkey.RMMonkey;
 
 /**
  * TODO This should run every 100ms
  */
 public class RedMonkeyAppState extends AbstractAppState{
 
-    RMSpace space;
+    public RMSpace space=new RMSpace();
     ArrayList<RMSense> senses=new ArrayList<RMSense>();
     
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         initialized = true;
-        space=new RMSpace();
+        
     }
     
     
@@ -33,5 +35,9 @@ public class RedMonkeyAppState extends AbstractAppState{
     public void update(float tpf){
         for (RMSense sense:senses)
             sense.scan();
+        for (RMItem item:space.items){
+            if (item instanceof RMMonkey)
+                ((RMMonkey)item).move(new Vector3f(1,0,0), tpf);
+        }
     }
 }

@@ -44,6 +44,10 @@ public class RMMonkey extends RMItem {
         System.out.println("zzz");
         sleeping = true;
     }
+    
+    public void move(Vector3f dir, float tpf){
+        position.add(dir.mult(tpf),position);
+    }
 
     public boolean lookingAround(ArrayList<String> tags) {
         System.out.print("looking around");

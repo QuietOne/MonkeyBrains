@@ -28,4 +28,12 @@ public class RMItem {
     public boolean hasTag(String tag){
         return tags.contains(tag);
     }
+    
+    public String toString(){
+        String s="";
+        for (String tag:tags)
+            s+=(tag+",");
+        s+="["+position.x+","+position.y+","+position.z+"]";
+        return s;
+    }
 }

@@ -16,6 +16,15 @@ public class RMItem {
     public Vector3f direction;
     public ArrayList<String> tags=new ArrayList<String>();
     
+    public RMItem(){
+    }
+    
+    public RMItem(Vector3f position, String... newTags){
+        this.position=position;
+        for (String tag:newTags)
+            this.tags.add(tag);
+    }
+    
     public boolean hasTag(String tag){
         return tags.contains(tag);
     }

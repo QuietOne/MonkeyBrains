@@ -46,7 +46,7 @@ public class RMMonkey extends RMItem {
     }
     
     public void move(Vector3f dir, float tpf){
-        position.add(dir.mult(tpf),position);
+        //position.add(dir.mult(tpf),position);
     }
 
     public boolean lookingAround(ArrayList<String> tags) {

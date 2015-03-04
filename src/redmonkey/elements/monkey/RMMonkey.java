@@ -4,7 +4,11 @@
  */
 package redmonkey.elements.monkey;
 
+import com.badlogic.gdx.ai.fsm.StateMachine;
+import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.ai.msg.Telegraph;
 import com.jme3.animation.AnimChannel;
+import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Vector3f;
 import java.util.ArrayList;
 import redmonkey.RMItem;
@@ -15,10 +19,11 @@ import redmonkey.RMSpace;
 /**
  *
  */
-public class RMMonkey extends RMItem {
+public class RMMonkey extends RMItem implements Telegraph{
 
     public RMSense sense;
     RMItem lookingFor;
+    CharacterControl control;
 
     public RMMonkey(Vector3f position) {
         tags.add("Monkey");
@@ -28,6 +33,10 @@ public class RMMonkey extends RMItem {
 
     public void setChannel(AnimChannel channel) {
         this.channel = channel;
+    }
+    
+    public void setCharacterControl(CharacterControl control){
+        this.control=control;
     }
 
     public void setSpace(RMSpace space) {
@@ -45,8 +54,8 @@ public class RMMonkey extends RMItem {
         sleeping = true;
     }
     
-    public void move(Vector3f dir, float tpf){
-        //position.add(dir.mult(tpf),position);
+    public void move(Vector3f dir){
+        control.setWalkDirection(dir);
     }
 
     public boolean lookingAround(ArrayList<String> tags) {
@@ -67,6 +76,10 @@ public class RMMonkey extends RMItem {
     }
 
     public boolean goTo() {
+        Vector3f goal=lookingFor.position.subtract(position);
+        if (goal.length()<2)
+            return true;
+        move(goal.mult(0.01f));
         if (!goTo) {
             channel.setAnim("Punches");
         }
@@ -78,5 +91,15 @@ public class RMMonkey extends RMItem {
 
     public void setLookingFor(RMItem lookingFor) {
         this.lookingFor = lookingFor;
+    }
+
+    private StateMachine<RMMonkey> stateMachine;
+    @Override
+    public boolean handleMessage(Telegram msg) {
+        return stateMachine.handleMessage(msg);
+    }
+	
+    public StateMachine<RMMonkey> getStateMachine () {
+        return stateMachine;
     }
 }

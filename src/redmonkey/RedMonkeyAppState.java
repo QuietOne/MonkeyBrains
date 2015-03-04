@@ -26,6 +26,9 @@ public class RedMonkeyAppState extends AbstractAppState{
         
     }
     
+    public RMSpace getSpace(){
+        return space;
+    }
     
     public void addSense(RMSense sense){
         senses.add(sense);

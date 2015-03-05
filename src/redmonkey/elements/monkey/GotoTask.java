@@ -14,11 +14,13 @@ public class GotoTask extends LeafTask<RMMonkey> {
 
     @Override
     public void run(RMMonkey monkey) {
-        if (monkey.goTo()) {
+        monkey.getStateMachine().changeState(RMMonkeyState.WALKING_TOWARD_BANANA);
+        running();
+        /*if (monkey.goTo()) {
             success();
         } else {
             fail();
-        }
+        }*/
     }
 
     @Override

@@ -4,6 +4,7 @@
  */
 package redmonkey.elements.monkey;
 
+import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
@@ -27,12 +28,14 @@ public class RMMonkey extends RMItem implements Telegraph{
 
     public RMMonkey(Vector3f position) {
         tags.add("Monkey");
+        stateMachine = new DefaultStateMachine<RMMonkey>(this, RMMonkeyState.START);
         this.position = position;
     }
     AnimChannel channel;
 
     public void setChannel(AnimChannel channel) {
         this.channel = channel;
+        stateMachine.changeState(RMMonkeyState.IDLE);
     }
     
     public void setCharacterControl(CharacterControl control){

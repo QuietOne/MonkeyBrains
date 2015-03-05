@@ -38,9 +38,9 @@ public class RedMonkeyAppState extends AbstractAppState{
     public void update(float tpf){
         for (RMSense sense:senses)
             sense.scan();
-        for (RMItem item:space.items){
-            if (item instanceof RMMonkey)
-                ((RMMonkey)item).move(new Vector3f(1,0,0), tpf);
-        }
+        //for (RMItem item:space.items){
+        //    if (item instanceof RMMonkey)
+        //        ((RMMonkey)item).move(new Vector3f(0.01f,0,0), tpf);
+        //}
     }
 }

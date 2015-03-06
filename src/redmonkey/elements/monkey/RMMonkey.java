@@ -11,12 +11,12 @@ import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.jme3.animation.AnimChannel;
+import com.jme3.animation.AnimControl;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Vector3f;
 import java.util.ArrayList;
 import redmonkey.RMItem;
-import redmonkey.RMOmniSight;
 import redmonkey.RMSense;
 import redmonkey.RMSpace;
 
@@ -35,9 +35,11 @@ public class RMMonkey extends RMItem implements Telegraph{
         this.position = position;
     }
     AnimChannel channel;
+    public AnimControl animControl;
 
-    public void setChannel(AnimChannel channel) {
-        this.channel = channel;
+    public void setChannel(AnimControl control) {
+        this.animControl=control;
+        this.channel = control.createChannel();
         stateMachine.changeState(RMMonkeyState.IDLE);
     }
     
@@ -89,14 +91,14 @@ public class RMMonkey extends RMItem implements Telegraph{
 
     public boolean goTo() {
         Vector3f goal=lookingFor.position.subtract(position);
-        if (goal.length()<2)
-            return true;
+        //if (goal.length()<2)
+        //    return true;
         move(goal.mult(0.01f));
-        if (!goTo) {
-            channel.setAnim("Punches");
-        }
-        System.out.println("GOTO");
-        goTo = true;
+        //if (!goTo) {
+        //    channel.setAnim("Punches");
+        //}
+        //System.out.println("GOTO");
+        //goTo = true;
         //TODO
         return true;
     }

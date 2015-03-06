@@ -7,6 +7,9 @@ package redmonkey.elements.monkey;
 
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
+import com.jme3.animation.LoopMode;
+import com.jme3.math.Vector3f;
+import redmonkey.RMFinishedAnim;
 import redmonkey.RMReachedGoalInterrupt;
 
 /**
@@ -48,17 +51,17 @@ public enum RMMonkeyState implements State<RMMonkey>{
     },
     WALKING_TOWARD_BANANA() {
         
-        RMReachedGoalInterrupt irq;
+        //RMReachedGoalInterrupt irq;
         @Override
         public void enter(RMMonkey monkey) {
-            monkey.channel.setAnim("Punches", 1.f);
+            monkey.channel.setAnim("JumpStart", 1.f);
             System.out.println("Monkey: entering WALKING_TOWARD_BANANA");
-            irq=new RMReachedGoalInterrupt(monkey);
+            //irq=new RMReachedGoalInterrupt(monkey);
         }
 
         @Override
         public void update(RMMonkey monkey) {
-            monkey.goTo();
+            //monkey.goTo();
             // CHECK FOR INTERRUPTIONS
             /*if (!monkey.hpSystem.isAlive()) {
                 monkey.characterControl.setWalkDirection(Vector3f.ZERO);
@@ -71,7 +74,30 @@ public enum RMMonkeyState implements State<RMMonkey>{
         public void exit(RMMonkey e) {
             System.out.println("Monkey: exiting WALKING_TOWARD_BANANA");
         }
-    };    
+    },
+    EAT_BANANA() {
+        
+        //RMFinishedAnim irq;
+        @Override
+        public void enter(RMMonkey monkey) {
+            monkey.channel.setAnim("Punches", 1.f);
+            monkey.channel.setLoopMode(LoopMode.DontLoop);
+            System.out.println("Monkey: entering EAT_BANANA");
+            //monkey.characterControl.setWalkDirection(Vector3f.ZERO);
+            //irq=new RMFinishedAnim(monkey);
+        }
+
+        @Override
+        public void update(RMMonkey monkey) {
+           // monkey.characterControl.setWalkDirection(Vector3f.ZERO);
+        //    monkey.getSpatial().rotate(beetle.q);
+        }
+
+        @Override
+        public void exit(RMMonkey e) {
+            System.out.println("Monkey: exiting EAT_BANANA");
+        }
+    };
             @Override
     public boolean onMessage(RMMonkey e, Telegram tlgrm) {
         return false;

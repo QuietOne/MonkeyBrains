@@ -4,11 +4,14 @@
  */
 package redmonkey.elements.monkey;
 
+import com.badlogic.gdx.ai.btree.BehaviorTree;
+import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.jme3.animation.AnimChannel;
+import com.jme3.asset.AssetManager;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Vector3f;
 import java.util.ArrayList;
@@ -41,20 +44,21 @@ public class RMMonkey extends RMItem implements Telegraph{
     public void setCharacterControl(CharacterControl control){
         this.control=control;
     }
+    public BehaviorTree<RMMonkey> behaviorTree;
 
+    public void setBehaviorTree(AssetManager assetManager, String tree){
+        BehaviorTreeParser<RMMonkey> parser = new BehaviorTreeParser<RMMonkey>(BehaviorTreeParser.DEBUG_NONE);
+        behaviorTree = parser.parse((String)(assetManager.loadAsset(tree)), this);
+    }
+    
     public void setSpace(RMSpace space) {
         space.addItems(this);
         sense.setSpace(space);
     }
-    boolean sleeping = false;
     boolean goTo = false;
 
     public void sleep() {
-        if (!sleeping) {
-            channel.setAnim("Idle");
-        }
-        System.out.println("zzz");
-        sleeping = true;
+        System.out.println("zzz: check for irq?");
     }
     
     public void move(Vector3f dir){

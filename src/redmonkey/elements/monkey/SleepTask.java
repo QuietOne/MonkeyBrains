@@ -18,6 +18,7 @@ public class SleepTask extends LeafTask<RMMonkey> {
 
     @Override
     public void run(RMMonkey monkey) {
+        monkey.getStateMachine().changeState(RMMonkeyState.IDLE);
         for (int i = 0; i < times; i++) {
             monkey.sleep();
         }

@@ -7,6 +7,7 @@ package redmonkey.elements.monkey;
 
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
+import redmonkey.RMReachedGoalInterrupt;
 
 /**
  *
@@ -46,10 +47,13 @@ public enum RMMonkeyState implements State<RMMonkey>{
         }
     },
     WALKING_TOWARD_BANANA() {
+        
+        RMReachedGoalInterrupt irq;
         @Override
         public void enter(RMMonkey monkey) {
             monkey.channel.setAnim("Punches", 1.f);
             System.out.println("Monkey: entering WALKING_TOWARD_BANANA");
+            irq=new RMReachedGoalInterrupt(monkey);
         }
 
         @Override

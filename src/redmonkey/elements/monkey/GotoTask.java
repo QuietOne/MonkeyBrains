@@ -6,21 +6,29 @@ package redmonkey.elements.monkey;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
+import redmonkey.RMReachedGoalInterrupt;
 
 /**
  *
  */
 public class GotoTask extends LeafTask<RMMonkey> {
 
+    RMReachedGoalInterrupt irq;
+    
     @Override
     public void run(RMMonkey monkey) {
-        monkey.getStateMachine().changeState(RMMonkeyState.WALKING_TOWARD_BANANA);
+        if (!monkey.getStateMachine().getCurrentState().equals(RMMonkeyState.WALKING_TOWARD_BANANA)){
+            monkey.getStateMachine().changeState(RMMonkeyState.WALKING_TOWARD_BANANA);
+            irq=new RMReachedGoalInterrupt(monkey);
+        }
+        monkey.goTo();
+        if (irq.testForInterrupt()){
+            if (irq.didISucceed())
+                System.exit(0);
+            else
+                fail();
+        }
         running();
-        /*if (monkey.goTo()) {
-            success();
-        } else {
-            fail();
-        }*/
     }
 
     @Override

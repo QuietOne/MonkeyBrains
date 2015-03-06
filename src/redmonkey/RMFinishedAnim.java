@@ -25,7 +25,7 @@ public class RMFinishedAnim implements RMInterrupt, AnimEventListener{
 
     
     public boolean testForInterrupt() {
-        return !isFinishedAnim;
+        return isFinishedAnim;
     }
 
     
@@ -40,7 +40,7 @@ public class RMFinishedAnim implements RMInterrupt, AnimEventListener{
         return true;
     }
 
-    boolean isFinishedAnim;
+    boolean isFinishedAnim=false;
     
     public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
         isFinishedAnim=true;

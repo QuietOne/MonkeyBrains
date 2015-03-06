@@ -23,8 +23,10 @@ public class GotoTask extends LeafTask<RMMonkey> {
         }
         monkey.goTo();
         if (irq.testForInterrupt()){
-            if (irq.didISucceed())
+            if (irq.didISucceed()){
                 success();
+                return;
+            }
             else
                 fail();
         }

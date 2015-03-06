@@ -86,11 +86,12 @@ public class RMMonkey extends RMItem implements Telegraph{
     
     public boolean hasReachedLookingFor(){
         Vector3f goal=lookingFor.position.subtract(position);
+        System.out.println("Goal distance "+goal.length());
         return goal.length()<2;
     }
 
     public boolean goTo() {
-        Vector3f goal=lookingFor.position.subtract(position);
+        Vector3f goal=lookingFor.position.subtract(position).normalize();
         //if (goal.length()<2)
         //    return true;
         move(goal.mult(0.01f));

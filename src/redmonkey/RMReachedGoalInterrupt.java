@@ -21,7 +21,9 @@ public class RMReachedGoalInterrupt implements RMInterrupt{
 
     
     public boolean testForInterrupt() {
-        return monkey.hasReachedLookingFor();
+        boolean b=monkey.hasReachedLookingFor();
+        System.out.println("tfi? "+b);
+        return b;
     }
 
     

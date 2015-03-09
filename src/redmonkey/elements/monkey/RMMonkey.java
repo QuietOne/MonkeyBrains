@@ -23,7 +23,7 @@ import redmonkey.RMSpace;
 /**
  *
  */
-public class RMMonkey extends RMItem implements Telegraph{
+public class RMMonkey extends RMItem {//implements Telegraph{
 
     public RMSense sense;
     RMItem lookingFor;
@@ -31,7 +31,7 @@ public class RMMonkey extends RMItem implements Telegraph{
 
     public RMMonkey(Vector3f position) {
         tags.add("Monkey");
-        stateMachine = new DefaultStateMachine<RMMonkey>(this, RMMonkeyState.START);
+//        stateMachine = new DefaultStateMachine<RMMonkey>(this, RMMonkeyState.START);
         this.position = position;
     }
     AnimChannel channel;
@@ -40,7 +40,7 @@ public class RMMonkey extends RMItem implements Telegraph{
     public void setChannel(AnimControl control) {
         this.animControl=control;
         this.channel = control.createChannel();
-        stateMachine.changeState(RMMonkeyState.IDLE);
+//        stateMachine.changeState(RMMonkeyState.IDLE);
     }
     
     public void setCharacterControl(CharacterControl control){
@@ -87,6 +87,7 @@ public class RMMonkey extends RMItem implements Telegraph{
     public boolean hasReachedLookingFor(){
         Vector3f goal=lookingFor.position.subtract(position);
         System.out.println("Goal distance "+goal.length());
+        System.out.println(goal.length()<2);
         return goal.length()<2;
     }
 
@@ -107,7 +108,7 @@ public class RMMonkey extends RMItem implements Telegraph{
     public void setLookingFor(RMItem lookingFor) {
         this.lookingFor = lookingFor;
     }
-
+/*
     private StateMachine<RMMonkey> stateMachine;
     @Override
     public boolean handleMessage(Telegram msg) {
@@ -116,5 +117,5 @@ public class RMMonkey extends RMItem implements Telegraph{
 	
     public StateMachine<RMMonkey> getStateMachine () {
         return stateMachine;
-    }
+    }*/
 }

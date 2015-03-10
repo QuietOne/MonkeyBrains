@@ -7,6 +7,8 @@ package redmonkey;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.font.BitmapFont;
+import com.jme3.scene.Node;
 import java.util.ArrayList;
 import redmonkey.elements.monkey.RMMonkey;
 
@@ -17,13 +19,30 @@ public class RedMonkeyAppState extends AbstractAppState {
 
     public RMSpace space = new RMSpace();
     ArrayList<RMSense> senses = new ArrayList<RMSense>();
-
+    protected boolean debugEnabled = false;
+    protected RedMonkeyDebugAppState debugAppState;
+    
+    Node rootNode;
+    BitmapFont guiFont;
+    
+    public RedMonkeyAppState(Node rootNode, BitmapFont guiFont){
+        this.rootNode=rootNode;
+        this.guiFont=guiFont;
+    }
+    
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         initialized = true;
-
+        if (debugEnabled) {
+            debugAppState = new RedMonkeyDebugAppState(space, rootNode, guiFont);
+            stateManager.attach(debugAppState);
+        }
     }
-
+    
+    public void setDebugEnabled(boolean debugEnabled) {
+        this.debugEnabled = debugEnabled;
+    }
+    
     public RMSpace getSpace() {
         return space;
     }

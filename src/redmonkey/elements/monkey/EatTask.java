@@ -16,6 +16,7 @@ public class EatTask extends LeafTask<RMMonkey> {
 
     RMFinishedAnim irq;
     
+    @Override
     public void start(RMMonkey monkey) {
             monkey.channel.setAnim("Punches", 1.f);
             monkey.channel.setLoopMode(LoopMode.DontLoop);

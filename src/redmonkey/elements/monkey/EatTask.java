@@ -15,23 +15,24 @@ import redmonkey.RMFinishedAnim;
 public class EatTask extends LeafTask<RMMonkey> {
 
     RMFinishedAnim irq;
-    boolean entered=false;
     
-    @Override
-    public void run(RMMonkey monkey) {
-        if (!entered){
-            entered=true;
-        //if (!monkey.getStateMachine().getCurrentState().equals(RMMonkeyState.EAT_BANANA)){
-        //    monkey.getStateMachine().changeState(RMMonkeyState.EAT_BANANA);
+    public void start(RMMonkey monkey) {
             monkey.channel.setAnim("Punches", 1.f);
             monkey.channel.setLoopMode(LoopMode.DontLoop);
             irq=new RMFinishedAnim(monkey);
-        }
+    }
+    
+    @Override
+    public void run(RMMonkey monkey) {
         if (irq.testForInterrupt()){
-            if (irq.didISucceed())
+            if (irq.didISucceed()){
                 success();
-            else
+                return;
+            }
+            else{
                 fail();
+                return;
+            }
         }
         running();
     }

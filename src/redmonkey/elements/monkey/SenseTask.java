@@ -21,19 +21,22 @@ public class SenseTask extends LeafTask<RMMonkey> {
     public int number;
 
     @Override
-    public void run(RMMonkey redMonkey) {
-        if (tags==null){
+    public void start(RMMonkey redMonkey){
             tags=new ArrayList<String>();
         System.out.println("tag:"+tag);
         StringTokenizer st=new StringTokenizer(tag,",");
         while(st.hasMoreTokens())
             tags.add(st.nextToken());
-        }
-        System.out.println("number:"+number);
+    }
+    
+    @Override
+    public void run(RMMonkey redMonkey) {
         if (redMonkey.lookingAround(tags)) {
             success();
+            return;
         } else {
             fail();
+            return;
         }
     }
 

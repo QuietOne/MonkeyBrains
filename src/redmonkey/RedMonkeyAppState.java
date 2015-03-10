@@ -62,4 +62,20 @@ public class RedMonkeyAppState extends AbstractAppState {
             }
         }
     }
+
+    
+    public enum ThreadingType {
+
+        /**
+         * Default mode; user update, ai update and rendering happen
+         * sequentially (single threaded)
+         */
+        SEQUENTIAL,
+        /**
+         * Parallel threaded mode; ai update and rendering are executed in
+         * parallel, update order is kept.<br/> Multiple RedMonkeyAppStates will
+         * execute in parallel in this mode.
+         */
+        PARALLEL,
+    }
 }

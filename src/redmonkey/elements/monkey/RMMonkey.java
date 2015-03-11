@@ -6,10 +6,6 @@ package redmonkey.elements.monkey;
 
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser;
-import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
-import com.badlogic.gdx.ai.fsm.StateMachine;
-import com.badlogic.gdx.ai.msg.Telegram;
-import com.badlogic.gdx.ai.msg.Telegraph;
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
 import com.jme3.asset.AssetManager;
@@ -23,7 +19,7 @@ import redmonkey.RMSpace;
 /**
  *
  */
-public class RMMonkey extends RMItem {//implements Telegraph{
+public class RMMonkey extends RMItem {
 
     public RMSense sense;
     RMItem lookingFor;
@@ -31,28 +27,26 @@ public class RMMonkey extends RMItem {//implements Telegraph{
 
     public RMMonkey(Vector3f position) {
         tags.add("Monkey");
-//        stateMachine = new DefaultStateMachine<RMMonkey>(this, RMMonkeyState.START);
         this.position = position;
     }
     AnimChannel channel;
     public AnimControl animControl;
 
     public void setChannel(AnimControl control) {
-        this.animControl=control;
+        this.animControl = control;
         this.channel = control.createChannel();
-//        stateMachine.changeState(RMMonkeyState.IDLE);
     }
-    
-    public void setCharacterControl(CharacterControl control){
-        this.control=control;
+
+    public void setCharacterControl(CharacterControl control) {
+        this.control = control;
     }
     public BehaviorTree<RMMonkey> behaviorTree;
 
-    public void setBehaviorTree(AssetManager assetManager, String tree){
+    public void setBehaviorTree(AssetManager assetManager, String tree) {
         BehaviorTreeParser<RMMonkey> parser = new BehaviorTreeParser<RMMonkey>(BehaviorTreeParser.DEBUG_NONE);
-        behaviorTree = parser.parse((String)(assetManager.loadAsset(tree)), this);
+        behaviorTree = parser.parse((String) (assetManager.loadAsset(tree)), this);
     }
-    
+
     public void setSpace(RMSpace space) {
         space.addItems(this);
         sense.setSpace(space);
@@ -62,8 +56,8 @@ public class RMMonkey extends RMItem {//implements Telegraph{
     public void sleep() {
         System.out.println("zzz: check for irq?");
     }
-    
-    public void move(Vector3f dir){
+
+    public void move(Vector3f dir) {
         control.setWalkDirection(dir);
     }
 
@@ -83,39 +77,19 @@ public class RMMonkey extends RMItem {//implements Telegraph{
         }
         return false;
     }
-    
-    public boolean hasReachedLookingFor(){
-        Vector3f goal=lookingFor.position.subtract(position);
-        System.out.println("Goal distance "+goal.length());
-        System.out.println(goal.length()<2);
-        return goal.length()<2;
+
+    public boolean hasReachedLookingFor() {
+        Vector3f goal = lookingFor.position.subtract(position);
+        return goal.length() < 2;
     }
 
     public boolean goTo() {
-        Vector3f goal=lookingFor.position.subtract(position).normalize();
-        //if (goal.length()<2)
-        //    return true;
+        Vector3f goal = lookingFor.position.subtract(position).normalize();
         move(goal.mult(0.01f));
-        //if (!goTo) {
-        //    channel.setAnim("Punches");
-        //}
-        //System.out.println("GOTO");
-        //goTo = true;
-        //TODO
         return true;
     }
 
     public void setLookingFor(RMItem lookingFor) {
         this.lookingFor = lookingFor;
     }
-/*
-    private StateMachine<RMMonkey> stateMachine;
-    @Override
-    public boolean handleMessage(Telegram msg) {
-        return stateMachine.handleMessage(msg);
-    }
-	
-    public StateMachine<RMMonkey> getStateMachine () {
-        return stateMachine;
-    }*/
 }

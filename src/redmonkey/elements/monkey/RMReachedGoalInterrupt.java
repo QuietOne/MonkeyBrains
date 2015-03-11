@@ -3,8 +3,9 @@
  * and open the template in the editor.
  */
 
-package redmonkey;
+package redmonkey.elements.monkey;
 
+import redmonkey.RMInterrupt;
 import redmonkey.elements.monkey.RMMonkey;
 
 /**
@@ -21,9 +22,7 @@ public class RMReachedGoalInterrupt implements RMInterrupt{
 
     
     public boolean testForInterrupt() {
-        boolean b=monkey.hasReachedLookingFor();
-        System.out.println("tfi? "+b);
-        return b;
+        return monkey.hasReachedLookingFor();
     }
 
     

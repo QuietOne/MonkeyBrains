@@ -3,11 +3,12 @@
  * and open the template in the editor.
  */
 
-package redmonkey;
+package redmonkey.elements.monkey;
 
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
 import com.jme3.animation.AnimEventListener;
+import redmonkey.RMInterrupt;
 import redmonkey.elements.monkey.RMMonkey;
 
 /**

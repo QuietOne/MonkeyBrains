@@ -6,7 +6,6 @@ package redmonkey.elements.monkey;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
-import redmonkey.RMReachedGoalInterrupt;
 
 /**
  *
@@ -25,7 +24,6 @@ public class GotoTask extends LeafTask<RMMonkey> {
     public void run(RMMonkey monkey) {
         monkey.goTo();
         if (irq.testForInterrupt()) {
-            System.out.println("Did I succeed? Reaced goal ");
             if (irq.didISucceed()) {
                 success();
                 return;

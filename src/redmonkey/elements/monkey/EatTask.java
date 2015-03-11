@@ -7,7 +7,6 @@ package redmonkey.elements.monkey;
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import com.jme3.animation.LoopMode;
-import redmonkey.RMFinishedAnim;
 
 /**
  *

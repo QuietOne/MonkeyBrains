@@ -61,11 +61,6 @@ public class RedMonkey extends RMSensefulItem {
         behaviorTree = parser.parse((String) (assetManager.loadAsset(tree)), this);
     }
 
-    public void setSpace(RMSpace space) {
-        space.addItems(this);
-        getSense().setSpace(space);
-    }
-
     public void sleep() {
         System.out.println("zzz: check for irq?");
     }

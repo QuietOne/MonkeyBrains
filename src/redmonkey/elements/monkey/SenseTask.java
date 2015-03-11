@@ -13,7 +13,7 @@ import java.util.StringTokenizer;
 /**
  *
  */
-public class SenseTask extends LeafTask<RMMonkey> {
+public class SenseTask extends LeafTask<RedMonkey> {
 
     public static final Metadata METADATA = new Metadata(LeafTask.METADATA, "tag", "number");
     public String tag;
@@ -21,7 +21,7 @@ public class SenseTask extends LeafTask<RMMonkey> {
     public int number;
 
     @Override
-    public void start(RMMonkey redMonkey){
+    public void start(RedMonkey redMonkey){
             tags=new ArrayList<String>();
         System.out.println("tag:"+tag);
         StringTokenizer st=new StringTokenizer(tag,",");
@@ -30,7 +30,7 @@ public class SenseTask extends LeafTask<RMMonkey> {
     }
     
     @Override
-    public void run(RMMonkey redMonkey) {
+    public void run(RedMonkey redMonkey) {
         if (redMonkey.lookingAround(tags)) {
             success();
             return;
@@ -41,7 +41,7 @@ public class SenseTask extends LeafTask<RMMonkey> {
     }
 
     @Override
-    protected Task<RMMonkey> copyTo(Task<RMMonkey> task) {
+    protected Task<RedMonkey> copyTo(Task<RedMonkey> task) {
         SenseTask sense = (SenseTask) task;
         sense.tag = tag;
         sense.tags = null;

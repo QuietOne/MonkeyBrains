@@ -6,16 +6,16 @@
 package redmonkey.elements.monkey;
 
 import redmonkey.RMInterrupt;
-import redmonkey.elements.monkey.RMMonkey;
+import redmonkey.elements.monkey.RedMonkey;
 
 /**
  *
  */
 public class RMReachedGoalInterrupt implements RMInterrupt{
 
-    RMMonkey monkey;
+    RedMonkey monkey;
 
-    public RMReachedGoalInterrupt( RMMonkey monkey) {
+    public RMReachedGoalInterrupt( RedMonkey monkey) {
         this.monkey=monkey;
     }
     

@@ -9,16 +9,16 @@ import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
 import com.jme3.animation.AnimEventListener;
 import redmonkey.RMInterrupt;
-import redmonkey.elements.monkey.RMMonkey;
+import redmonkey.elements.monkey.RedMonkey;
 
 /**
  *
  */
 public class RMFinishedAnim implements RMInterrupt, AnimEventListener{
 
-    RMMonkey monkey;
+    RedMonkey monkey;
 
-    public RMFinishedAnim( RMMonkey monkey) {
+    public RMFinishedAnim( RedMonkey monkey) {
         this.monkey=monkey;
         monkey.animControl.addListener(this);
     }

@@ -11,7 +11,7 @@ import java.util.ArrayList;
  *
  */
 public class RMSpace {
-    ArrayList<RMItem> items=new ArrayList<RMItem>();
+    public ArrayList<RMItem> items=new ArrayList<RMItem>();
     public void addItems(RMItem... newItems){
         for (RMItem newItem:newItems)
             items.add(newItem);

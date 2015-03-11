@@ -4,13 +4,14 @@
  */
 package redmonkey;
 
+import redmonkey.senses.RMSense;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.font.BitmapFont;
 import com.jme3.scene.Node;
 import java.util.ArrayList;
-import redmonkey.elements.monkey.RMMonkey;
+import redmonkey.elements.monkey.RedMonkey;
 
 /**
  * TODO This should run every 100ms
@@ -57,8 +58,8 @@ public class RedMonkeyAppState extends AbstractAppState {
             sense.scan();
         }
         for (RMItem item : space.items) {
-            if (item instanceof RMMonkey) {
-                ((RMMonkey) item).behaviorTree.step();
+            if (item instanceof RedMonkey) {
+                ((RedMonkey) item).behaviorTree.step();
             }
         }
     }

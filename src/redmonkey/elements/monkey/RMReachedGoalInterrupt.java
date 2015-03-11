@@ -14,15 +14,17 @@ import redmonkey.elements.monkey.RedMonkey;
 public class RMReachedGoalInterrupt implements RMInterrupt{
 
     RedMonkey monkey;
+    float reachDist;
 
-    public RMReachedGoalInterrupt( RedMonkey monkey) {
+    public RMReachedGoalInterrupt( RedMonkey monkey, float reachDist) {
         this.monkey=monkey;
+        this.reachDist=reachDist;
     }
     
 
     
     public boolean testForInterrupt() {
-        return monkey.hasReachedLookingFor();
+        return monkey.hasReachedLookingFor(reachDist);
     }
 
     

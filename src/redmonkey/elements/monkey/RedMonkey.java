@@ -91,9 +91,9 @@ public class RedMonkey extends RMSensefulItem {
         return false;
     }
 
-    public boolean hasReachedLookingFor() {
+    public boolean hasReachedLookingFor(float reachDist) {
         Vector3f goal = lookingFor.position.subtract(position);
-        return goal.length() < 2;
+        return goal.length() < reachDist;
     }
 
     public boolean goTo() {

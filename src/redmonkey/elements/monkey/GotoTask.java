@@ -14,16 +14,17 @@ import java.util.ArrayList;
  */
 public class GotoTask extends LeafTask<RedMonkey> {
 
-    public static final Metadata METADATA = new Metadata(LeafTask.METADATA, "anim", "speedFact");
+    public static final Metadata METADATA = new Metadata(LeafTask.METADATA, "anim", "speedFact", "reachDist");
     public String anim;
     public float speedFact;
+    public float reachDist;
     RMReachedGoalInterrupt irq;
 
     @Override
     public void start(RedMonkey monkey) {
         monkey.channel.setAnim(anim, 1.f);
         monkey.speedFact=speedFact;
-        irq = new RMReachedGoalInterrupt(monkey);
+        irq = new RMReachedGoalInterrupt(monkey,reachDist);
     }
 
     @Override
@@ -46,6 +47,7 @@ public class GotoTask extends LeafTask<RedMonkey> {
         GotoTask sense = (GotoTask) task;
         sense.anim = anim;
         sense.speedFact = speedFact;
+        sense.reachDist = reachDist;
         return task;
     }
 }

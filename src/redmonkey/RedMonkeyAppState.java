@@ -23,11 +23,9 @@ public class RedMonkeyAppState extends AbstractAppState {
     protected boolean debugEnabled = false;
     protected RedMonkeyDebugAppState debugAppState;
     
-    Node rootNode;
     BitmapFont guiFont;
     
-    public RedMonkeyAppState(Node rootNode, BitmapFont guiFont){
-        this.rootNode=rootNode;
+    public RedMonkeyAppState(BitmapFont guiFont){
         this.guiFont=guiFont;
     }
     
@@ -35,7 +33,7 @@ public class RedMonkeyAppState extends AbstractAppState {
     public void initialize(AppStateManager stateManager, Application app) {
         initialized = true;
         if (debugEnabled) {
-            debugAppState = new RedMonkeyDebugAppState(space, rootNode, guiFont);
+            debugAppState = new RedMonkeyDebugAppState(space, guiFont);
             stateManager.attach(debugAppState);
         }
     }

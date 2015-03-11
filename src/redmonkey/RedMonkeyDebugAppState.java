@@ -26,14 +26,12 @@ public class RedMonkeyDebugAppState extends BaseAppState {
     protected ViewPort viewPort;
     protected RenderManager rm;
     RMSpace space;
-    Node rootNode;
     Node redmonkeyDebugRootNode = new Node("RM Debug Root Node");
     BitmapFont font;
     protected HashMap<RMItem, BitmapText> labels = new HashMap<RMItem, BitmapText>();
 
-    public RedMonkeyDebugAppState(RMSpace space, Node rootNode, BitmapFont font) {
+    public RedMonkeyDebugAppState(RMSpace space, BitmapFont font) {
         this.space = space;
-        this.rootNode = rootNode;
         this.font = font;
     }
 
@@ -44,12 +42,14 @@ public class RedMonkeyDebugAppState extends BaseAppState {
         viewPort = rm.createMainView("Physics Debug Overlay", app.getCamera());
         viewPort.setClearFlags(false, true, false);
         viewPort.attachScene(redmonkeyDebugRootNode);    
-        rootNode.attachChild(redmonkeyDebugRootNode);
     }
 
     @Override
     public void update(float tpf) {
+        super.update(tpf);
         updateRMItems();
+        redmonkeyDebugRootNode.updateLogicalState(tpf);
+        redmonkeyDebugRootNode.updateGeometricState();
     }
 
     private void updateRMItems() {

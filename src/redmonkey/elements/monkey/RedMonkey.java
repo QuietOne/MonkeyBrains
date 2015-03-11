@@ -5,6 +5,7 @@
 package redmonkey.elements.monkey;
 
 import com.badlogic.gdx.ai.btree.BehaviorTree;
+import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser;
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
@@ -16,6 +17,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import java.util.ArrayList;
+import redmonkey.GameLogicHook;
 import redmonkey.RMItem;
 import redmonkey.RMSensefulItem;
 import redmonkey.senses.RMSense;
@@ -34,12 +36,14 @@ public class RedMonkey extends RMSensefulItem {
     Spatial spatial;
     Quaternion q = new Quaternion();
     float speedFact;
+    GameLogicHook gameLogic;
 
-    public RedMonkey(Vector3f position, TerrainQuad terrain, Spatial spatial) {
+    public RedMonkey(Vector3f position, TerrainQuad terrain, Spatial spatial, GameLogicHook gameLogic) {
         tags.add("Monkey");
         this.position = position;
         this.terrain=terrain;
         this.spatial=spatial;
+        this.gameLogic=gameLogic;
     }
 
     public void setChannel(AnimControl control) {
@@ -104,5 +108,9 @@ public class RedMonkey extends RMSensefulItem {
 
     public void setLookingFor(RMItem lookingFor) {
         this.lookingFor = lookingFor;
+    }
+    
+    public void endedTask(LeafTask o){
+        gameLogic.endedTask(o);
     }
 }

@@ -42,7 +42,7 @@ public class EatTask extends LeafTask<RedMonkey> {
 
     @Override
     public void end(RedMonkey monkey) {
-        //remove spatial
+        monkey.endedTask(this);
     }
 
     @Override

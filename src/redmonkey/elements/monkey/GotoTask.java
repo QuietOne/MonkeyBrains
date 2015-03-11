@@ -4,6 +4,7 @@
  */
 package redmonkey.elements.monkey;
 
+import redmonkey.elements.monkey.interrupts.RMReachedGoalInterrupt;
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Metadata;
 import com.badlogic.gdx.ai.btree.Task;

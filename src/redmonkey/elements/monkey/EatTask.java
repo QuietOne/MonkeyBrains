@@ -4,6 +4,7 @@
  */
 package redmonkey.elements.monkey;
 
+import redmonkey.elements.monkey.interrupts.RMFinishedAnim;
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Metadata;
 import com.badlogic.gdx.ai.btree.Task;

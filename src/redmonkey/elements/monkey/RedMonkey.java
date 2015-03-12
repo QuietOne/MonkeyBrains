@@ -14,14 +14,13 @@ import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import java.util.ArrayList;
 import redmonkey.GameLogicHook;
 import redmonkey.RMItem;
 import redmonkey.RMSensefulItem;
-import redmonkey.senses.RMSense;
-import redmonkey.RMSpace;
 
 /**
  *
@@ -33,16 +32,20 @@ public class RedMonkey extends RMSensefulItem {
     AnimChannel channel;
     public AnimControl animControl;
     TerrainQuad terrain;
-    Spatial spatial;
+    public Node spatial=new Node();
+    Spatial sp;
     Quaternion q = new Quaternion();
     float speedFact;
     GameLogicHook gameLogic;
 
-    public RedMonkey(Vector3f position, TerrainQuad terrain, Spatial spatial, GameLogicHook gameLogic) {
+    public RedMonkey(float x, float y,float z, TerrainQuad terrain, Spatial model, GameLogicHook gameLogic) {
         tags.add("Monkey");
-        this.position = position;
+        //this.position = new Vector3f();
         this.terrain=terrain;
-        this.spatial=spatial;
+        this.sp=model;
+        this.spatial.move(x,y,z);
+        this.position=spatial.getLocalTranslation();
+        this.spatial.attachChild(model);
         this.gameLogic=gameLogic;
     }
 
@@ -70,7 +73,7 @@ public class RedMonkey extends RMSensefulItem {
         Vector3f norM = terrain.getNormal(new Vector2f(spatial.getWorldTranslation().x, spatial.getWorldTranslation().z));
         norM = norM.cross(dir).cross(norM);
         q.lookAt(norM, Vector3f.UNIT_Y);
-        spatial.setLocalRotation(q);
+        sp.setLocalRotation(q);
     }
 
     public boolean lookingAround(ArrayList<String> tags) {
@@ -95,8 +98,10 @@ public class RedMonkey extends RMSensefulItem {
         return goal.length() < reachDist;
     }
 
+    Vector3f goal=new Vector3f();
     public boolean goTo() {
-        Vector3f goal = lookingFor.position.subtract(position).normalize();
+        System.out.println(position);
+        goal = lookingFor.position.subtract(position,goal).normalize();
         move(goal.mult(speedFact));
         return true;
     }

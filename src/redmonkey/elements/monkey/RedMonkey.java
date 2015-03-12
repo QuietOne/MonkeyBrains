@@ -33,15 +33,16 @@ public class RedMonkey extends RMSensefulItem {
     public AnimControl animControl;
     TerrainQuad terrain;
     public Node spatial=new Node();
-    Spatial sp;
+    public Spatial sp;
     Quaternion q = new Quaternion();
     float speedFact;
     GameLogicHook gameLogic;
 
-    public RedMonkey(float x, float y,float z, TerrainQuad terrain, Spatial model, GameLogicHook gameLogic) {
+    public RedMonkey(float x, float y,float z, TerrainQuad terrain, Spatial model, GameLogicHook gameLogic, float yTranslation) {
         tags.add("Monkey");
         this.terrain=terrain;
         this.sp=model;
+        this.sp.setLocalTranslation(0, yTranslation, 0);
         this.spatial.move(x,y,z);
         this.position=spatial.getLocalTranslation();
         this.spatial.attachChild(model);

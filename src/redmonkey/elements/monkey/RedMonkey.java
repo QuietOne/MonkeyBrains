@@ -55,6 +55,7 @@ public class RedMonkey extends RMSensefulItem {
 
     public void setCharacterControl(CharacterControl control) {
         this.control = control;
+        this.spatial.addControl(control);
     }
     public BehaviorTree<RedMonkey> behaviorTree;
 

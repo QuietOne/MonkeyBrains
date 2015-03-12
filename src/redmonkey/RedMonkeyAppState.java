@@ -31,6 +31,7 @@ public class RedMonkeyAppState extends AbstractAppState {
     
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
+        app.getAssetManager().registerLoader(RMLoader.class, "redmonkey");
         initialized = true;
         if (debugEnabled) {
             debugAppState = new RedMonkeyDebugAppState(space, guiFont);

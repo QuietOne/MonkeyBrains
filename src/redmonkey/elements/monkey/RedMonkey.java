@@ -40,7 +40,6 @@ public class RedMonkey extends RMSensefulItem {
 
     public RedMonkey(float x, float y,float z, TerrainQuad terrain, Spatial model, GameLogicHook gameLogic) {
         tags.add("Monkey");
-        //this.position = new Vector3f();
         this.terrain=terrain;
         this.sp=model;
         this.spatial.move(x,y,z);
@@ -100,7 +99,6 @@ public class RedMonkey extends RMSensefulItem {
 
     Vector3f goal=new Vector3f();
     public boolean goTo() {
-        System.out.println(position);
         goal = lookingFor.position.subtract(position,goal).normalize();
         move(goal.mult(speedFact));
         return true;

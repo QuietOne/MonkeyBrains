@@ -11,5 +11,5 @@ import com.badlogic.gdx.ai.btree.LeafTask;
  *
  */
 public interface GameLogicHook {
-    public void endedTask(LeafTask o);
+    public void endedTask(LeafTask o, RMItem... items);
 }

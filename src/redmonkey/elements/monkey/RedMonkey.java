@@ -110,7 +110,7 @@ public class RedMonkey extends RMSensefulItem {
         this.lookingFor = lookingFor;
     }
     
-    public void endedTask(LeafTask o){
-        gameLogic.endedTask(o);
+    public void endedTask(LeafTask o, RMItem... items){
+        gameLogic.endedTask(o, items);
     }
 }

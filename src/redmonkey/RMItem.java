@@ -23,8 +23,9 @@ public class RMItem {
     public RMItem(){
     }
     
-    public RMItem(Vector3f position, String... newTags){
-        this.position=position;
+    public RMItem(Spatial spatial, String... newTags){
+        this.spatial=spatial;
+        this.position=spatial.getWorldTranslation();
         for (String tag:newTags)
             this.tags.add(tag);
     }

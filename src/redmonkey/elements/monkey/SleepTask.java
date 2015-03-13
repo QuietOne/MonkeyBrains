@@ -13,12 +13,17 @@ import com.badlogic.gdx.ai.btree.Task;
  */
 public class SleepTask extends LeafTask<RedMonkey> {
 
-    public static final Metadata METADATA = new Metadata(LeafTask.METADATA, "times");
+    public static final Metadata METADATA = new Metadata(LeafTask.METADATA, "anim");
+    public String anim;
     public int times = 1;
 
     @Override
+    public void start(RedMonkey monkey) {
+        monkey.channel.setAnim(anim, 1.f);
+    }
+
+    @Override
     public void run(RedMonkey monkey) {
-        //monkey.getStateMachine().changeState(RMMonkeyState.IDLE);
         for (int i = 0; i < times; i++) {
             monkey.sleep();
         }
@@ -28,7 +33,7 @@ public class SleepTask extends LeafTask<RedMonkey> {
     @Override
     protected Task<RedMonkey> copyTo(Task<RedMonkey> task) {
         SleepTask sleep = (SleepTask) task;
-        sleep.times = times;
+        sleep.anim = anim;
 
         return task;
     }

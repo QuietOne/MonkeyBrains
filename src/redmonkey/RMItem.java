@@ -34,6 +34,12 @@ public class RMItem {
         return tags.contains(tag);
     }
     
+    public void setTags(String... newTags){
+        this.tags.clear();
+        for (String tag:newTags)
+            this.tags.add(tag);
+    }
+    
     @Override
     public String toString(){
         String s="";

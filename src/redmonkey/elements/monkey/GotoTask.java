@@ -44,6 +44,11 @@ public class GotoTask extends LeafTask<RedMonkey> {
     }
 
     @Override
+    public void end(RedMonkey monkey) {
+        monkey.endedTask(this, monkey.lookingFor);
+    }
+
+    @Override
     protected Task<RedMonkey> copyTo(Task<RedMonkey> task) {
         GotoTask sense = (GotoTask) task;
         sense.anim = anim;

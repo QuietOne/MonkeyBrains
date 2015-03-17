@@ -14,6 +14,7 @@ import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.TerrainQuad;
@@ -33,7 +34,7 @@ public class RedMonkey extends RMSensefulItem {
     public AnimControl animControl;
     TerrainQuad terrain;
     public Node spatial=new Node();
-    public Spatial sp;
+    public Spatial model;
     Quaternion q = new Quaternion();
     float speedFact;
     GameLogicHook gameLogic;
@@ -41,8 +42,8 @@ public class RedMonkey extends RMSensefulItem {
     public RedMonkey(float x, float y,float z, TerrainQuad terrain, Spatial model, GameLogicHook gameLogic, float yTranslation) {
         tags.add("Monkey");
         this.terrain=terrain;
-        this.sp=model;
-        this.sp.setLocalTranslation(0, yTranslation, 0);
+        this.model=model;
+        this.model.setLocalTranslation(0, yTranslation, 0);
         this.spatial.move(x,y,z);
         this.position=spatial.getLocalTranslation();
         this.spatial.attachChild(model);
@@ -74,11 +75,11 @@ public class RedMonkey extends RMSensefulItem {
         Vector3f norM = terrain.getNormal(new Vector2f(spatial.getWorldTranslation().x, spatial.getWorldTranslation().z));
         norM = norM.cross(dir).cross(norM);
         q.lookAt(norM, Vector3f.UNIT_Y);
-        sp.setLocalRotation(q);
+        spatial.setLocalRotation(q);
+        System.out.println("Spatial rotation"+spatial.getWorldRotation());
     }
 
     public boolean lookingAround(ArrayList<String> tags) {
-        System.out.println("looking around");
         for (RMItem sensedItem : getSense().scan()) {
             boolean hasAllTags = true;
             for (String tag : tags) {

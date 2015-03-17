@@ -23,7 +23,6 @@ public class SenseTask extends LeafTask<RedMonkey> {
     @Override
     public void start(RedMonkey redMonkey){
             tags=new ArrayList<String>();
-        System.out.println("tag:"+tag);
         StringTokenizer st=new StringTokenizer(tag,",");
         while(st.hasMoreTokens())
             tags.add(st.nextToken());

@@ -19,14 +19,12 @@ public class SleepTask extends LeafTask<RedMonkey> {
 
     @Override
     public void start(RedMonkey monkey) {
-        monkey.channel.setAnim(anim, 1.f);
+        if (monkey.notSleeping(anim))
+            monkey.channel.setAnim(anim, 1.f);
     }
 
     @Override
     public void run(RedMonkey monkey) {
-        for (int i = 0; i < times; i++) {
-            monkey.sleep();
-        }
         success();
     }
 

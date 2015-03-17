@@ -65,10 +65,10 @@ public class RedMonkey extends RMSensefulItem {
         behaviorTree = parser.parse((String) (assetManager.loadAsset(tree)), this);
     }
 
-    public void sleep() {
-        System.out.println("zzz: check for irq?");
+    public boolean notSleeping(String anim) {
+        return !anim.equals(channel.getAnimationName());
     }
-
+    
     public void move(Vector3f dir) {
         control.setWalkDirection(dir);
         Vector3f norM = terrain.getNormal(new Vector2f(spatial.getWorldTranslation().x, spatial.getWorldTranslation().z));

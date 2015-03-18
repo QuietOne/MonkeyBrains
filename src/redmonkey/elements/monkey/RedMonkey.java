@@ -34,6 +34,7 @@ public class RedMonkey extends RMSensefulItem {
     public AnimControl animControl;
     TerrainQuad terrain;
     public Node spatial=new Node();
+//    public Node physHook=new Node();
     public Spatial model;
     Quaternion q = new Quaternion();
     float speedFact;
@@ -75,7 +76,7 @@ public class RedMonkey extends RMSensefulItem {
         Vector3f norM = terrain.getNormal(new Vector2f(spatial.getWorldTranslation().x, spatial.getWorldTranslation().z));
         norM = norM.cross(dir).cross(norM);
         q.lookAt(norM, Vector3f.UNIT_Y);
-        spatial.setLocalRotation(q);
+        control.setViewDirection(q.mult(control.getViewDirection()));
         System.out.println("Spatial rotation"+spatial.getWorldRotation());
     }
 

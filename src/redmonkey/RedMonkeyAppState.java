@@ -11,6 +11,7 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.font.BitmapFont;
 import com.jme3.scene.Node;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import redmonkey.elements.monkey.RedMonkey;
 
 /**
@@ -56,11 +57,12 @@ public class RedMonkeyAppState extends AbstractAppState {
         for (RMSense sense : senses) {
             sense.scan();
         }
+        try{
         for (RMItem item : space.items) {
             if (item instanceof RedMonkey) {
                 ((RedMonkey) item).behaviorTree.step();
             }
-        }
+        }}catch(ConcurrentModificationException e){e.printStackTrace();}
     }
 
     

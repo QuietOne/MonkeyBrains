@@ -14,7 +14,6 @@ import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.TerrainQuad;
@@ -30,11 +29,10 @@ public class RedMonkey extends RMSensefulItem {
 
     RMItem lookingFor;
     CharacterControl control;
-    AnimChannel channel;
+    public AnimChannel channel;
     public AnimControl animControl;
     TerrainQuad terrain;
     public Node spatial=new Node();
-//    public Node physHook=new Node();
     public Spatial model;
     Quaternion q = new Quaternion();
     float speedFact;
@@ -71,13 +69,16 @@ public class RedMonkey extends RMSensefulItem {
         return !anim.equals(channel.getAnimationName());
     }
     
+    public void stopMoving(){
+        control.setWalkDirection(Vector3f.ZERO.clone());
+    }
+    
     public void move(Vector3f dir) {
         control.setWalkDirection(dir);
         Vector3f norM = terrain.getNormal(new Vector2f(spatial.getWorldTranslation().x, spatial.getWorldTranslation().z));
         norM = norM.cross(dir).cross(norM);
-        q.lookAt(norM, Vector3f.UNIT_Y);
-        control.setViewDirection(q.mult(control.getViewDirection()));
-        System.out.println("Spatial rotation"+spatial.getWorldRotation());
+//        q.lookAt(norM, Vector3f.UNIT_Y);
+        control.setViewDirection(norM);
     }
 
     public boolean lookingAround(ArrayList<String> tags) {

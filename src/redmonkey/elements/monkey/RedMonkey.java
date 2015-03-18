@@ -38,8 +38,9 @@ public class RedMonkey extends RMSensefulItem {
     float speedFact;
     GameLogicHook gameLogic;
 
-    public RedMonkey(float x, float y,float z, TerrainQuad terrain, Spatial model, GameLogicHook gameLogic, float yTranslation) {
-        tags.add("Monkey");
+    public RedMonkey(float x, float y,float z, TerrainQuad terrain, Spatial model, GameLogicHook gameLogic, float yTranslation, String... newTags) {
+        for (String tag:newTags)
+            this.tags.add(tag);
         this.terrain=terrain;
         this.model=model;
         this.model.setLocalTranslation(0, yTranslation, 0);
@@ -64,7 +65,7 @@ public class RedMonkey extends RMSensefulItem {
         BehaviorTreeParser<RedMonkey> parser = new BehaviorTreeParser<RedMonkey>(BehaviorTreeParser.DEBUG_NONE);
         behaviorTree = parser.parse((String) (assetManager.loadAsset(tree)), this);
     }
-
+    
     public boolean notSleeping(String anim) {
         return !anim.equals(channel.getAnimationName());
     }

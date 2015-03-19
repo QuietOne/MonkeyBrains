@@ -18,5 +18,8 @@ public abstract class RMSense {
     public void setSpace(RMSpace space){
         this.space=space;
     }
+    public RMSpace getSpace(){
+        return space;
+    }
 
 }

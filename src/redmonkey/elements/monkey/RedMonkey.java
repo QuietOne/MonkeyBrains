@@ -74,6 +74,24 @@ public class RedMonkey extends RMSensefulItem {
         control.setWalkDirection(Vector3f.ZERO.clone());
     }
     
+    float rotationY;
+    public void rotateY(float rotationY){
+        this.rotationY=rotationY;
+    }
+    RMItem tempTarget=new RMItem(new Node(),"temp target");
+    public void advance(float advanceAmount){
+        lookingFor=tempTarget;
+        goal.x=control.getViewDirection().x;
+        goal.y=control.getViewDirection().y;
+        goal.z=control.getViewDirection().z;
+        Quaternion q=new Quaternion();
+        q=q.fromAngleAxis( rotationY, Vector3f.UNIT_Y );
+        q.mult(goal,goal);
+        goal.mult(advanceAmount,goal);
+        lookingFor.position=control.getPhysicsLocation().add(goal);
+        getSense().getSpace().addItems(lookingFor);
+    }
+    
     public void move(Vector3f dir) {
         control.setWalkDirection(dir);
         Vector3f norM = terrain.getNormal(new Vector2f(spatial.getWorldTranslation().x, spatial.getWorldTranslation().z));

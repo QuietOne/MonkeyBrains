@@ -5,13 +5,13 @@
 
 package redmonkey;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  *
  */
 public class RMSpace {
-    public ArrayList<RMItem> items=new ArrayList<RMItem>();
+    public HashSet<RMItem> items=new HashSet<RMItem>();
     public void addItems(RMItem... newItems){
         for (RMItem newItem:newItems){
             items.add(newItem);

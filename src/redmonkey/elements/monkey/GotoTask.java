@@ -23,7 +23,8 @@ public class GotoTask extends LeafTask<RedMonkey> {
 
     @Override
     public void start(RedMonkey monkey) {
-        monkey.channel.setAnim(anim, 1.f);
+        if (anim!=null)
+            monkey.channel.setAnim(anim, 1.f);
         monkey.speedFact=speedFact;
         irq = new RMReachedGoalInterrupt(monkey,reachDist);
     }

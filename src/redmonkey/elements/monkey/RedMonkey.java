@@ -67,8 +67,10 @@ public class RedMonkey extends RMSensefulItem {
     }
     
     public boolean notSleeping(String anim) {
+         if (channel!=null)
         return !anim.equals(channel.getAnimationName());
-    }
+         return false;
+   }
     
     public void stopMoving(){
         control.setWalkDirection(Vector3f.ZERO.clone());

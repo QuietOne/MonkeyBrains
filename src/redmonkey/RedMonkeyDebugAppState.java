@@ -5,6 +5,7 @@
 package redmonkey;
 
 import com.jme3.app.Application;
+import com.jme3.app.state.BaseAppState;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.renderer.RenderManager;
@@ -12,7 +13,6 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.BillboardControl;
-import com.simsilica.lemur.event.BaseAppState;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -102,10 +102,10 @@ public class RedMonkeyDebugAppState extends BaseAppState {
     }
 
     @Override
-    protected void enable() {
+    protected void onEnable() {
     }
 
     @Override
-    protected void disable() {
+    protected void onDisable() {
     }
 }

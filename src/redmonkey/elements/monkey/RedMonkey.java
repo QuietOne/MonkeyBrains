@@ -27,6 +27,7 @@ import redmonkey.RMSensefulItem;
  */
 public class RedMonkey extends RMSensefulItem {
 
+    public Object container;
     RMItem lookingFor;
     CharacterControl control;
     public AnimChannel channel;
@@ -59,7 +60,7 @@ public class RedMonkey extends RMSensefulItem {
         this.control = control;
         this.spatial.addControl(control);
     }
-    public BehaviorTree<RedMonkey> behaviorTree;
+    public BehaviorTree<? extends RedMonkey> behaviorTree;
 
     public void setBehaviorTree(AssetManager assetManager, String tree) {
         BehaviorTreeParser<RedMonkey> parser = new BehaviorTreeParser<RedMonkey>(BehaviorTreeParser.DEBUG_NONE);

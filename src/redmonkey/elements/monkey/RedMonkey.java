@@ -36,7 +36,7 @@ public class RedMonkey extends RMSensefulItem {
     public Node spatial=new Node();
     public Spatial model;
     Quaternion q = new Quaternion();
-    float speedFact;
+    public float speedFact;
     GameLogicHook gameLogic;
 
     public RedMonkey(float x, float y,float z, TerrainQuad terrain, Spatial model, GameLogicHook gameLogic, float yTranslation, String... newTags) {
@@ -127,6 +127,12 @@ public class RedMonkey extends RMSensefulItem {
     Vector3f goal=new Vector3f();
     public boolean goTo() {
         goal = lookingFor.position.subtract(position,goal).normalize();
+        move(goal.mult(speedFact));
+        return true;
+    }
+    
+    public boolean goAway() {
+        goal = position.subtract(lookingFor.position,goal).normalize();
         move(goal.mult(speedFact));
         return true;
     }

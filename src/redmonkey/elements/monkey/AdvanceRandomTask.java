@@ -25,7 +25,7 @@ public class AdvanceRandomTask extends LeafTask<RedMonkey> {
     public void run(RedMonkey redMonkey) {
         float v=(float)Math.random();
         v=((max-min)*v)+min;
-        redMonkey.advance(v);
+        redMonkey.advanceGround(v);
         success();
     }
 

@@ -28,7 +28,7 @@ import redmonkey.RMSensefulItem;
 public class RedMonkey extends RMSensefulItem {
 
     public Object container;
-    RMItem lookingFor;
+    public RMItem lookingFor;
     CharacterControl control;
     public AnimChannel channel;
     public AnimControl animControl;
@@ -36,7 +36,7 @@ public class RedMonkey extends RMSensefulItem {
     public Node spatial=new Node();
     public Spatial model;
     Quaternion q = new Quaternion();
-    float speedFact;
+    public float speedFact;
     GameLogicHook gameLogic;
 
     public RedMonkey(float x, float y,float z, TerrainQuad terrain, Spatial model, GameLogicHook gameLogic, float yTranslation, String... newTags) {
@@ -72,7 +72,7 @@ public class RedMonkey extends RMSensefulItem {
             return !anim.equals(channel.getAnimationName());
         }
         return false;
-    }
+   }
     
     public void stopMoving(){
         control.setWalkDirection(Vector3f.ZERO.clone());
@@ -83,7 +83,7 @@ public class RedMonkey extends RMSensefulItem {
         this.rotationY=rotationY;
     }
     RMItem tempTarget=new RMItem(new Node(),"temp target");
-    public void advance(float advanceAmount){
+    public void advanceGround(float advanceAmount){
         lookingFor=tempTarget;
         goal.x=control.getViewDirection().x;
         goal.y=control.getViewDirection().y;
@@ -93,6 +93,21 @@ public class RedMonkey extends RMSensefulItem {
         q.mult(goal,goal);
         goal.mult(advanceAmount,goal);
         lookingFor.position=control.getPhysicsLocation().add(goal);
+        lookingFor.position.y=terrain.getHeight(new Vector2f(lookingFor.position.x,lookingFor.position.z));
+        getSense().getSpace().addItems(lookingFor);
+    }
+    
+    public void advanceAir(float advanceAmount){
+        lookingFor=tempTarget;
+        goal.x=control.getViewDirection().x;
+        goal.y=control.getViewDirection().y;
+        goal.z=control.getViewDirection().z;
+        Quaternion q=new Quaternion();
+        q=q.fromAngleAxis( rotationY, Vector3f.UNIT_Y );
+        q.mult(goal,goal);
+        goal.mult(advanceAmount,goal);
+        lookingFor.position=control.getPhysicsLocation().add(goal);
+        lookingFor.position.y=Math.max(terrain.getHeight(new Vector2f(lookingFor.position.x,lookingFor.position.z))+10,lookingFor.position.y);
         getSense().getSpace().addItems(lookingFor);
     }
     
@@ -128,6 +143,12 @@ public class RedMonkey extends RMSensefulItem {
     Vector3f goal=new Vector3f();
     public boolean goTo() {
         goal = lookingFor.position.subtract(position,goal).normalize();
+        move(goal.mult(speedFact));
+        return true;
+    }
+    
+    public boolean goAway() {
+        goal = position.subtract(lookingFor.position,goal).normalize();
         move(goal.mult(speedFact));
         return true;
     }

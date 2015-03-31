@@ -28,7 +28,7 @@ import redmonkey.RMSensefulItem;
 public class RedMonkey extends RMSensefulItem {
 
     public Object container;
-    RMItem lookingFor;
+    public RMItem lookingFor;
     CharacterControl control;
     public AnimChannel channel;
     public AnimControl animControl;

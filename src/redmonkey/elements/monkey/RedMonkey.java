@@ -82,7 +82,7 @@ public class RedMonkey extends RMSensefulItem {
         this.rotationY=rotationY;
     }
     RMItem tempTarget=new RMItem(new Node(),"temp target");
-    public void advance(float advanceAmount){
+    public void advanceGround(float advanceAmount){
         lookingFor=tempTarget;
         goal.x=control.getViewDirection().x;
         goal.y=control.getViewDirection().y;
@@ -92,6 +92,21 @@ public class RedMonkey extends RMSensefulItem {
         q.mult(goal,goal);
         goal.mult(advanceAmount,goal);
         lookingFor.position=control.getPhysicsLocation().add(goal);
+        lookingFor.position.y=terrain.getHeight(new Vector2f(lookingFor.position.x,lookingFor.position.z));
+        getSense().getSpace().addItems(lookingFor);
+    }
+    
+    public void advanceAir(float advanceAmount){
+        lookingFor=tempTarget;
+        goal.x=control.getViewDirection().x;
+        goal.y=control.getViewDirection().y;
+        goal.z=control.getViewDirection().z;
+        Quaternion q=new Quaternion();
+        q=q.fromAngleAxis( rotationY, Vector3f.UNIT_Y );
+        q.mult(goal,goal);
+        goal.mult(advanceAmount,goal);
+        lookingFor.position=control.getPhysicsLocation().add(goal);
+        lookingFor.position.y=Math.max(terrain.getHeight(new Vector2f(lookingFor.position.x,lookingFor.position.z))+10,lookingFor.position.y);
         getSense().getSpace().addItems(lookingFor);
     }
     

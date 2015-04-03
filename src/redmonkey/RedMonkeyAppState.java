@@ -9,9 +9,7 @@ import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.font.BitmapFont;
-import com.jme3.scene.Node;
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 import redmonkey.elements.monkey.RedMonkey;
 
 /**
@@ -54,15 +52,22 @@ public class RedMonkeyAppState extends AbstractAppState {
 
     @Override
     public void update(float tpf) {
+        synchronized(space.removedItems){
+            space.items.removeAll(space.removedItems);
+            space.removedItems.clear();
+        }
+        synchronized(space.addedItems){
+            space.items.addAll(space.addedItems);
+            space.addedItems.clear();
+        }
         for (RMSense sense : senses) {
             sense.scan();
         }
-        try{
         for (RMItem item : space.items) {
             if (item instanceof RedMonkey) {
                 ((RedMonkey) item).behaviorTree.step();
             }
-        }}catch(ConcurrentModificationException e){e.printStackTrace();}
+        }
     }
 
     
